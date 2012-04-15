@@ -9,12 +9,14 @@
         android:targetSdkVersion="15" />
 
     <uses-feature android:name="android.hardware.sensor.light" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" />
     <uses-feature android:name="android.hardware.sensor.proximity" />
-    <uses-permission android:name="android.hardware.sensor.light" />
+
+    <uses-permission android:name="android.hardware.sensor.light" />
+    <uses-permission android:name="android.hardware.sensor.accelerometer" />
     <uses-permission android:name="android.hardware.sensor.proximity" />
 
     <application
-        android:debuggable="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >

@@ -3,5 +3,7 @@
 
     <string name="app_instructions">Simple instructions about how to use the app should be made available here.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum mattis turpis. Mauris vestibulum felis vel est facilisis commodo. In sit amet elementum augue. Nunc suscipit nibh ac mi porttitor ac placerat urna vestibulum. Quisque varius tellus vel justo aliquet tristique. Curabitur nec augue erat, vitae varius mauris. Integer tempus tellus dapibus tortor varius luctus blandit purus ornare. Nullam nec ipsum ac leo faucibus interdum quis eget libero.</string>
     <string name="app_name">Pocket Theremin</string>
+    <string name="image_description_logo">Pocket Theremin Logo</string>
+    <string name="image_description_theremin">Léon Theremin playing his instrument.</string>
 
 </resources>
