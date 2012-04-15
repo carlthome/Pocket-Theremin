@@ -40,16 +40,21 @@ public class PocketThereminActivity extends Activity implements
 	/*
 	 * TODO Emulate the sound of a theremin (instead of a pure sinus curve).
 	 */
+	
+	/*
+	 * TODO Prepare a preference menu.
+	 */
 
 	static final boolean DEBUG = true;
 
 	private SensorManager mSensorManager;
 	private Sensor mLight, mProximity, mAccelerometer;
 
-	AsyncTask soundGenerator;
-	AudioTrack sound;
-	protected float pitch, amplitude;
-	boolean play;
+	private AsyncTask soundGenerator;
+	private AudioTrack sound;
+	private float pitch, amplitude;
+	private int maxFrequency, minFrequency;
+	private boolean play;
 
 	/**
 	 * When the app is started: load graphics and find the sensors.
@@ -69,13 +74,13 @@ public class PocketThereminActivity extends Activity implements
 		if (DEBUG) {
 			pitch = 1000;
 			amplitude = 100;
+			minFrequency = 200;
+			maxFrequency = 10000;
 		}
 
 		if (DEBUG)
 			for (Sensor sensor : mSensorManager.getSensorList(Sensor.TYPE_ALL))
 				Log.e("Sensors", sensor.getName());
-
-		alert("Ready..."); // TODO Provide more detailed info to the user.
 	}
 
 	// TODO What is the use of this method?
@@ -100,11 +105,11 @@ public class PocketThereminActivity extends Activity implements
 	@Override
 	public final void onSensorChanged(SensorEvent event) {
 		Sensor sensor = event.sensor;
-
+		
 		if (sensor.getType() == Sensor.TYPE_LIGHT
 				|| sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-			pitch = (event.values[0] * 20) + 1000;
-			//alert("Current pitch:" + pitch);
+			float step = (maxFrequency - minFrequency) / sensor.getResolution();
+			pitch = event.values[0] * step;
 		} else if (sensor.getType() == Sensor.TYPE_PROXIMITY) {
 			if (play) {
 				play = false;
@@ -132,6 +137,8 @@ public class PocketThereminActivity extends Activity implements
 				SensorManager.SENSOR_DELAY_GAME);
 		mSensorManager.registerListener(this, mLight,
 				SensorManager.SENSOR_DELAY_GAME);
+		
+		alert("Ready...");
 	}
 
 	/**
@@ -142,7 +149,9 @@ public class PocketThereminActivity extends Activity implements
 	protected void onPause() {
 		super.onPause();
 		mSensorManager.unregisterListener(this);
-		sound.release();
+
+		if (sound.getState() == AudioTrack.STATE_INITIALIZED)
+			sound.release();
 	}
 
 	private class SoundGenerator extends AsyncTask<Void, Void, Void> {
@@ -164,7 +173,11 @@ public class PocketThereminActivity extends Activity implements
 		protected Void doInBackground(Void... params) {
 			while (PocketThereminActivity.this.play) {
 				for (int i = 0; i < samples.length; i++) {
-					frequency = PocketThereminActivity.this.pitch; //TODO Interpret sensor input here.
+					
+					frequency = PocketThereminActivity.this.pitch + minFrequency;
+					
+					if (frequency > maxFrequency)
+						frequency = maxFrequency;
 					
 					increment = (float) (2 * Math.PI * frequency) / sampleRate;
 					samples[i] = (short) ((float) Math.sin(angle) * Short.MAX_VALUE);
