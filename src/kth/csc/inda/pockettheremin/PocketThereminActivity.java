@@ -36,6 +36,10 @@ public class PocketThereminActivity extends Activity implements
 	 * through the SensorManager. For now the accelerometer is used instead.
 	 * Fun!
 	 */
+	
+	/*
+	 * TODO Emulate the sound of a theremin (instead of a pure sinus curve).
+	 */
 
 	static final boolean DEBUG = true;
 
