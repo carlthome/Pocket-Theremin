@@ -10,8 +10,7 @@
 
     <uses-feature android:name="android.hardware.sensor.light" />
     <uses-feature android:name="android.hardware.sensor.proximity" />
-
-    <uses-permission android:name="android.hardware.sensor.light" />
+    <uses-permission android:name="android.hardware.sensor.light" />
     <uses-permission android:name="android.hardware.sensor.proximity" />
 
     <application
@@ -20,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         <activity
-            android:name=".Main"
+            android:name=".PocketThereminActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
             <intent-filter>
