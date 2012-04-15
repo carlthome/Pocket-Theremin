@@ -52,8 +52,10 @@ public class PocketThereminActivity extends Activity implements
 
 		alert("Loaded..."); // TODO Provide more detailed info to the user.
 		
-pitch = ToneGenerator.TONE_CDMA_ABBR_ALERT;
-amplitude = 100;
+		if (DEBUG) {
+			pitch = ToneGenerator.TONE_CDMA_CONFIRM;
+			amplitude = ToneGenerator.MAX_VOLUME;
+		}
 
 		if (DEBUG)
 			for (Sensor sensor : mSensorManager.getSensorList(Sensor.TYPE_ALL))
@@ -98,7 +100,7 @@ amplitude = 100;
 		mSensorManager.registerListener(this, mLight, SensorManager.SENSOR_DELAY_FASTEST);
 
 		// Prepare a new tone generator.
-		toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, ToneGenerator.MAX_VOLUME);
+		toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, amplitude);
 	}
 
 	/**
