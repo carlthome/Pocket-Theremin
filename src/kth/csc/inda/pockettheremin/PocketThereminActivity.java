@@ -36,6 +36,15 @@ public class PocketThereminActivity extends Activity implements
 	 */
 
 	/*
+	 * TODO Add "cheat mode" where available frequencies align with a harmonic
+	 * scale.
+	 */
+
+	/*
+	 * TODO Sweep between frequencies.
+	 */
+
+	/*
 	 * TODO Emulate the sound of a theremin (instead of a pure sine curve).
 	 */
 
@@ -97,7 +106,8 @@ public class PocketThereminActivity extends Activity implements
 	public final void onSensorChanged(SensorEvent event) {
 		Sensor sensor = event.sensor;
 
-		if (sensor.getType() == Sensor.TYPE_LIGHT || sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+		if (sensor.getType() == Sensor.TYPE_LIGHT
+				|| sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 			float step = (maxFrequency - minFrequency) / sensor.getResolution();
 			pitch = event.values[0] * step;
 		} else if (sensor.getType() == Sensor.TYPE_PROXIMITY) {
@@ -166,7 +176,8 @@ public class PocketThereminActivity extends Activity implements
 			while (PocketThereminActivity.this.play) {
 				for (int i = 0; i < samples.length; i++) {
 
-					frequency = PocketThereminActivity.this.pitch + minFrequency;
+					frequency = PocketThereminActivity.this.pitch
+							+ minFrequency;
 
 					if (frequency > maxFrequency)
 						frequency = maxFrequency;
@@ -175,7 +186,7 @@ public class PocketThereminActivity extends Activity implements
 					samples[i] = (short) ((float) Math.sin(angle) * Short.MAX_VALUE);
 					angle += increment;
 				}
-				//publishProgress(frequency); No, keep it simple!
+				// publishProgress(frequency); No, keep it simple!
 				sound.write(samples, 0, samples.length);
 			}
 
