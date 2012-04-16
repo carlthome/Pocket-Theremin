@@ -183,7 +183,7 @@ public class PocketThereminActivity extends Activity implements
 						frequency = maxFrequency;
 
 					increment = (float) (2 * Math.PI * frequency) / sampleRate;
-					samples[i] = (short) ((float) Math.sin(angle) * Short.MAX_VALUE);
+					samples[i] = (short) ((float) android.util.FloatMath.sin(angle) * Short.MAX_VALUE);
 					angle += increment;
 				}
 				// publishProgress(frequency); No, keep it simple!
