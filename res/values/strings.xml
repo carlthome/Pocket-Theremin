@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_instructions">Simple instructions about how to use the app should be made available here.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum mattis turpis. Mauris vestibulum felis vel est facilisis commodo. In sit amet elementum augue. Nunc suscipit nibh ac mi porttitor ac placerat urna vestibulum. Quisque varius tellus vel justo aliquet tristique. Curabitur nec augue erat, vitae varius mauris. Integer tempus tellus dapibus tortor varius luctus blandit purus ornare. Nullam nec ipsum ac leo faucibus interdum quis eget libero.</string>
+    <string name="app_instructions">Simple instructions about how to use the app should be made available here.</string>
     <string name="app_name">Pocket Theremin</string>
-    <string name="image_description">Léon Theremin playing his instrument.</string>
+    <string name="theremin_description_text">"The theremin is an early electronic musical instrument controlled without discernible physical contact from the player. It is named after its Russian inventor, Professor Léon Theremin, who patented the device in 1928." /n/n-- Wikiedia</string>
+    <string name="theremin_description_image">Léon Theremin playing his instrument.</string>
+    <string name="theremin_description_headline">What is a Theremin?</string>
 
 </resources>

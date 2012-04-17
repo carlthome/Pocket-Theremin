@@ -2,29 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:contentDescription="@string/image_description"
-        android:src="@drawable/theremin" />
-
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:padding="10dp" >
+        android:orientation="horizontal" >
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="241dp"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_launcher"
                 android:drawablePadding="5dp"
                 android:gravity="center_vertical"
@@ -32,10 +26,69 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:text="@string/app_instructions" />
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textFrequency"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Frequency: "
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+id/textAmplitude"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Amplitude: "
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/theremin_description_image"
+            android:src="@drawable/theremin" />
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theremin_description_headline"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/theremin_description_text" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>
