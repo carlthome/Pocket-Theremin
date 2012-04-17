@@ -110,7 +110,8 @@ public class PocketThereminActivity extends Activity implements
 		int type = sensor.getType();
 		if (DEBUG) {
 			Log.d(sensor.getName(), "onSensorChanged: " + event.values[0]);
-			Log.d(sensor.getName(), "Resolution: " + sensor.getResolution()	+ ", Range: " + sensor.getMaximumRange());
+			Log.d(sensor.getName(), "Resolution: " + sensor.getResolution()
+					+ ", Range: " + sensor.getMaximumRange());
 		}
 
 		/*
@@ -130,8 +131,11 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Modulate pitch.
 		 */
-		if (type == Sensor.TYPE_ACCELEROMETER || type == Sensor.TYPE_LIGHT) {
-			pitch = event.values[0]	* ((maxFrequency - minFrequency) / sensor.getMaximumRange());
+		float step = (maxFrequency - minFrequency) / sensor.getMaximumRange();
+		if (type == Sensor.TYPE_ACCELEROMETER) {
+			pitch = event.values[1] * step;
+		} else if (type == Sensor.TYPE_LIGHT) {
+			pitch = event.values[0] * step;
 		}
 	}
 
@@ -210,7 +214,7 @@ public class PocketThereminActivity extends Activity implements
 					Log.d("Autotune", "Frequency before snap: " + frequency);
 
 				frequency = tuner.snap(frequency, scale);
-				
+
 				// TODO Portamento.
 				double difference = frequency - previousFrequency;
 				previousFrequency = frequency;
@@ -251,8 +255,8 @@ public class PocketThereminActivity extends Activity implements
 		protected void onProgressUpdate(Double... progress) {
 			((TextView) findViewById(R.id.textFrequency)).setText("Frequency: "
 					+ progress[0].shortValue());
-			((TextView) findViewById(R.id.textAmplitude))
-					.setText("Amplitude: " + progress[1].shortValue());
+			((TextView) findViewById(R.id.textAmplitude)).setText("Amplitude: "
+					+ progress[1].shortValue());
 		}
 
 		protected void onPostExecute(String result) {
