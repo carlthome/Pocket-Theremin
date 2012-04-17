@@ -3,8 +3,7 @@ package kth.csc.inda.pockettheremin;
 /**
  * Let A in the fourth octave be 440hz in accordance with modern convention.
  * 
- * @author Carl
- * 
+ * TODO Document this class properly.
  */
 public class AutoTune {
 	final double[] notes = {
@@ -75,10 +74,10 @@ public class AutoTune {
 
 		int index = 57; // 57 is A440hz
 		for (int counter = 0; counter < steps.length; counter++) {
-			scale[counter] = notes[index]; 
+			scale[counter] = notes[index];
 			index += steps[counter];
 		}
-		scale[scale.length -1] = notes[index]; // Tonic
+		scale[scale.length - 1] = notes[index]; // Tonic
 
 		return scale;
 	}
