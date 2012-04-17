@@ -203,9 +203,9 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		protected String doInBackground(Void... params) {
-			while (PocketThereminActivity.this.play) {
+			while (play) {
 
-				// Select the correct frequency after modulating by pitch.
+				// Select the correct frequency modified by pitch.
 				double frequency = PocketThereminActivity.this.pitch
 						+ minFrequency;
 				if (frequency > maxFrequency)
