@@ -32,6 +32,17 @@ import android.widget.Toast;
  */
 public class PocketThereminActivity extends Activity implements
 		SensorEventListener {
+
+	/*
+	 * TODO Create both a sampler and a synth as two separate classes and allow
+	 * the AsyncTask that generates sounds by pitch to use one of the two.
+	 */
+	
+	/*
+	 * TODO Use the new ViewPager layout but with backwards-compatibility from
+	 * 1.6 and onward.
+	 */
+
 	/*
 	 * TODO Find out why Xperia phones don't seem to provide a light sensor
 	 * through the SensorManager. For now the accelerometer is used instead.
@@ -39,21 +50,28 @@ public class PocketThereminActivity extends Activity implements
 	 */
 
 	/*
-	 * TODO Add "cheat mode" where available frequencies align with a harmonic
-	 * scale.
+	 * TODO Sweep between frequencies. (i.e. portamento-mode since sensor
+	 * resolution might be limited)
 	 */
 
 	/*
-	 * TODO Sweep between frequencies.
+	 * TODO Improve sensor stepping between frequencies.
+	 */
+
+	/*
+	 * TODO Remove the noise that occurs when play=false and the sound loop is
+	 * stopped.
 	 */
 
 	/*
 	 * TODO Emulate the sound of a theremin (instead of a pure sine curve).
+	 * Perhaps use a mp3 for sampling?
 	 */
 
 	/*
 	 * TODO Prepare a preference menu.
 	 */
+
 	/*
 	 * TODO Let the user select sensor.
 	 */
@@ -115,27 +133,74 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		/*
-		 * Modulate amplitude.
-		 */
-		if (type == Sensor.TYPE_PROXIMITY) {
-			amplitude = event.values[0];
-
-			if (play) {
-				play = false;
-			} else {
-				play = true;
-				soundGenerator = new SoundGenerator().execute();
-			}
-		}
-
-		/*
-		 * Modulate pitch.
+		 * Calculate sensor stepping.
 		 */
 		float step = (maxFrequency - minFrequency) / sensor.getMaximumRange();
-		if (type == Sensor.TYPE_ACCELEROMETER) {
-			pitch = event.values[1] * step;
-		} else if (type == Sensor.TYPE_LIGHT) {
-			pitch = event.values[0] * step;
+
+		/*
+		 * Modulate pitch and amplitude just with the accelerometer, or modulate
+		 * pitch with the light sensor and amplitude with the proximity sensor.
+		 */
+		boolean useAccelerometer = false; // TODO Set this by user preference.
+
+		if (useAccelerometer) {
+			if (type == Sensor.TYPE_ACCELEROMETER) {
+				pitch = event.values[0] * step;
+				amplitude = event.values[1] * step;
+
+				if (amplitude <= 0) { // TODO Calibrate values.
+					play = false;
+				} else {
+					play = true;
+					soundGenerator = new SoundGenerator().execute(); // TODO
+																		// Leave
+																		// the
+																		// generator
+																		// on
+																		// for
+																		// the
+																		// entire
+																		// app
+																		// duration
+																		// and
+																		// just
+																		// attenuate
+																		// the
+																		// amplitude
+																		// instead.
+				}
+			}
+		} else {
+			if (type == Sensor.TYPE_PROXIMITY) {
+				amplitude = event.values[0];
+
+				if (play)
+					play = false;
+				else {
+					play = true;
+					soundGenerator = new SoundGenerator().execute(); // TODO
+																		// Leave
+																		// the
+																		// generator
+																		// on
+																		// for
+																		// the
+																		// entire
+																		// app
+																		// duration
+																		// and
+																		// just
+																		// attenuate
+																		// the
+																		// amplitude
+																		// instead.
+				}
+
+			} else if (type == Sensor.TYPE_LIGHT) // TODO Not working?
+				pitch = event.values[0] * step;
+			else if (light == null && type == Sensor.TYPE_ACCELEROMETER) // Sensor
+																			// fallback.
+				pitch = event.values[1] * step;
 		}
 	}
 
@@ -253,6 +318,7 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		protected void onProgressUpdate(Double... progress) {
+			// TODO Separate label and value for easier localization.
 			((TextView) findViewById(R.id.textFrequency)).setText("Frequency: "
 					+ progress[0].shortValue());
 			((TextView) findViewById(R.id.textAmplitude)).setText("Amplitude: "

@@ -6,6 +6,7 @@ package kth.csc.inda.pockettheremin;
  * TODO Document this class properly.
  */
 public class AutoTune {
+	int tonic = 57; //A4 is index 57 of the available notes.
 	final double[] notes = {
 			16.35, // C0
 			17.32, 18.35,
@@ -72,17 +73,29 @@ public class AutoTune {
 	public double[] getScale(int[] steps) {
 		double[] scale = new double[steps.length + 1];
 
-		int index = 57; // 57 is A440hz
+		int index = tonic;
 		for (int counter = 0; counter < steps.length; counter++) {
 			scale[counter] = notes[index];
 			index += steps[counter];
 		}
-		scale[scale.length - 1] = notes[index]; // Tonic
+		//TODO Improve loop invariant so that the octave is set before leaving the loop.
+		scale[scale.length - 1] = notes[index]; // Octave
 
 		return scale;
+	}
+	
+	public void setKey(String key) {
+		//TODO Parse string and interpret tonic.
+		
+		// if (KEY OF C) 
+		// tonic = 57 - 4;
 	}
 
 	public double[] getMajorScale() {
 		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 });
+	}
+
+	public double[] getMinorScale() {
+		return getScale(new int[] { 2, 1, 2, 2, 1, 2 }); //TODO Verify sequence.
 	}
 }
