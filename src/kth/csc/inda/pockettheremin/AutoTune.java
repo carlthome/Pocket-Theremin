@@ -70,16 +70,24 @@ public class AutoTune {
 		return closestNote;
 	}
 
-	public double[] getScale(int[] steps) {
-		double[] scale = new double[steps.length + 1];
+	public double[] getScale(int[] steps, int octaves) throws IllegalArgumentException {
+		double[] scale = new double[(octaves * steps.length) + 1]; // We always want the final tonic of one more octave so add one.
 
-		int index = tonic;
-		for (int counter = 0; counter < steps.length; counter++) {
-			scale[counter] = notes[index];
-			index += steps[counter];
+		if (octaves > 6 || octaves < 0) 
+			throw new IllegalArgumentException();
+
+		//TODO Fix odd octave ranges.
+		int octavesUp = (octaves / 2);
+		int octavesDown = (octaves / 2);
+		
+		int note = tonic - (12*octavesDown);
+		for (int octave = 0; octave < octaves; octave++) {
+			for (int step = 0; step < steps.length; step++) {
+				scale[step + (steps.length*octave)] = notes[note];
+				note += steps[step];
+			} 
 		}
-		//TODO Improve loop invariant so that the octave is set before leaving the loop.
-		scale[scale.length - 1] = notes[index]; // Octave
+		scale[scale.length - 1] = notes[tonic+(12*octavesUp)]; // Final tonic in the scale.
 
 		return scale;
 	}
@@ -92,10 +100,10 @@ public class AutoTune {
 	}
 
 	public double[] getMajorScale() {
-		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 });
+		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, 4);
 	}
 
-	public double[] getMinorScale() {
-		return getScale(new int[] { 2, 1, 2, 2, 1, 2 }); //TODO Verify sequence.
+	public double[] getMinorScale() { //TODO Fix erroneous sequence.
+		return getScale(new int[] { 2, 1, 2, 2, 1, 2 }, 4); 
 	}
 }

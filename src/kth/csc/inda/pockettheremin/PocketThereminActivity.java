@@ -176,8 +176,7 @@ public class PocketThereminActivity extends Activity implements
 
 			} else if (type == Sensor.TYPE_LIGHT) // TODO Not working?
 				pitch = event.values[0] * step;
-			else if (light == null && type == Sensor.TYPE_ACCELEROMETER) // Sensor
-																			// fallback.
+			else if (light == null && type == Sensor.TYPE_ACCELEROMETER) // Fallback.
 				pitch = event.values[1] * step;
 		}
 	}
@@ -266,8 +265,9 @@ public class PocketThereminActivity extends Activity implements
 				// Generate sound samples.
 				short samples[] = new short[buffersize];
 				for (int i = 0; i < samples.length; i++) {
+					//TODO Look for rounding errors. The sound drops pitch after some time.
 					increment = (float) (2 * Math.PI * frequency) / sampleRate;
-					samples[i] = (short) ((float) Math.sin(angle) * Short.MAX_VALUE);
+					samples[i] = (short) ((float) Math.signum(Math.sin(angle)) * Short.MAX_VALUE);
 					angle += increment;
 				}
 
@@ -279,9 +279,9 @@ public class PocketThereminActivity extends Activity implements
 				// Tremolo
 				// TODO Make sure tremolo is independent of buffer size.
 				sound.setStereoVolume(attentuation, attentuation);
-				if (attentuation >= 1.0)
+				if (attentuation >= 1.0f)
 					direction = -1;
-				else if (attentuation <= 0)
+				else if (attentuation <= 0.0f)
 					direction = 1;
 				attentuation += 0.1f * direction;
 
