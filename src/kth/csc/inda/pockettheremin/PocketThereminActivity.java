@@ -88,7 +88,6 @@ public class PocketThereminActivity extends Activity implements
 	private int maxFrequency, minFrequency;
 	private boolean play, useAutotune, useTremolo, usePortamento, useVibrato,
 			chiptuneMode;
-
 	WaveForm waveForm;
 
 	public enum WaveForm {
@@ -111,12 +110,12 @@ public class PocketThereminActivity extends Activity implements
 
 		if (DEBUG) {
 			volume = 0; // TODO Should be set by a sensor.
-			minFrequency = 200; // TODO Should be an user preference.
-			maxFrequency = 3000; // TODO Should be an user preference.
+			minFrequency = 16; // TODO Should be an user preference.
+			maxFrequency = 5000; // TODO Should be an user preference.
 
 			useTremolo = false;
 			usePortamento = false;
-			useVibrato = false;
+			useVibrato = true;
 			useAutotune = true;
 			useAccelerometer = true;
 			chiptuneMode = false;
@@ -153,7 +152,8 @@ public class PocketThereminActivity extends Activity implements
 		 * Calibrate sensor stepping.
 		 */
 		float sensorSteps = sensor.getMaximumRange() / sensor.getResolution();
-		float pitchStep = (maxFrequency - minFrequency) / sensor.getResolution(); // TODO
+		float pitchStep = (maxFrequency - minFrequency)
+				/ sensor.getResolution(); // TODO
 		float volumeStep = 1.0f / sensor.getResolution();
 
 		/*
@@ -161,8 +161,8 @@ public class PocketThereminActivity extends Activity implements
 		 * pitch with the light sensor and amplitude with the proximity sensor.
 		 */
 		if (useAccelerometer && type == Sensor.TYPE_ACCELEROMETER) {
-			pitch = event.values[0] * pitchStep;
-			volume = event.values[1] * volumeStep;
+			volume = event.values[0] * volumeStep;
+			pitch = event.values[1] * pitchStep;
 		} else { // Don't use accelerometer
 
 			// Set volume.
@@ -222,7 +222,7 @@ public class PocketThereminActivity extends Activity implements
 		int buffersize = 1024;
 		int sampleRate = 44100;
 		SoundEffect autotune, tremolo, portamento, vibrato;
-		float frequency, amplitude;
+		float frequency, amplitude, angle;
 
 		protected void onPreExecute() {
 			if (useAutotune)
@@ -234,7 +234,8 @@ public class PocketThereminActivity extends Activity implements
 			if (useVibrato)
 				vibrato = new Vibrato();
 
-			int audioFormat = (chiptuneMode) ? AudioFormat.ENCODING_PCM_8BIT : AudioFormat.ENCODING_PCM_16BIT;
+			int audioFormat = (chiptuneMode) ? AudioFormat.ENCODING_PCM_8BIT
+					: AudioFormat.ENCODING_PCM_16BIT;
 			audioStream = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO, audioFormat,
 					AudioTrack
@@ -285,9 +286,9 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Generate sound samples.
 				 */
-				float angle = 0.0f;
 				short[] samples = new short[buffersize];
 				for (int i = 0; i < samples.length; i++) {
+
 					switch (waveForm) {
 					case SINE:
 						samples[i] = (short) (Math.sin(angle) * Short.MAX_VALUE);
@@ -303,6 +304,7 @@ public class PocketThereminActivity extends Activity implements
 					case SAWTOOTH: // TODO
 						break;
 					}
+
 					angle += (float) ((2 * Math.PI * frequency) / sampleRate);
 				}
 
