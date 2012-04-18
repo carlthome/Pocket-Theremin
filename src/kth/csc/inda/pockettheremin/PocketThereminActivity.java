@@ -2,6 +2,12 @@ package kth.csc.inda.pockettheremin;
 
 import java.util.Arrays;
 
+import kth.csc.inda.pockettheremin.soundeffects.Autotune;
+import kth.csc.inda.pockettheremin.soundeffects.Portamento;
+import kth.csc.inda.pockettheremin.soundeffects.SoundEffect;
+import kth.csc.inda.pockettheremin.soundeffects.Tremolo;
+import kth.csc.inda.pockettheremin.soundeffects.Vibrato;
+
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -79,12 +85,20 @@ public class PocketThereminActivity extends Activity implements
 	static final boolean DEBUG = true;
 	private SensorManager sensors;
 	private Sensor light, proximity, accelerometer;
-	private AsyncTask soundGenerator;
-	private AudioTrack sound;
-	private float pitch;
-	private double amplitude;
+	private boolean useAccelerometer;
+
+	private AsyncTask<?, ?, ?> soundGenerator;
+	AudioTrack audioStream;
+	private float pitch, volume;
 	private int maxFrequency, minFrequency;
-	private boolean play, autotune, tremolo, portamento, vibrato;
+	private boolean play, useAutotune, useTremolo, usePortamento, useVibrato,
+			chiptuneMode;
+
+	public enum WaveForm {
+		SINE, SQUARE, TRIANGLE, SAWTOOTH,
+	};
+
+	WaveForm waveForm;
 
 	/**
 	 * When the app is started: load graphics and find the sensors.
@@ -101,9 +115,17 @@ public class PocketThereminActivity extends Activity implements
 		proximity = sensors.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 
 		if (DEBUG) {
-			amplitude = 0; // TODO Should be set by a sensor.
-			minFrequency = 20; // TODO Should be an user preference.
+			volume = 0; // TODO Should be set by a sensor.
+			minFrequency = 1000; // TODO Should be an user preference.
 			maxFrequency = 20000; // TODO Should be an user preference.
+
+			useTremolo = false;
+			usePortamento = false;
+			useVibrato = true;
+			useAutotune = true;
+			useAccelerometer = true;
+			chiptuneMode = true;
+			waveForm = WaveForm.SINE;
 		}
 
 		if (DEBUG)
@@ -133,51 +155,30 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		/*
-		 * Calculate sensor stepping.
+		 * Calibrate sensor stepping.
 		 */
-		float step = (maxFrequency - minFrequency) / sensor.getMaximumRange();
+		float pitchStep = (maxFrequency - minFrequency)
+				/ sensor.getMaximumRange(); // TODO
+		float volumeStep = 1.0f / sensor.getResolution();
 
 		/*
 		 * Modulate pitch and amplitude just with the accelerometer, or modulate
 		 * pitch with the light sensor and amplitude with the proximity sensor.
 		 */
-		boolean useAccelerometer = false; // TODO Set this by user preference.
+		if (useAccelerometer && type == Sensor.TYPE_ACCELEROMETER) {
+			pitch = event.values[0] * pitchStep;
+			volume = event.values[1] * volumeStep;
+		} else { // Don't use accelerometer
 
-		if (useAccelerometer) {
-			if (type == Sensor.TYPE_ACCELEROMETER) {
-				pitch = event.values[0] * step;
-				amplitude = event.values[1] * step;
+			// Set volume.
+			if (type == Sensor.TYPE_PROXIMITY)
+				volume = -1 * event.values[0];
 
-				if (amplitude <= 0) { // TODO Calibrate values.
-					play = false;
-				} else {
-					play = true;
-					/*
-					 * TODO Leave the generator on for the entire app duration
-					 * and just attenuate the amplitude instead.
-					 */
-					soundGenerator = new SoundGenerator().execute();
-				}
-			}
-		} else {
-			if (type == Sensor.TYPE_PROXIMITY) {
-				amplitude = event.values[0];
-
-				if (play)
-					play = false;
-				else {
-					play = true;
-					/*
-					 * TODO Leave the generator on for the entire app duration
-					 * and just attenuate the amplitude instead.
-					 */
-					soundGenerator = new SoundGenerator().execute();
-				}
-
-			} else if (type == Sensor.TYPE_LIGHT) // TODO Not working?
-				pitch = event.values[0] * step;
+			// Set pitch.
+			if (type == Sensor.TYPE_LIGHT) // TODO Not working?
+				pitch = event.values[0] * pitchStep;
 			else if (light == null && type == Sensor.TYPE_ACCELEROMETER) // Fallback.
-				pitch = event.values[1] * step;
+				pitch = event.values[1] * pitchStep;
 		}
 	}
 
@@ -193,6 +194,9 @@ public class PocketThereminActivity extends Activity implements
 				SensorManager.SENSOR_DELAY_NORMAL);
 		sensors.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
 
+		play = true;
+		soundGenerator = new AudioThread().execute();
+
 		alert("Ready...");
 	}
 
@@ -203,10 +207,14 @@ public class PocketThereminActivity extends Activity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
-		sensors.unregisterListener(this);
 
-		if (sound.getState() == AudioTrack.STATE_INITIALIZED)
-			sound.release();
+		play = false;
+
+		if (sensors != null)
+			sensors.unregisterListener(this);
+
+		if (soundGenerator != null)
+			soundGenerator.cancel(true);
 
 		alert("Paused...");
 	}
@@ -215,78 +223,100 @@ public class PocketThereminActivity extends Activity implements
 	 * Generate sounds in a separate thread (as an AsyncTask) by sampling a
 	 * frequency. The frequency is modulated by the sensor provided pitch.
 	 */
-	private class SoundGenerator extends AsyncTask<Void, Double, String> {
-
-		float increment, angle;
+	private class AudioThread extends AsyncTask<Void, Float, String> {
 		int buffersize = 1024;
 		int sampleRate = 44100;
-
-		float attentuation = 0.0f;
-		int direction = 1;
-		double previousFrequency;
-		private AutoTune tuner;
-		private double[] scale;
+		SoundEffect autotune, tremolo, portamento, vibrato;
+		float frequency, amplitude;
 
 		protected void onPreExecute() {
-			tuner = new AutoTune();
-			scale = tuner.getMajorScale();
+			if (useAutotune)
+				autotune = new Autotune();
+			if (useTremolo)
+				tremolo = new Tremolo();
+			if (usePortamento)
+				portamento = new Portamento();
+			if (useVibrato)
+				vibrato = new Vibrato();
 
-			if (DEBUG)
-				Log.d("Scale", "" + Arrays.toString(scale));
+			int audioFormat;
+			if (chiptuneMode) {
+				audioFormat = AudioFormat.ENCODING_PCM_8BIT;
+			} else {
+				audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+			}
 
-			int minSize = AudioTrack.getMinBufferSize(sampleRate,
-					AudioFormat.CHANNEL_CONFIGURATION_MONO,
-					AudioFormat.ENCODING_PCM_16BIT);
-			sound = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
-					AudioFormat.CHANNEL_CONFIGURATION_MONO,
-					AudioFormat.ENCODING_PCM_16BIT, minSize,
-					AudioTrack.MODE_STREAM);
-			sound.play();
+			audioStream = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
+					AudioFormat.CHANNEL_CONFIGURATION_MONO, audioFormat,
+					AudioTrack
+							.getMinBufferSize(sampleRate,
+									AudioFormat.CHANNEL_CONFIGURATION_MONO,
+									audioFormat), AudioTrack.MODE_STREAM);
+			audioStream.play();
 		}
 
 		protected String doInBackground(Void... params) {
 			while (play) {
 
-				// Select the correct frequency modified by pitch.
-				double frequency = PocketThereminActivity.this.pitch
-						+ minFrequency;
+				/*
+				 * Set initial frequency according to the sensor.
+				 */
+				frequency = PocketThereminActivity.this.pitch + minFrequency;
+
+				/*
+				 * Set initial volume according to the sensor.
+				 */
+				amplitude = PocketThereminActivity.this.volume;
+				audioStream.setStereoVolume(amplitude, amplitude);
+
+				/*
+				 * Effects chain.
+				 */
 				if (frequency > maxFrequency)
 					frequency = maxFrequency;
-				if (DEBUG)
-					Log.d("Autotune", "Frequency before snap: " + frequency);
 
-				frequency = tuner.snap(frequency, scale);
+				if (autotune != null)
+					frequency = autotune.getFrequency(frequency);
 
-				// TODO Portamento.
-				double difference = frequency - previousFrequency;
-				previousFrequency = frequency;
-				frequency += difference / buffersize;
+				if (vibrato != null)
+					frequency = vibrato.getFrequency(frequency);
 
-				// Generate sound samples.
-				short samples[] = new short[buffersize];
-				for (int i = 0; i < samples.length; i++) {
-					//TODO Look for rounding errors. The sound drops pitch after some time.
-					increment = (float) (2 * Math.PI * frequency) / sampleRate;
-					samples[i] = (short) ((float) Math.signum(Math.sin(angle)) * Short.MAX_VALUE);
-					angle += increment;
+				if (portamento != null)
+					frequency = portamento.getFrequency(frequency);
+
+				if (tremolo != null) {
+					amplitude = tremolo.getAmplitude(amplitude);
+					audioStream.setStereoVolume(amplitude, amplitude);
 				}
 
-				if (DEBUG)
-					Log.d("Sound Buffer: ", "Frequency: " + frequency
-							+ ", Attentuation: " + attentuation
-							+ ", Tremolo Direction: " + direction);
-
-				// Tremolo
-				// TODO Make sure tremolo is independent of buffer size.
-				sound.setStereoVolume(attentuation, attentuation);
-				if (attentuation >= 1.0f)
-					direction = -1;
-				else if (attentuation <= 0.0f)
-					direction = 1;
-				attentuation += 0.1f * direction;
+				/*
+				 * Generate sound samples.
+				 */
+				short[] samples = new short[buffersize];
+				float angle = 0.0f;
+				float x, y = 0.0f;
+				for (int i = 0; i < samples.length; i++) {
+					switch (waveForm) {
+					case SINE:
+						y = (short) ((float) Math.signum(Math.sin(angle)) * Short.MAX_VALUE);
+						break;
+					case SQUARE: // TODO
+						if (y != Short.MAX_VALUE)
+							y = Short.MAX_VALUE;
+						else
+							y = -1 * Short.MAX_VALUE;
+						break;
+					case TRIANGLE: // TODO
+						break;
+					case SAWTOOTH: // TODO
+						break;
+					}
+					samples[i] = (short) y;// TODO Look for rounding errors.
+					angle += (float) (2 * Math.PI * frequency) / sampleRate;
+				}
 
 				// Write samples.
-				sound.write(samples, 0, buffersize);
+				audioStream.write(samples, 0, buffersize);
 
 				// Return amplitude and frequency to the GUI thread.
 				publishProgress(frequency, amplitude);
@@ -295,7 +325,7 @@ public class PocketThereminActivity extends Activity implements
 			return "Done.";
 		}
 
-		protected void onProgressUpdate(Double... progress) {
+		protected void onProgressUpdate(Float... progress) {
 			// TODO Separate label and value for easier localization.
 			((TextView) findViewById(R.id.textFrequency)).setText("Frequency: "
 					+ progress[0].shortValue());
@@ -304,7 +334,7 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		protected void onPostExecute(String result) {
-			sound.release();
+			audioStream.release();
 		}
 	}
 
