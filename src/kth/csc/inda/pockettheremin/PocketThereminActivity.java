@@ -65,11 +65,6 @@ public class PocketThereminActivity extends Activity implements
 	 */
 
 	/*
-	 * TODO Remove the noise that occurs when play=false and the sound loop is
-	 * stopped.
-	 */
-
-	/*
 	 * TODO Emulate the sound of a theremin (instead of a pure sine curve).
 	 * Perhaps use a mp3 for sampling?
 	 */
@@ -94,11 +89,11 @@ public class PocketThereminActivity extends Activity implements
 	private boolean play, useAutotune, useTremolo, usePortamento, useVibrato,
 			chiptuneMode;
 
+	WaveForm waveForm;
+
 	public enum WaveForm {
 		SINE, SQUARE, TRIANGLE, SAWTOOTH,
 	};
-
-	WaveForm waveForm;
 
 	/**
 	 * When the app is started: load graphics and find the sensors.
@@ -116,15 +111,15 @@ public class PocketThereminActivity extends Activity implements
 
 		if (DEBUG) {
 			volume = 0; // TODO Should be set by a sensor.
-			minFrequency = 1000; // TODO Should be an user preference.
-			maxFrequency = 20000; // TODO Should be an user preference.
+			minFrequency = 200; // TODO Should be an user preference.
+			maxFrequency = 3000; // TODO Should be an user preference.
 
 			useTremolo = false;
 			usePortamento = false;
-			useVibrato = true;
+			useVibrato = false;
 			useAutotune = true;
 			useAccelerometer = true;
-			chiptuneMode = true;
+			chiptuneMode = false;
 			waveForm = WaveForm.SINE;
 		}
 
@@ -157,8 +152,8 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calibrate sensor stepping.
 		 */
-		float pitchStep = (maxFrequency - minFrequency)
-				/ sensor.getMaximumRange(); // TODO
+		float sensorSteps = sensor.getMaximumRange() / sensor.getResolution();
+		float pitchStep = (maxFrequency - minFrequency) / sensor.getResolution(); // TODO
 		float volumeStep = 1.0f / sensor.getResolution();
 
 		/*
@@ -239,13 +234,7 @@ public class PocketThereminActivity extends Activity implements
 			if (useVibrato)
 				vibrato = new Vibrato();
 
-			int audioFormat;
-			if (chiptuneMode) {
-				audioFormat = AudioFormat.ENCODING_PCM_8BIT;
-			} else {
-				audioFormat = AudioFormat.ENCODING_PCM_16BIT;
-			}
-
+			int audioFormat = (chiptuneMode) ? AudioFormat.ENCODING_PCM_8BIT : AudioFormat.ENCODING_PCM_16BIT;
 			audioStream = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO, audioFormat,
 					AudioTrack
@@ -263,6 +252,12 @@ public class PocketThereminActivity extends Activity implements
 				 */
 				frequency = PocketThereminActivity.this.pitch + minFrequency;
 
+				if (frequency > maxFrequency)
+					frequency = maxFrequency;
+
+				if (frequency < minFrequency)
+					frequency = minFrequency;
+
 				/*
 				 * Set initial volume according to the sensor.
 				 */
@@ -272,8 +267,6 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Effects chain.
 				 */
-				if (frequency > maxFrequency)
-					frequency = maxFrequency;
 
 				if (autotune != null)
 					frequency = autotune.getFrequency(frequency);
@@ -292,27 +285,25 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Generate sound samples.
 				 */
-				short[] samples = new short[buffersize];
 				float angle = 0.0f;
-				float x, y = 0.0f;
+				short[] samples = new short[buffersize];
 				for (int i = 0; i < samples.length; i++) {
 					switch (waveForm) {
 					case SINE:
-						y = (short) ((float) Math.signum(Math.sin(angle)) * Short.MAX_VALUE);
+						samples[i] = (short) (Math.sin(angle) * Short.MAX_VALUE);
 						break;
 					case SQUARE: // TODO
-						if (y != Short.MAX_VALUE)
-							y = Short.MAX_VALUE;
+						if (samples[i - 1] != Short.MAX_VALUE)
+							samples[i] = Short.MAX_VALUE;
 						else
-							y = -1 * Short.MAX_VALUE;
+							samples[i] = -1 * Short.MAX_VALUE;
 						break;
 					case TRIANGLE: // TODO
 						break;
 					case SAWTOOTH: // TODO
 						break;
 					}
-					samples[i] = (short) y;// TODO Look for rounding errors.
-					angle += (float) (2 * Math.PI * frequency) / sampleRate;
+					angle += (float) ((2 * Math.PI * frequency) / sampleRate);
 				}
 
 				// Write samples.
