@@ -37,7 +37,7 @@ public class PocketThereminActivity extends Activity implements
 	 * TODO Create both a sampler and a synth as two separate classes and allow
 	 * the AsyncTask that generates sounds by pitch to use one of the two.
 	 */
-	
+
 	/*
 	 * TODO Use the new ViewPager layout but with backwards-compatibility from
 	 * 1.6 and onward.
@@ -152,22 +152,11 @@ public class PocketThereminActivity extends Activity implements
 					play = false;
 				} else {
 					play = true;
-					soundGenerator = new SoundGenerator().execute(); // TODO
-																		// Leave
-																		// the
-																		// generator
-																		// on
-																		// for
-																		// the
-																		// entire
-																		// app
-																		// duration
-																		// and
-																		// just
-																		// attenuate
-																		// the
-																		// amplitude
-																		// instead.
+					/*
+					 * TODO Leave the generator on for the entire app duration
+					 * and just attenuate the amplitude instead.
+					 */
+					soundGenerator = new SoundGenerator().execute();
 				}
 			}
 		} else {
@@ -178,22 +167,11 @@ public class PocketThereminActivity extends Activity implements
 					play = false;
 				else {
 					play = true;
-					soundGenerator = new SoundGenerator().execute(); // TODO
-																		// Leave
-																		// the
-																		// generator
-																		// on
-																		// for
-																		// the
-																		// entire
-																		// app
-																		// duration
-																		// and
-																		// just
-																		// attenuate
-																		// the
-																		// amplitude
-																		// instead.
+					/*
+					 * TODO Leave the generator on for the entire app duration
+					 * and just attenuate the amplitude instead.
+					 */
+					soundGenerator = new SoundGenerator().execute();
 				}
 
 			} else if (type == Sensor.TYPE_LIGHT) // TODO Not working?
