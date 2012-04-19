@@ -175,10 +175,10 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calibrate sensor stepping.
 		 */
-		float sensorSteps = sensor.getMaximumRange() / sensor.getResolution();
-		float pitchStep = (maxFrequency - minFrequency)
-				/ sensor.getResolution(); // TODO
-		float volumeStep = 1.0f / sensor.getResolution();
+		float sensorSteps = sensor.getResolution();
+		float frequencyRange = (maxFrequency - minFrequency);
+		float pitchStep = frequencyRange / sensorSteps;
+		float volumeStep = 1.0f / sensorSteps;
 
 		/*
 		 * Modulate pitch and amplitude just with the accelerometer, or modulate
@@ -186,7 +186,7 @@ public class PocketThereminActivity extends Activity implements
 		 */
 		if (useAccelerometer && type == Sensor.TYPE_ACCELEROMETER) {
 			volume = event.values[0] * volumeStep;
-			pitch = event.values[1] * pitchStep;
+			pitch = event.values[0] * pitchStep;
 		} else { // Don't use accelerometer
 
 			// Set volume.
@@ -215,7 +215,7 @@ public class PocketThereminActivity extends Activity implements
 		sensors.registerListener(this, proximity,
 				SensorManager.SENSOR_DELAY_FASTEST);
 		sensors.registerListener(this, accelerometer,
-				SensorManager.SENSOR_DELAY_NORMAL);
+				SensorManager.SENSOR_DELAY_GAME);
 		sensors.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
 
 		/*
