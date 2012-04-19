@@ -319,11 +319,10 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		protected void onProgressUpdate(Float... progress) {
-			// TODO Separate label and value for easier localization.
-			((TextView) findViewById(R.id.textFrequency)).setText("Frequency: "
-					+ progress[0].shortValue());
-			((TextView) findViewById(R.id.textAmplitude)).setText("Amplitude: "
-					+ progress[1].shortValue());
+			((TextView) findViewById(R.id.textFrequency)).setText(progress[0]
+					.shortValue() + "Hz");
+			((TextView) findViewById(R.id.textAmplitude)).setText(progress[1]
+					.shortValue() + "%"); // TODO Should be decibel?
 		}
 
 		protected void onPostExecute(String result) {
