@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:key="sensors"
+        android:title="Sensors" >
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="accelerometer"
+            android:summary="Use the accelerometer."
+            android:title="Accelerometer" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="sound_generation"
+        android:title="Sound Generator" >
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="sound_effects"
+        android:title="Sound Effects" >
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="tremolo"
+            android:summary="Modulate the amplitude."
+            android:title="Tremolo" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="vibrato"
+            android:summary="Modulate the pitch"
+            android:title="Vibrato" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="portamento"
+            android:summary="Glide between notes."
+            android:title="Portamento" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="nintendoMode"
+            android:summary="Limit sound generation to 8-bit."
+            android:title="Nintendo Mode" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="autotune"
+            android:summary="Turn on autotune."
+            android:title="Autotune" />
+
+        <ListPreference
+            android:defaultValue="1000"
+            android:dependency="autotune"
+            android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalValues"
+            android:key="updates_interval"
+            android:summary="Select key."
+            android:title="Key" />
+
+        <ListPreference
+            android:defaultValue="1000"
+            android:dependency="autotune"
+            android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalValues"
+            android:key="updates_interval"
+            android:summary="Select scale."
+            android:title="Scale" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

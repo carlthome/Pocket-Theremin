@@ -10,6 +10,8 @@ import kth.csc.inda.pockettheremin.soundeffects.Vibrato;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -19,7 +21,10 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,29 +75,56 @@ public class PocketThereminActivity extends Activity implements
 	 */
 
 	/*
-	 * TODO Prepare a preference menu.
-	 */
-
-	/*
 	 * TODO Let the user select sensor.
 	 */
 
 	static final boolean DEBUG = true;
+
+	/*
+	 * Sensor variables.
+	 */
 	private SensorManager sensors;
 	private Sensor light, proximity, accelerometer;
 	private boolean useAccelerometer;
 
+	/*
+	 * Sound variables.
+	 */
 	private AsyncTask<?, ?, ?> soundGenerator;
 	AudioTrack audioStream;
 	private float pitch, volume;
 	private int maxFrequency, minFrequency;
-	private boolean play, useAutotune, useTremolo, usePortamento, useVibrato,
-			chiptuneMode;
+
+	/*
+	 * User preferences.
+	 */
+	private boolean useAutotune, useTremolo, usePortamento, useVibrato,
+			useNintendoMode;
 	WaveForm waveForm;
 
 	public enum WaveForm {
 		SINE, SQUARE, TRIANGLE, SAWTOOTH,
 	};
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.add(Menu.NONE, 0, 0, "About");
+		menu.add(Menu.NONE, 1, 1, "Settings");
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case 0:
+			startActivity(new Intent(this, AboutActivity.class));
+			return true;
+		case 1:
+			startActivity(new Intent(this, PreferencesActivity.class));
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * When the app is started: load graphics and find the sensors.
@@ -100,27 +132,19 @@ public class PocketThereminActivity extends Activity implements
 	@Override
 	public final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		/*
+		 * Set content view.
+		 */
 		setContentView(R.layout.main);
 
-		// Find sensors with the SensorManager.
+		/*
+		 * Find sensors with the SensorManager.
+		 */
 		sensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		light = sensors.getDefaultSensor(Sensor.TYPE_LIGHT);
 		accelerometer = sensors.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		proximity = sensors.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-
-		if (DEBUG) {
-			volume = 0; // TODO Should be set by a sensor.
-			minFrequency = 16; // TODO Should be an user preference.
-			maxFrequency = 5000; // TODO Should be an user preference.
-
-			useTremolo = false;
-			usePortamento = false;
-			useVibrato = true;
-			useAutotune = true;
-			useAccelerometer = true;
-			chiptuneMode = false;
-			waveForm = WaveForm.SINE;
-		}
 
 		if (DEBUG)
 			for (Sensor sensor : sensors.getSensorList(Sensor.TYPE_ALL))
@@ -178,32 +202,51 @@ public class PocketThereminActivity extends Activity implements
 	}
 
 	/**
-	 * Register sensor listeners.
+	 * Register sensor listeners, load user preferences and start the audio
+	 * thread.
 	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		/*
+		 * Register sensors.
+		 */
 		sensors.registerListener(this, proximity,
 				SensorManager.SENSOR_DELAY_FASTEST);
 		sensors.registerListener(this, accelerometer,
 				SensorManager.SENSOR_DELAY_NORMAL);
 		sensors.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
 
-		play = true;
-		soundGenerator = new AudioThread().execute();
+		/*
+		 * Get user preferences.
+		 */
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		minFrequency = 16; // TODO Should be an user preference.
+		maxFrequency = 5000; // TODO Should be an user preference.
+		waveForm = WaveForm.SINE; // TODO Make into user preference.
+		useTremolo = preferences.getBoolean("tremolo", false);
+		usePortamento = preferences.getBoolean("portamento", false);
+		useVibrato = preferences.getBoolean("vibrato", true);
+		useAutotune = preferences.getBoolean("autotune", true);
+		useNintendoMode = preferences.getBoolean("nintendoMode", false);
+		useAccelerometer = preferences.getBoolean("accelerometer", false);
 
+		/*
+		 * Start audio thread.
+		 */
+		soundGenerator = new AudioThread().execute();
 		alert("Ready...");
 	}
 
 	/**
-	 * Free up system resources when the theremin app isn't used anymore. Also,
-	 * make sure to kill any ongoing sounds!
+	 * Unregister sensor listeners and kill the audio thread (i.e free up system
+	 * resources when the app isn't used anymore).
 	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
-
-		play = false;
 
 		if (sensors != null)
 			sensors.unregisterListener(this);
@@ -219,12 +262,15 @@ public class PocketThereminActivity extends Activity implements
 	 * frequency. The frequency is modulated by the sensor provided pitch.
 	 */
 	private class AudioThread extends AsyncTask<Void, Float, String> {
+		boolean running;
 		int buffersize = 1024;
 		int sampleRate = 44100;
 		SoundEffect autotune, tremolo, portamento, vibrato;
 		float frequency, amplitude, angle;
 
 		protected void onPreExecute() {
+			running = true;
+
 			if (useAutotune)
 				autotune = new Autotune();
 			if (useTremolo)
@@ -234,7 +280,7 @@ public class PocketThereminActivity extends Activity implements
 			if (useVibrato)
 				vibrato = new Vibrato();
 
-			int audioFormat = (chiptuneMode) ? AudioFormat.ENCODING_PCM_8BIT
+			int audioFormat = (useNintendoMode) ? AudioFormat.ENCODING_PCM_8BIT
 					: AudioFormat.ENCODING_PCM_16BIT;
 			audioStream = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO, audioFormat,
@@ -246,7 +292,7 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		protected String doInBackground(Void... params) {
-			while (play) {
+			while (running) {
 
 				/*
 				 * Set initial frequency according to the sensor.
@@ -314,8 +360,7 @@ public class PocketThereminActivity extends Activity implements
 				// Return amplitude and frequency to the GUI thread.
 				publishProgress(frequency, amplitude);
 			}
-
-			return "Done.";
+			return null;
 		}
 
 		protected void onProgressUpdate(Float... progress) {
@@ -323,6 +368,11 @@ public class PocketThereminActivity extends Activity implements
 					.shortValue() + "Hz");
 			((TextView) findViewById(R.id.textAmplitude)).setText(progress[1]
 					.shortValue() + "%"); // TODO Should be decibel?
+		}
+
+		@Override
+		protected void onCancelled() {
+			running = false;
 		}
 
 		protected void onPostExecute(String result) {
