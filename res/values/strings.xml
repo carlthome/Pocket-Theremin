@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_instructions">Simple instructions about how to use the app should be made available here.</string>
     <string name="app_name">Pocket Theremin</string>
-    <string name="theremin_description_text">"The theremin is an early electronic musical instrument controlled without discernible physical contact from the player. It is named after its Russian inventor, Professor Léon Theremin, who patented the device in 1928." /n/n- from Wikipedia</string>
-    <string name="theremin_description_headline">What is a Theremin?</string>
+    <string name="app_instructions">Position your device onto a table and slowly increase its angle in first the vertical direction and then the horizontal direction.</string>
+    <string name="theremin_description_headline">What is a theremin?</string>
+    <string name="theremin_description_text">"The theremin is an early electronic musical instrument controlled without discernible physical contact from the player. It is named after its Russian inventor, Professor Léon Theremin, who patented the device in 1928." \n\n- from Wikipedia</string>
+    <string name="app_description_headline">About this app</string>
+    <string name="app_description_text">The Pocket Theremin was created by Carl Thomé and Oskar Thorén as a homework assignment at KTH Royal Institute of Technology.</string>
+    <string name="license_headline">License</string>
+    <string name="license_text">You may do whatever you wish with this app, including its binaries and source code. Even for commercial use and distribution.\n\nBeware that graphics may be copyrighted by their respective authors.</string>
     <string name="frequency">"Frequency:"</string>
     <string name="amplitude">"Amplitude:"</string>
 
