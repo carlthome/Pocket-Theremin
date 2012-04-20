@@ -61,7 +61,8 @@ public class Autotune implements SoundEffect {
 			2793.83f, 2959.96f, 3135.96f, 3322.44f, 3520.00f, // A7
 			3729.31f, 3951.07f, 4186.01f, 4434.92f, 4698.64f, 4978.03f };
 	
-	public float getFrequency(float frequency) {
+	@Override
+	public float modify(float frequency) {
 		return snap(frequency, getMajorScale());
 	}
 
@@ -112,11 +113,5 @@ public class Autotune implements SoundEffect {
 
 	private float[] getMajorScale() {
 		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, octaveRange);
-	}
-
-	@Override
-	public float getAmplitude(float amplitude) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

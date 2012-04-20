@@ -10,11 +10,12 @@ public class Vibrato implements SoundEffect {
 	double increment = (2 * Math.PI) / 512;
 
 	@Override
-	public float getFrequency(float frequency) {
+	public float modify(float frequency) {
 
 		// Store new base frequencies
 		float quotient = (baseFrequency / frequency);
-		if (1 + percentageToDecimal(range) < quotient || quotient < 1 - percentageToDecimal(range))
+		if (1 + percentageToDecimal(range) < quotient
+				|| quotient < 1 - percentageToDecimal(range))
 			this.baseFrequency = frequency;
 
 		// Pitch a tiny bit.
@@ -35,11 +36,5 @@ public class Vibrato implements SoundEffect {
 		float decimal = 0.00f;
 		decimal = (percentage / (float) 100);
 		return decimal;
-	}
-
-	@Override
-	public float getAmplitude(float amplitude) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

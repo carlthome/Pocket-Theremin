@@ -50,9 +50,9 @@
             android:title="Portamento" />
 
         <CheckBoxPreference
-            android:key="nintendoMode"
-            android:summary="Limit sound generation to 8-bit."
-            android:title="Nintendo Mode" />
+            android:key="chiptuneMode"
+            android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
+            android:title="NES" />
 
         <CheckBoxPreference
             android:key="autotune"

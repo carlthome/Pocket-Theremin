@@ -58,7 +58,7 @@ public class PocketThereminActivity extends Activity implements
 	float pitch, volume;
 	float maxFrequency, minFrequency, frequencyRange;
 	boolean useTremolo, useVibrato, usePortamento, useAutotune,
-			useNintendoMode;
+			useChiptuneMode;
 	int octaveRange;
 	Waveform waveform;
 
@@ -121,7 +121,7 @@ public class PocketThereminActivity extends Activity implements
 		useVibrato = preferences.getBoolean("vibrato", false);
 		usePortamento = preferences.getBoolean("portamento", false);
 		useAutotune = preferences.getBoolean("autotune", false);
-		useNintendoMode = preferences.getBoolean("nintendoMode", false);
+		useChiptuneMode = preferences.getBoolean("chiptuneMode", false);
 		octaveRange = Integer.parseInt(preferences
 				.getString("octaveRange", "2"));
 		minFrequency = 440.00f / (float) Math.pow(2, octaveRange / 2);
@@ -304,7 +304,7 @@ public class PocketThereminActivity extends Activity implements
 	 */
 	private class AudioThread extends AsyncTask<Float, Float, Void> {
 		boolean play;
-		int sampleSize = 1024;
+		int sampleSize = 256;
 		int sampleRate = 44100;
 		SoundEffect autotune, tremolo, portamento, vibrato;
 		float frequency, amplitude, angle;
@@ -321,7 +321,7 @@ public class PocketThereminActivity extends Activity implements
 			if (useVibrato)
 				vibrato = new Vibrato();
 
-			int audioFormat = (useNintendoMode) ? AudioFormat.ENCODING_PCM_8BIT
+			int audioFormat = (useChiptuneMode) ? AudioFormat.ENCODING_PCM_8BIT
 					: AudioFormat.ENCODING_PCM_16BIT;
 			audioStream = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO, audioFormat,
@@ -355,17 +355,17 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Effects chain.
 				 */
-				if (autotune != null)
-					frequency = autotune.getFrequency(frequency);
+				if (autotune != null) //TODO Combine autotune and portamento.
+					frequency = autotune.modify(frequency);
 
 				if (vibrato != null)
-					frequency = vibrato.getFrequency(frequency);
+					frequency = vibrato.modify(frequency);
 
 				if (portamento != null)
-					frequency = portamento.getFrequency(frequency);
+					frequency = portamento.modify(frequency);
 
 				if (tremolo != null) {
-					amplitude = tremolo.getAmplitude(amplitude);
+					amplitude = tremolo.modify(amplitude);
 					audioStream.setStereoVolume(amplitude, amplitude);
 				}
 
@@ -396,13 +396,9 @@ public class PocketThereminActivity extends Activity implements
 					}
 
 					angle += increment % circle;
-					
-					//angle += increment;
 
-					/*
-					if (angle == circle)
+					if (angle > circle)
 						angle = 0;
-						*/
 				}
 
 				// Write samples.

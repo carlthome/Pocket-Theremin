@@ -1,44 +1,45 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
 public class Portamento implements SoundEffect {
-	float startFrequency, destinationFrequency;
-	int delay;
+	float from, to, current, distance, speed, step;
 	boolean gliding;
 
 	public Portamento() {
-		delay = 10;
+		speed = 1; // TODO Make speed independent of distance between notes.
+		gliding = false;
 	}
 
-	public float getFrequency(float frequency) {
+	@Override
+	public float modify(float frequency) {
 		return glide(frequency);
 	}
 
 	private float glide(float frequency) {
-
-		// TODO Think this through...
-
-		if (!gliding)
-			destinationFrequency = frequency;
-
-		startFrequency = frequency;
-
-		if (startFrequency != destinationFrequency)
+		if (!gliding) {
+			from = current = frequency;
 			gliding = true;
-		else
-			gliding = false;
-
-		while (gliding) {
-			float difference = destinationFrequency - startFrequency;
-
-			frequency = (difference / delay) + startFrequency;
+		} else {
+			to = frequency;
+			distance = Math.signum(to - from);
+			step = speed;
 		}
 
-		return frequency;
-	}
+		if (gliding) {
+			if (to > current)
+				return current += step;
 
-	@Override
-	public float getAmplitude(float amplitude) {
-		// TODO Auto-generated method stub
-		return 0;
+			if (to < current)
+				return current -= step;
+
+			if (to == current)
+				gliding = false;
+
+			return to;
+		} else
+			return current;
+	}
+	
+	public boolean isGliding() {
+		return gliding;
 	}
 }

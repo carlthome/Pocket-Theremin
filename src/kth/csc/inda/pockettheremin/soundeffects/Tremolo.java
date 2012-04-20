@@ -1,6 +1,5 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
-
 /**
  * The volume goes from 0.0 to 1.0.
  * 
@@ -12,7 +11,8 @@ public class Tremolo implements SoundEffect {
 	float attentuation = 0.0f;
 	int direction = 1;
 
-	public float getAmplitude(float amplitude) {
+	@Override
+	public float modify(float amplitude) {
 		step();
 		return attentuation;
 	}
@@ -23,11 +23,5 @@ public class Tremolo implements SoundEffect {
 		else if (attentuation <= 0.0f)
 			direction = 1;
 		attentuation += 0.1f * direction;
-	}
-
-	@Override
-	public float getFrequency(float frequency) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
