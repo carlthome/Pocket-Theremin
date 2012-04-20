@@ -1,13 +1,10 @@
 package kth.csc.inda.pockettheremin;
 
-import java.util.Arrays;
-
 import kth.csc.inda.pockettheremin.soundeffects.Autotune;
 import kth.csc.inda.pockettheremin.soundeffects.Portamento;
 import kth.csc.inda.pockettheremin.soundeffects.SoundEffect;
 import kth.csc.inda.pockettheremin.soundeffects.Tremolo;
 import kth.csc.inda.pockettheremin.soundeffects.Vibrato;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +23,9 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,17 +43,7 @@ import android.widget.Toast;
  * 
  */
 public class PocketThereminActivity extends Activity implements
-		SensorEventListener {
-
-	/*
-	 * TODO Create both a sampler and a synth as two separate classes and allow
-	 * the AsyncTask that generates sounds by pitch to use one of the two.
-	 */
-
-	/*
-	 * TODO Use the new ViewPager layout but with backwards-compatibility from
-	 * 1.6 and onward.
-	 */
+		SensorEventListener, OnTouchListener {
 
 	/*
 	 * TODO Find out why Xperia phones don't seem to provide a light sensor
@@ -61,44 +51,23 @@ public class PocketThereminActivity extends Activity implements
 	 * Fun!
 	 */
 
-	/*
-	 * TODO Sweep between frequencies. (i.e. portamento-mode since sensor
-	 * resolution might be limited)
-	 */
-
-	/*
-	 * TODO Improve sensor stepping between frequencies.
-	 */
-
-	/*
-	 * TODO Emulate the sound of a theremin (instead of a pure sine curve).
-	 * Perhaps use a mp3 for sampling?
-	 */
-
-	/*
-	 * TODO Let the user select sensor.
-	 */
-
 	static final boolean DEBUG = true;
 
 	/*
-	 * Sensor variables.
+	 * Input
 	 */
 	private SensorManager sensors;
-	private Sensor light, proximity, accelerometer;
+	private Sensor accelerometer;
 	private boolean useAccelerometer;
+	private View touch;
 
 	/*
-	 * Sound variables.
+	 * Output.
 	 */
 	private AsyncTask<?, ?, ?> soundGenerator;
 	AudioTrack audioStream;
 	private float pitch, volume;
 	private int maxFrequency, minFrequency;
-
-	/*
-	 * User preferences.
-	 */
 	private boolean useAutotune, useTremolo, usePortamento, useVibrato,
 			useNintendoMode;
 	WaveForm waveForm;
@@ -107,6 +76,92 @@ public class PocketThereminActivity extends Activity implements
 		SINE, SQUARE, TRIANGLE, SAWTOOTH,
 	};
 
+	/**
+	 * When the app is started: load graphics and find resources.
+	 */
+	@Override
+	public final void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		/*
+		 * Set content view.
+		 */
+		setContentView(R.layout.main);
+
+		/*
+		 * Find input.
+		 */
+		sensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		accelerometer = sensors.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		touch = findViewById(R.id.touchInputView);
+
+		if (DEBUG)
+			for (Sensor sensor : sensors.getSensorList(Sensor.TYPE_ALL))
+				Log.d("Sensors", sensor.getName());
+	}
+
+	/**
+	 * Register sensor listeners, load user preferences and start the audio
+	 * thread.
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		/*
+		 * Get user preferences.
+		 */
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		minFrequency = 16; // TODO Should be an user preference.
+		maxFrequency = 5000; // TODO Should be an user preference.
+		waveForm = WaveForm.SINE; // TODO Make into user preference.
+		useTremolo = preferences.getBoolean("tremolo", false);
+		usePortamento = preferences.getBoolean("portamento", false);
+		useVibrato = preferences.getBoolean("vibrato", true);
+		useAutotune = preferences.getBoolean("autotune", true);
+		useNintendoMode = preferences.getBoolean("nintendoMode", false);
+		useAccelerometer = preferences.getBoolean("accelerometer", false);
+
+		/*
+		 * Register input listeners.
+		 */
+		if (useAccelerometer)
+			sensors.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+		else
+			touch.setOnTouchListener(this);
+
+		/*
+		 * Start audio thread.
+		 */
+		soundGenerator = new AudioThread().execute();
+		alert("Ready...");
+	}
+
+	/**
+	 * Unregister sensor listeners and kill the audio thread (i.e free up system
+	 * resources when the app isn't used anymore).
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (sensors != null)
+			sensors.unregisterListener(this);
+		
+		if (touch != null)
+			touch.setOnTouchListener(null);
+
+		if (soundGenerator != null)
+			soundGenerator.cancel(true);
+
+		alert("Paused...");
+	}
+
+	/**
+	 * Setup a menu for this activity that allows the user to reach app settings
+	 * and an "About this app" page.
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(Menu.NONE, 0, 0, "About");
@@ -114,6 +169,10 @@ public class PocketThereminActivity extends Activity implements
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	/**
+	 * Make sure the activity menu actually does what's intended when a menu
+	 * item is selected.
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -128,33 +187,40 @@ public class PocketThereminActivity extends Activity implements
 	}
 
 	/**
-	 * When the app is started: load graphics and find the sensors.
+	 * Provide feedback to the user.
 	 */
+	private void alert(String s) {
+		Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+	}
+
 	@Override
-	public final void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public boolean onTouchEvent(MotionEvent event) {
+		int x = (int) event.getX();
+		int y = (int) event.getY();
 
-		/*
-		 * Set content view.
-		 */
-		setContentView(R.layout.main);
+		Log.d("Touch Event", "(" + x + ", " + y + ")");
 
-		/*
-		 * Find sensors with the SensorManager.
-		 */
-		sensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-		light = sensors.getDefaultSensor(Sensor.TYPE_LIGHT);
-		accelerometer = sensors.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-		proximity = sensors.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			break;
+		case MotionEvent.ACTION_MOVE:
+			break;
+		case MotionEvent.ACTION_UP:
+			break;
+		}
 
-		if (DEBUG)
-			for (Sensor sensor : sensors.getSensorList(Sensor.TYPE_ALL))
-				Log.d("Sensors", sensor.getName());
+		if (!useAccelerometer) {
+			volume = x;
+			pitch = y;
+		}
+
+		return false;
 	}
 
 	@Override
 	public final void onAccuracyChanged(Sensor sensor, int accuracy) {
-		Log.i(sensor.getName(), "onAccuracyChanged: " + accuracy);
+		if (DEBUG)
+			Log.d(sensor.getName(), "onAccuracyChanged: " + accuracy);
 	}
 
 	/**
@@ -185,87 +251,28 @@ public class PocketThereminActivity extends Activity implements
 		 * Modulate pitch and amplitude just with the accelerometer, or modulate
 		 * pitch with the light sensor and amplitude with the proximity sensor.
 		 */
-		if (useAccelerometer && type == Sensor.TYPE_ACCELEROMETER) {
+		if (type == Sensor.TYPE_ACCELEROMETER) {
 
 			// TODO Filter noise with a high-pass filter.
 			volume = event.values[0] * volumeStep;
 			pitch = (event.values[1] + SensorManager.STANDARD_GRAVITY)
 					* pitchStep;
-
-		} else { // Don't use accelerometer
-
-			// Set volume.
-			if (type == Sensor.TYPE_PROXIMITY)
-				volume = Math.signum(event.values[0]);
-
-			// Set pitch.
-			if (type == Sensor.TYPE_LIGHT) // TODO Not working?
-				pitch = event.values[0] * pitchStep;
-			else if (light == null && type == Sensor.TYPE_ACCELEROMETER) // Fallback.
-				pitch = event.values[1] * pitchStep;
 		}
 	}
 
-	/**
-	 * Register sensor listeners, load user preferences and start the audio
-	 * thread.
-	 */
 	@Override
-	protected void onResume() {
-		super.onResume();
+	public boolean onTouch(View v, MotionEvent event) {
+		int x = (int) event.getX();
+		int y = (int) event.getY();
 
-		/*
-		 * Register sensors.
-		 */
-		sensors.registerListener(this, accelerometer,
-				SensorManager.SENSOR_DELAY_GAME);
-		sensors.registerListener(this, proximity,
-				SensorManager.SENSOR_DELAY_NORMAL);
-		sensors.registerListener(this, light,
-				SensorManager.SENSOR_DELAY_FASTEST);
+		Log.d("Touch Event", "(" + x + ", " + y + ")");
 
-		/*
-		 * Get user preferences.
-		 */
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		minFrequency = 16; // TODO Should be an user preference.
-		maxFrequency = 5000; // TODO Should be an user preference.
-		waveForm = WaveForm.SINE; // TODO Make into user preference.
-		useTremolo = preferences.getBoolean("tremolo", false);
-		usePortamento = preferences.getBoolean("portamento", false);
-		useVibrato = preferences.getBoolean("vibrato", true);
-		useAutotune = preferences.getBoolean("autotune", true);
-		useNintendoMode = preferences.getBoolean("nintendoMode", false);
-		useAccelerometer = preferences.getBoolean("accelerometer", false);
-
-		/*
-		 * Start audio thread.
-		 */
-		soundGenerator = new AudioThread().execute();
-		alert("Ready...");
-	}
-
-	/**
-	 * Unregister sensor listeners and kill the audio thread (i.e free up system
-	 * resources when the app isn't used anymore).
-	 */
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		if (sensors != null)
-			sensors.unregisterListener(this);
-
-		if (soundGenerator != null)
-			soundGenerator.cancel(true);
-
-		alert("Paused...");
+		return false;
 	}
 
 	/**
 	 * Generate sounds in a separate thread (as an AsyncTask) by sampling a
-	 * frequency. The frequency is modulated by the sensor provided pitch.
+	 * frequency. The frequency is modulated by the user input.
 	 */
 	private class AudioThread extends AsyncTask<Void, Float, Void> {
 		boolean play;
@@ -301,7 +308,7 @@ public class PocketThereminActivity extends Activity implements
 			while (play) {
 
 				/*
-				 * Set initial frequency according to the sensor.
+				 * Set initial frequency according input.
 				 */
 				frequency = PocketThereminActivity.this.pitch + minFrequency;
 
@@ -312,7 +319,7 @@ public class PocketThereminActivity extends Activity implements
 					frequency = minFrequency;
 
 				/*
-				 * Set initial volume according to the sensor.
+				 * Set initial volume according to input.
 				 */
 				amplitude = PocketThereminActivity.this.volume;
 				audioStream.setStereoVolume(amplitude, amplitude);
@@ -338,20 +345,15 @@ public class PocketThereminActivity extends Activity implements
 				 * Generate sound samples.
 				 */
 				short[] samples = new short[buffersize];
-				float increment = (float) (2 * Math.PI) * frequency
-						/ sampleRate;
+				float increment = (float) (2 * Math.PI) * frequency / sampleRate;
 				for (int i = 0; i < samples.length; i++) {
-
+					
 					switch (waveForm) {
 					case SINE:
 						samples[i] = (short) (FloatMath.sin(angle) * Short.MAX_VALUE);
 						break;
 					case SQUARE: // TODO
 						// ((550.0*2*i/rate)%2<0?-1:1)
-						if (samples[i - 1] != Short.MAX_VALUE)
-							samples[i] = Short.MAX_VALUE;
-						else
-							samples[i] = -1 * Short.MAX_VALUE;
 						break;
 					case TRIANGLE: // TODO
 						break;
@@ -359,7 +361,8 @@ public class PocketThereminActivity extends Activity implements
 						break;
 					}
 
-					angle += (increment % (2 * (float) Math.PI));
+					//angle += (increment % (2 * (float) Math.PI));
+					angle += increment;
 				}
 
 				// Write samples.
@@ -384,12 +387,5 @@ public class PocketThereminActivity extends Activity implements
 			if (audioStream != null)
 				audioStream.release();
 		}
-	}
-
-	/**
-	 * Provide feedback to the user.
-	 */
-	private void alert(String s) {
-		Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
 	}
 }
