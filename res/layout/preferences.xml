@@ -2,19 +2,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory
-        android:key="sensors"
-        android:title="Sensors" >
+        android:key="input"
+        android:title="Input" >
 
         <CheckBoxPreference
-            android:defaultValue="true"
             android:key="accelerometer"
-            android:summary="Use the accelerometer."
+            android:summary="Use the accelerometer. If unchecked touch input will be used instead."
             android:title="Accelerometer" />
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="sound_generation"
-        android:title="Sound Generator" >
+        android:key="output"
+        android:title="Output" >
+
+        <ListPreference
+            android:entries="@array/waveforms"
+            android:entryValues="@array/waveforms"
+            android:key="waveform"
+            android:summary="Select waveform."
+            android:title="Waveform" />
+
+        <ListPreference
+            android:entries="@array/octaves"
+            android:entryValues="@array/octaves"
+            android:key="octaveRange"
+            android:summary="Select number of octaves."
+            android:title="Octave Range" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -22,50 +35,43 @@
         android:title="Sound Effects" >
 
         <CheckBoxPreference
-            android:defaultValue="false"
             android:key="tremolo"
             android:summary="Modulate the amplitude."
             android:title="Tremolo" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
             android:key="vibrato"
             android:summary="Modulate the pitch"
             android:title="Vibrato" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
             android:key="portamento"
             android:summary="Glide between notes."
             android:title="Portamento" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
             android:key="nintendoMode"
             android:summary="Limit sound generation to 8-bit."
             android:title="Nintendo Mode" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
             android:key="autotune"
             android:summary="Turn on autotune."
             android:title="Autotune" />
 
         <ListPreference
-            android:defaultValue="1000"
             android:dependency="autotune"
-            android:entries="@array/updateInterval"
-            android:entryValues="@array/updateIntervalValues"
-            android:key="updates_interval"
+            android:entries="@array/keys"
+            android:entryValues="@array/keys"
+            android:key="key"
             android:summary="Select key."
             android:title="Key" />
 
         <ListPreference
-            android:defaultValue="1000"
             android:dependency="autotune"
-            android:entries="@array/updateInterval"
-            android:entryValues="@array/updateIntervalValues"
-            android:key="updates_interval"
+            android:entries="@array/scale"
+            android:entryValues="@array/scaleValues"
+            android:key="scale"
             android:summary="Select scale."
             android:title="Scale" />
     </PreferenceCategory>

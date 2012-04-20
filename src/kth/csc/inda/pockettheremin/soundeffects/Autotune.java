@@ -8,6 +8,12 @@ package kth.csc.inda.pockettheremin.soundeffects;
  */
 public class Autotune implements SoundEffect {
 	int tonic = 57; //A4 is index 57 of the available notes.
+	int octaveRange;
+	
+	public Autotune(int octaveRange) {
+		this.octaveRange = octaveRange;
+	}
+	
 	final float[] notes = {
 			16.35f, // C0
 			17.32f, 18.35f,
@@ -105,11 +111,11 @@ public class Autotune implements SoundEffect {
 	}
 
 	public float[] getMajorScale() {
-		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, 4);
+		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, 6);
 	}
 
 	public float[] getMinorScale() { //TODO Fix erroneous sequence.
-		return getScale(new int[] { 2, 1, 2, 2, 1, 2 }, 4); 
+		return getScale(new int[] { 2, 1, 2, 2, 1, 2 }, 6); 
 	}
 
 	@Override
