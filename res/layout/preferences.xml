@@ -70,7 +70,7 @@
         <ListPreference
             android:dependency="autotune"
             android:entries="@array/scale"
-            android:entryValues="@array/scaleValues"
+            android:entryValues="@array/scale"
             android:key="scale"
             android:summary="Select scale."
             android:title="Scale" />

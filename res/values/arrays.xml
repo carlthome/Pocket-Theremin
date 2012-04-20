@@ -2,38 +2,35 @@
 <resources>
 
     <string-array name="waveforms">
-        <item>Sine</item>
-        <item>Tangent</item>
-        <item>Square</item>
-        <item>Triangle</item>
-        <item>Sawtooth</item>
+        <item>SINE</item>
+        <item>TAN</item>
+        <item>SQUARE</item>
+        <item>TRIANGLE</item>
+        <item>SAWTOOTH</item>
     </string-array>
     <string-array name="scale">
-        <item name="1">Major</item>
-        <item name="2">Minor</item>
-        <item name="3">Chromatic</item>
-    </string-array>
-    <string-array name="scaleValues">
-        <item name="1">1000</item>
-        <item name="2">5000</item>
-        <item name="3">30000</item>
+        <item>MAJOR</item>
+        <item>MINOR</item>
+        <item>CHROMATIC</item>
     </string-array>
     <string-array name="octaves">
-        <item name="1">1</item>
-        <item name="2">2</item>
-        <item name="3">3</item>
-        <item name="4">4</item>
-        <item name="5">5</item>
-        <item name="6">6</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
     </string-array>
     <string-array name="keys">
-        <item name="1">A</item>
-        <item name="2">B</item>
-        <item name="3">C</item>
-        <item name="4">D</item>
-        <item name="5">E</item>
-        <item name="6">F</item>
-        <item name="6">G</item>
+        <item>A</item>
+        <item>Bb</item>
+        <item>B</item>
+        <item>C</item>
+        <item>Db</item>
+        <item>D</item>
+        <item>Eb</item>
+        <item>E</item>
+        <item>F</item>
+        <item>Gb</item>
+        <item>G</item>
+        <item>Ab</item>
     </string-array>
 
 </resources>

@@ -1,10 +1,5 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
-/**
- * The volume goes from 0.0 to 1.0.
- * 
- * TODO Document this class properly.
- */
 public class Tremolo implements SoundEffect {
 
 	// TODO Allow parameters such as speed, shape and depth.

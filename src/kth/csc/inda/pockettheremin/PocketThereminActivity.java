@@ -1,8 +1,9 @@
 package kth.csc.inda.pockettheremin;
 
-import java.util.Map;
-
+import kth.csc.inda.pockettheremin.Oscillator.Waveform;
 import kth.csc.inda.pockettheremin.soundeffects.Autotune;
+import kth.csc.inda.pockettheremin.soundeffects.Autotune.AutotuneKey;
+import kth.csc.inda.pockettheremin.soundeffects.Autotune.AutotuneScale;
 import kth.csc.inda.pockettheremin.soundeffects.Portamento;
 import kth.csc.inda.pockettheremin.soundeffects.SoundEffect;
 import kth.csc.inda.pockettheremin.soundeffects.Tremolo;
@@ -21,7 +22,6 @@ import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,14 +57,12 @@ public class PocketThereminActivity extends Activity implements
 	AsyncTask<?, ?, ?> soundGenerator;
 	float pitch, volume;
 	float maxFrequency, minFrequency, frequencyRange;
-	boolean useTremolo, useVibrato, usePortamento, useAutotune,
-			useChiptuneMode;
 	int octaveRange;
 	Waveform waveform;
-
-	public enum Waveform {
-		SINE, SQUARE, TRIANGLE, SAWTOOTH, TANGENT,
-	};
+	boolean useTremolo, useVibrato, usePortamento, useAutotune,
+			useChiptuneMode;
+	AutotuneKey key;
+	AutotuneScale scale;
 
 	/**
 	 * When the app is started: load graphics and find resources.
@@ -117,30 +115,16 @@ public class PocketThereminActivity extends Activity implements
 		 */
 		SharedPreferences preferences = PreferenceManager
 				.getDefaultSharedPreferences(this);
+		useSensor = preferences.getBoolean("accelerometer", false);
 		useTremolo = preferences.getBoolean("tremolo", false);
 		useVibrato = preferences.getBoolean("vibrato", false);
 		usePortamento = preferences.getBoolean("portamento", false);
 		useAutotune = preferences.getBoolean("autotune", false);
 		useChiptuneMode = preferences.getBoolean("chiptuneMode", false);
-		octaveRange = Integer.parseInt(preferences
-				.getString("octaveRange", "2"));
-		minFrequency = 440.00f / (float) Math.pow(2, octaveRange / 2);
-		maxFrequency = 440.00f * (float) Math.pow(2, octaveRange / 2);
-		frequencyRange = maxFrequency - minFrequency;
-
-		String useWaveform = preferences.getString("waveform", "Sine");
-		if (useWaveform.equals("Sine"))
-			waveform = Waveform.SINE;
-		else if (useWaveform.equals("Tangent"))
-			waveform = Waveform.TANGENT;
-		else if (useWaveform.equals("Square"))
-			waveform = Waveform.SQUARE;
-		else if (useWaveform.equals("Triangle"))
-			waveform = Waveform.TRIANGLE;
-		else if (useWaveform.equals("Sawtooth"))
-			waveform = Waveform.SAWTOOTH;
-
-		useSensor = preferences.getBoolean("accelerometer", false);
+		octaveRange = Integer.parseInt(preferences.getString("octaveRange", "2"));		
+		waveform = Waveform.valueOf(preferences.getString("waveform", "SINE"));
+		key = AutotuneKey.valueOf(preferences.getString("key", "A"));
+		scale = AutotuneScale.valueOf(preferences.getString("scale", "MAJOR"));
 
 		/*
 		 * Register input listeners.
@@ -154,6 +138,9 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Start audio thread.
 		 */
+		minFrequency = 440.00f / (float) Math.pow(2, octaveRange / 2);
+		maxFrequency = 440.00f * (float) Math.pow(2, octaveRange / 2);
+		frequencyRange = maxFrequency - minFrequency;
 		soundGenerator = new AudioThread().execute();
 
 		alert(getString(R.string.resume));
@@ -306,14 +293,17 @@ public class PocketThereminActivity extends Activity implements
 		boolean play;
 		int sampleSize = 256;
 		int sampleRate = 44100;
+		Oscillator oscillator;
 		SoundEffect autotune, tremolo, portamento, vibrato;
-		float frequency, amplitude, angle;
+		float frequency, amplitude;
 
 		protected void onPreExecute() {
 			play = true;
+			oscillator  = new Oscillator(waveform, sampleSize, sampleRate);
 
+			// Effects
 			if (useAutotune)
-				autotune = new Autotune(octaveRange);
+				autotune = new Autotune(key, scale, octaveRange);
 			if (useTremolo)
 				tremolo = new Tremolo();
 			if (usePortamento)
@@ -321,6 +311,7 @@ public class PocketThereminActivity extends Activity implements
 			if (useVibrato)
 				vibrato = new Vibrato();
 
+			// Audio stream
 			int audioFormat = (useChiptuneMode) ? AudioFormat.ENCODING_PCM_8BIT
 					: AudioFormat.ENCODING_PCM_16BIT;
 			audioStream = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
@@ -372,34 +363,7 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Generate sound samples.
 				 */
-				short[] samples = new short[sampleSize];
-				float circle = (float) (2 * Math.PI);
-				float increment = circle * (frequency / sampleRate);
-				for (int i = 0; i < samples.length; i++) {
-
-					switch (waveform) {
-					case SINE:
-						samples[i] = (short) (FloatMath.sin(angle) * Short.MAX_VALUE);
-						break;
-					case TANGENT:
-						samples[i] = (short) (FloatMath.sin(angle) / FloatMath.cos(angle) * Short.MAX_VALUE);
-						break;
-					case SQUARE:
-						samples[i] = (short) ((FloatMath.sin(angle) % 2 < 0 ? -1 : 1) * Short.MAX_VALUE);
-						break;
-					case TRIANGLE: // TODO This is probably wrong.
-						samples[i] = (short) ((FloatMath.sin(angle) % 2 < 0 ? -1 : 1) * angle * Short.MAX_VALUE); 
-						break;
-					case SAWTOOTH: // TODO This is probably wrong.
-						samples[i] = (short) ((FloatMath.sin(angle) % 2 < 0 ? -1 : angle) * Short.MAX_VALUE); 
-						break;
-					}
-
-					angle += increment % circle;
-
-					if (angle > circle)
-						angle = 0;
-				}
+				short[] samples = oscillator.getSamples(frequency);
 
 				// Write samples.
 				audioStream.write(samples, 0, sampleSize);
