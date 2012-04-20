@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kth.csc.inda.pockettheremin"
-    android:versionCode="2"
-    android:versionName="0.2" >
+    android:versionCode="3"
+    android:versionName="0.3" >
 
     <uses-sdk
         android:minSdkVersion="3"
         android:targetSdkVersion="15" />
 
-    <uses-feature android:name="android.hardware.sensor.light" />
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
-    <uses-feature android:name="android.hardware.sensor.proximity" />
-
-    <uses-permission android:name="android.hardware.sensor.light" />
-    <uses-permission android:name="android.hardware.sensor.accelerometer" />
-    <uses-permission android:name="android.hardware.sensor.proximity" />
+    <uses-permission android:name="android.hardware.sensor.accelerometer" />
 
     <application
         android:icon="@drawable/ic_launcher"

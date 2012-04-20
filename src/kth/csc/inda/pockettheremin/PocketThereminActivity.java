@@ -143,7 +143,7 @@ public class PocketThereminActivity extends Activity implements
 		frequencyRange = maxFrequency - minFrequency;
 		soundGenerator = new AudioThread().execute();
 
-		alert(getString(R.string.resume));
+		//alert(getString(R.string.resume));
 	}
 
 	/**
@@ -162,8 +162,11 @@ public class PocketThereminActivity extends Activity implements
 
 		if (soundGenerator != null)
 			soundGenerator.cancel(true);
+		
+		if (audioStream != null)
+			audioStream.release();
 
-		alert(getString(R.string.pause));
+		//alert(getString(R.string.pause));
 	}
 
 	@Override
@@ -384,8 +387,6 @@ public class PocketThereminActivity extends Activity implements
 		@Override
 		protected void onCancelled() {
 			play = false;
-			if (audioStream != null)
-				audioStream.release();
 		}
 	}
 }
