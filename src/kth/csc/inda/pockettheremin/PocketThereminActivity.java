@@ -22,6 +22,7 @@ import android.media.AudioTrack;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -185,13 +186,17 @@ public class PocketThereminActivity extends Activity implements
 		 * pitch with the light sensor and amplitude with the proximity sensor.
 		 */
 		if (useAccelerometer && type == Sensor.TYPE_ACCELEROMETER) {
+
+			// TODO Filter noise with a high-pass filter.
 			volume = event.values[0] * volumeStep;
-			pitch = event.values[0] * pitchStep;
+			pitch = (event.values[1] + SensorManager.STANDARD_GRAVITY)
+					* pitchStep;
+
 		} else { // Don't use accelerometer
 
 			// Set volume.
 			if (type == Sensor.TYPE_PROXIMITY)
-				volume = -1 * event.values[0];
+				volume = Math.signum(event.values[0]);
 
 			// Set pitch.
 			if (type == Sensor.TYPE_LIGHT) // TODO Not working?
@@ -212,11 +217,12 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Register sensors.
 		 */
-		sensors.registerListener(this, proximity,
-				SensorManager.SENSOR_DELAY_FASTEST);
 		sensors.registerListener(this, accelerometer,
 				SensorManager.SENSOR_DELAY_GAME);
-		sensors.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
+		sensors.registerListener(this, proximity,
+				SensorManager.SENSOR_DELAY_NORMAL);
+		sensors.registerListener(this, light,
+				SensorManager.SENSOR_DELAY_FASTEST);
 
 		/*
 		 * Get user preferences.
@@ -261,15 +267,15 @@ public class PocketThereminActivity extends Activity implements
 	 * Generate sounds in a separate thread (as an AsyncTask) by sampling a
 	 * frequency. The frequency is modulated by the sensor provided pitch.
 	 */
-	private class AudioThread extends AsyncTask<Void, Float, String> {
-		boolean running;
+	private class AudioThread extends AsyncTask<Void, Float, Void> {
+		boolean play;
 		int buffersize = 1024;
 		int sampleRate = 44100;
 		SoundEffect autotune, tremolo, portamento, vibrato;
 		float frequency, amplitude, angle;
 
 		protected void onPreExecute() {
-			running = true;
+			play = true;
 
 			if (useAutotune)
 				autotune = new Autotune();
@@ -291,8 +297,8 @@ public class PocketThereminActivity extends Activity implements
 			audioStream.play();
 		}
 
-		protected String doInBackground(Void... params) {
-			while (running) {
+		protected Void doInBackground(Void... params) {
+			while (play) {
 
 				/*
 				 * Set initial frequency according to the sensor.
@@ -314,7 +320,6 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Effects chain.
 				 */
-
 				if (autotune != null)
 					frequency = autotune.getFrequency(frequency);
 
@@ -333,13 +338,16 @@ public class PocketThereminActivity extends Activity implements
 				 * Generate sound samples.
 				 */
 				short[] samples = new short[buffersize];
+				float increment = (float) (2 * Math.PI) * frequency
+						/ sampleRate;
 				for (int i = 0; i < samples.length; i++) {
 
 					switch (waveForm) {
 					case SINE:
-						samples[i] = (short) (Math.sin(angle) * Short.MAX_VALUE);
+						samples[i] = (short) (FloatMath.sin(angle) * Short.MAX_VALUE);
 						break;
 					case SQUARE: // TODO
+						// ((550.0*2*i/rate)%2<0?-1:1)
 						if (samples[i - 1] != Short.MAX_VALUE)
 							samples[i] = Short.MAX_VALUE;
 						else
@@ -351,7 +359,7 @@ public class PocketThereminActivity extends Activity implements
 						break;
 					}
 
-					angle += (float) ((2 * Math.PI * frequency) / sampleRate);
+					angle += (increment % (2 * (float) Math.PI));
 				}
 
 				// Write samples.
@@ -372,11 +380,9 @@ public class PocketThereminActivity extends Activity implements
 
 		@Override
 		protected void onCancelled() {
-			running = false;
-		}
-
-		protected void onPostExecute(String result) {
-			audioStream.release();
+			play = false;
+			if (audioStream != null)
+				audioStream.release();
 		}
 	}
 
