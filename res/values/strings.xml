@@ -9,7 +9,10 @@
     <string name="app_description_text">The Pocket Theremin was created by Carl Thomé and Oskar Thorén as a homework assignment at KTH Royal Institute of Technology.</string>
     <string name="license_headline">License</string>
     <string name="license_text">You may do whatever you wish with this app, including its binaries and source code. Even for commercial use and distribution.\n\nBeware that graphics may be copyrighted by their respective authors.</string>
-    <string name="frequency">"Frequency:"</string>
-    <string name="amplitude">"Amplitude:"</string>
+    <string name="frequency">Frequency:</string>
+    <string name="amplitude">Amplitude:</string>
+    <string name="low_volume_notice">Turn up the volume on your device!</string>
+    <string name="resume">Playing...</string>
+    <string name="pause">Paused...</string>
 
 </resources>

@@ -110,12 +110,8 @@ public class Autotune implements SoundEffect {
 		// tonic = 57 - 4;
 	}
 
-	public float[] getMajorScale() {
-		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, 6);
-	}
-
-	public float[] getMinorScale() { //TODO Fix erroneous sequence.
-		return getScale(new int[] { 2, 1, 2, 2, 1, 2 }, 6); 
+	private float[] getMajorScale() {
+		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, octaveRange);
 	}
 
 	@Override

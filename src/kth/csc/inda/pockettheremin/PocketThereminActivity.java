@@ -56,14 +56,14 @@ public class PocketThereminActivity extends Activity implements
 	AudioTrack audioStream;
 	AsyncTask<?, ?, ?> soundGenerator;
 	float pitch, volume;
-	int maxFrequency, minFrequency;
+	float maxFrequency, minFrequency, frequencyRange;
 	boolean useTremolo, useVibrato, usePortamento, useAutotune,
 			useNintendoMode;
 	int octaveRange;
-	WaveForm waveForm;
+	Waveform waveform;
 
-	public enum WaveForm {
-		SINE, SQUARE, TRIANGLE, SAWTOOTH,
+	public enum Waveform {
+		SINE, SQUARE, TRIANGLE, SAWTOOTH, TANGENT,
 	};
 
 	/**
@@ -110,7 +110,7 @@ public class PocketThereminActivity extends Activity implements
 		if (0.1 > audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
 				/ (float) audioManager
 						.getStreamMaxVolume(AudioManager.STREAM_MUSIC))
-			alert("Turn up the volume on your device!"); // TODO
+			alert(getString(R.string.low_volume_notice));
 
 		/*
 		 * Get user preferences.
@@ -122,18 +122,33 @@ public class PocketThereminActivity extends Activity implements
 		usePortamento = preferences.getBoolean("portamento", false);
 		useAutotune = preferences.getBoolean("autotune", false);
 		useNintendoMode = preferences.getBoolean("nintendoMode", false);
-		octaveRange = 4; //preferences.getInt("octaveRange", 4);
-		minFrequency = 16; // TODO Set by octave.
-		maxFrequency = 5000; // TODO Set by octave.
-		waveForm = WaveForm.SINE; // TODO Make into user preference.
+		octaveRange = Integer.parseInt(preferences
+				.getString("octaveRange", "2"));
+		minFrequency = 440.00f / (float) Math.pow(2, octaveRange / 2);
+		maxFrequency = 440.00f * (float) Math.pow(2, octaveRange / 2);
+		frequencyRange = maxFrequency - minFrequency;
+
+		String useWaveform = preferences.getString("waveform", "Sine");
+		if (useWaveform.equals("Sine"))
+			waveform = Waveform.SINE;
+		else if (useWaveform.equals("Tangent"))
+			waveform = Waveform.TANGENT;
+		else if (useWaveform.equals("Square"))
+			waveform = Waveform.SQUARE;
+		else if (useWaveform.equals("Triangle"))
+			waveform = Waveform.TRIANGLE;
+		else if (useWaveform.equals("Sawtooth"))
+			waveform = Waveform.SAWTOOTH;
+
 		useSensor = preferences.getBoolean("accelerometer", false);
 
 		/*
 		 * Register input listeners.
 		 */
 		if (useSensor)
-			sensors.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
-		else 
+			sensors.registerListener(this, sensor,
+					SensorManager.SENSOR_DELAY_GAME);
+		else
 			touch.setOnTouchListener(this);
 
 		/*
@@ -141,7 +156,7 @@ public class PocketThereminActivity extends Activity implements
 		 */
 		soundGenerator = new AudioThread().execute();
 
-		alert("Ready...");
+		alert(getString(R.string.resume));
 	}
 
 	/**
@@ -161,7 +176,7 @@ public class PocketThereminActivity extends Activity implements
 		if (soundGenerator != null)
 			soundGenerator.cancel(true);
 
-		alert("Paused...");
+		alert(getString(R.string.pause));
 	}
 
 	@Override
@@ -226,7 +241,6 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calibrate input.
 		 */
-		float frequencyRange = (maxFrequency - minFrequency);
 		float pitchStep = frequencyRange / height;
 		float volumeStep = 1.0f / width;
 
@@ -258,10 +272,8 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calibrate sensor stepping.
 		 */
-		float sensorSteps = sensor.getResolution();
-		float frequencyRange = (maxFrequency - minFrequency);
-		float pitchStep = frequencyRange / sensorSteps;
-		float volumeStep = 1.0f / sensorSteps;
+		float pitchStep = frequencyRange / sensor.getResolution();
+		float volumeStep = 1.0f / sensor.getResolution();
 
 		/*
 		 * Modulate pitch and amplitude just with the accelerometer, or modulate
@@ -292,7 +304,7 @@ public class PocketThereminActivity extends Activity implements
 	 */
 	private class AudioThread extends AsyncTask<Float, Float, Void> {
 		boolean play;
-		int buffersize = 1024;
+		int sampleSize = 1024;
 		int sampleRate = 44100;
 		SoundEffect autotune, tremolo, portamento, vibrato;
 		float frequency, amplitude, angle;
@@ -360,33 +372,41 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Generate sound samples.
 				 */
-				short[] samples = new short[buffersize];
+				short[] samples = new short[sampleSize];
 				float circle = (float) (2 * Math.PI);
 				float increment = circle * (frequency / sampleRate);
 				for (int i = 0; i < samples.length; i++) {
 
-					switch (waveForm) {
+					switch (waveform) {
 					case SINE:
 						samples[i] = (short) (FloatMath.sin(angle) * Short.MAX_VALUE);
 						break;
-					case SQUARE: // TODO
-						// ((550.0*2*i/rate)%2<0?-1:1)
+					case TANGENT:
+						samples[i] = (short) (FloatMath.sin(angle) / FloatMath.cos(angle) * Short.MAX_VALUE);
 						break;
-					case TRIANGLE: // TODO
+					case SQUARE:
+						samples[i] = (short) ((FloatMath.sin(angle) % 2 < 0 ? -1 : 1) * Short.MAX_VALUE);
 						break;
-					case SAWTOOTH: // TODO
+					case TRIANGLE: // TODO This is probably wrong.
+						samples[i] = (short) ((FloatMath.sin(angle) % 2 < 0 ? -1 : 1) * angle * Short.MAX_VALUE); 
+						break;
+					case SAWTOOTH: // TODO This is probably wrong.
+						samples[i] = (short) ((FloatMath.sin(angle) % 2 < 0 ? -1 : angle) * Short.MAX_VALUE); 
 						break;
 					}
 
-					// angle += (increment % (2 * (float) Math.PI));
-					angle += increment;
+					angle += increment % circle;
+					
+					//angle += increment;
 
-					if (angle > circle)
+					/*
+					if (angle == circle)
 						angle = 0;
+						*/
 				}
 
 				// Write samples.
-				audioStream.write(samples, 0, buffersize);
+				audioStream.write(samples, 0, sampleSize);
 
 				// Return amplitude and frequency to the GUI thread.
 				publishProgress(frequency, amplitude);
