@@ -1,8 +1,10 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
-public class Autotune implements SoundEffect {
+final public class Autotune implements SoundEffect {
 	int prime = 57; // A4 is index 57 of the available notes.
+	int[] scaleSteps;
 	int octaveRange;
+	float[] scale;
 
 	public enum AutotuneScale {
 		MAJOR, MINOR, CHROMATIC;
@@ -56,13 +58,20 @@ public class Autotune implements SoundEffect {
 
 		switch (scale) {
 		case MAJOR:
-			//
+			int[] major = { 2, 2, 1, 2, 2, 2, 1 };
+			scaleSteps = major;
 			break;
 		case MINOR:
+			int[] minor = { 2, 1, 2, 2, 1, 2, 2 };
+			scaleSteps = minor;
 			break;
 		case CHROMATIC:
+			int[] chromatic = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+			scaleSteps = chromatic;
 			break;
 		}
+		
+		setupScale();
 	}
 
 	final float[] notes = {
@@ -115,10 +124,10 @@ public class Autotune implements SoundEffect {
 
 	@Override
 	public float modify(float frequency) {
-		return snap(frequency, getMajorScale());
+		return snap(frequency);
 	}
 
-	private float snap(float frequency, float[] scale) {
+	private float snap(float frequency) {
 		float min = Float.MAX_VALUE;
 		float closestNote = frequency;
 
@@ -134,37 +143,24 @@ public class Autotune implements SoundEffect {
 		return closestNote;
 	}
 
-	public float[] getScale(int[] steps, int octaves)
-			throws IllegalArgumentException {
-		float[] scale = new float[(octaves * steps.length) + 1]; // We always
-																	// want the
-																	// final
-																	// prime of
-																	// one more
-																	// octave so
-																	// add one.
+	public void setupScale() throws IllegalArgumentException {
+		
+		scale = new float[(octaveRange * scaleSteps.length) + 1];
 
-		if (octaves > 6 || octaves < 0)
+		if (octaveRange > 6 || octaveRange < 0)
 			throw new IllegalArgumentException();
 
 		// TODO Fix odd octave ranges.
-		int octavesUp = (octaves / 2);
-		int octavesDown = (octaves / 2);
+		int octavesUp = (octaveRange / 2);
+		int octavesDown = (octaveRange / 2);
 
 		int note = prime - (12 * octavesDown);
-		for (int octave = 0; octave < octaves; octave++) {
-			for (int step = 0; step < steps.length; step++) {
-				scale[step + (steps.length * octave)] = notes[note];
-				note += steps[step];
+		for (int octave = 0; octave < octaveRange; octave++) {
+			for (int step = 0; step < scaleSteps.length; step++) {
+				scale[step + (scaleSteps.length * octave)] = notes[note];
+				note += scaleSteps[step];
 			}
 		}
 		scale[scale.length - 1] = notes[prime + (12 * octavesUp)]; // Octave
-
-		return scale;
 	}
-
-	private float[] getMajorScale() {
-		return getScale(new int[] { 2, 2, 1, 2, 2, 2, 1 }, octaveRange);
-	}
-
 }
