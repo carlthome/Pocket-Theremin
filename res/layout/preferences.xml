@@ -7,7 +7,8 @@
 
         <CheckBoxPreference
             android:key="accelerometer"
-            android:summary="Use the accelerometer. If unchecked touch input will be used instead."
+            android:summaryOff="Use the accelerometer. If unchecked touch input will be used instead."
+            android:summaryOn="Disable this to use touch input instead."
             android:title="Accelerometer" />
     </PreferenceCategory>
 
@@ -39,10 +40,12 @@
             android:summary="Modulate the amplitude."
             android:title="Tremolo" />
 
+        <!--
         <CheckBoxPreference
             android:key="vibrato"
             android:summary="Modulate the pitch"
-            android:title="Vibrato" />
+            android:title="Vibrato" />
+        -->
 
         <CheckBoxPreference
             android:key="portamento"

@@ -57,6 +57,7 @@ public class PocketThereminActivity extends Activity implements
 	AsyncTask<?, ?, ?> soundGenerator;
 	float pitch, volume;
 	float maxFrequency, minFrequency, frequencyRange;
+	float maxAmplitude, minAmplitude, amplitudeRange;
 	int octaveRange;
 	Waveform waveform;
 	boolean useTremolo, useVibrato, usePortamento, useAutotune,
@@ -121,7 +122,8 @@ public class PocketThereminActivity extends Activity implements
 		usePortamento = preferences.getBoolean("portamento", false);
 		useAutotune = preferences.getBoolean("autotune", false);
 		useChiptuneMode = preferences.getBoolean("chiptuneMode", false);
-		octaveRange = Integer.parseInt(preferences.getString("octaveRange", "2"));		
+		octaveRange = Integer.parseInt(preferences
+				.getString("octaveRange", "2"));
 		waveform = Waveform.valueOf(preferences.getString("waveform", "SINE"));
 		key = AutotuneKey.valueOf(preferences.getString("key", "A"));
 		scale = AutotuneScale.valueOf(preferences.getString("scale", "MAJOR"));
@@ -136,14 +138,29 @@ public class PocketThereminActivity extends Activity implements
 			touch.setOnTouchListener(this);
 
 		/*
-		 * Start audio thread.
+		 * Calculate operational values.
 		 */
 		minFrequency = 440.00f / (float) Math.pow(2, octaveRange / 2);
 		maxFrequency = 440.00f * (float) Math.pow(2, octaveRange / 2);
 		frequencyRange = maxFrequency - minFrequency;
-		soundGenerator = new AudioThread().execute();
 
-		//alert(getString(R.string.resume));
+		minAmplitude = 0.0f; // TODO Get from system.
+		maxAmplitude = 1.0f; // TODO Get from system.
+
+		/*
+		 * Update graphics.
+		 */
+		((TextView) findViewById(R.id.amplitudeMax)).setText(maxAmplitude + "");
+		((TextView) findViewById(R.id.amplitudeMin)).setText(minAmplitude + "");
+		((TextView) findViewById(R.id.frequencyMin)).setText(minFrequency
+				+ "Hz");
+		((TextView) findViewById(R.id.frequencyMax)).setText(maxFrequency
+				+ "Hz");
+
+		/*
+		 * Start audio thread.
+		 */
+		soundGenerator = new AudioThread().execute();
 	}
 
 	/**
@@ -162,11 +179,11 @@ public class PocketThereminActivity extends Activity implements
 
 		if (soundGenerator != null)
 			soundGenerator.cancel(true);
-		
+
 		if (audioStream != null)
 			audioStream.release();
 
-		//alert(getString(R.string.pause));
+		// alert(getString(R.string.pause));
 	}
 
 	@Override
@@ -302,7 +319,7 @@ public class PocketThereminActivity extends Activity implements
 
 		protected void onPreExecute() {
 			play = true;
-			oscillator  = new Oscillator(waveform, sampleSize, sampleRate);
+			oscillator = new Oscillator(waveform, sampleSize, sampleRate);
 
 			// Effects
 			if (useAutotune)
@@ -349,7 +366,7 @@ public class PocketThereminActivity extends Activity implements
 				/*
 				 * Effects chain.
 				 */
-				if (autotune != null) //TODO Combine autotune and portamento.
+				if (autotune != null) // TODO Combine autotune and portamento.
 					frequency = autotune.modify(frequency);
 
 				if (vibrato != null)
@@ -378,10 +395,10 @@ public class PocketThereminActivity extends Activity implements
 		}
 
 		protected void onProgressUpdate(Float... progress) {
-			((TextView) findViewById(R.id.textFrequency)).setText(progress[0]
+			((TextView) findViewById(R.id.frequency)).setText(progress[0]
 					.shortValue() + "Hz");
-			((TextView) findViewById(R.id.textAmplitude)).setText(progress[1]
-					.shortValue() + "%"); // TODO Should be decibel?
+			((TextView) findViewById(R.id.amplitude)).setText(progress[1]
+					.shortValue() + "");
 		}
 
 		@Override
