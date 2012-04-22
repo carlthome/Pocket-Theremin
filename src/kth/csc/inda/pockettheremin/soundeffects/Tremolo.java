@@ -20,7 +20,7 @@ public class Tremolo implements SoundEffect {
 	}
 	
 	private float tremble(float amplitude) {
-		float attentuation = 1 + (depth / (float) 100) * oscillator.getWaveValue(speed);
+		float attentuation = 1 + (depth / (float) 100) * oscillator.getNext(speed, true);
 		return amplitude * attentuation;
 	}
 }

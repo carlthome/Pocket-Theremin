@@ -20,7 +20,7 @@ public class Vibrato implements SoundEffect {
 	}
 
 	private float vibrate(float frequency) {
-		float pitch = 1 + (depth / (float) 100) * oscillator.getWaveValue(speed);
+		float pitch = 1 + (depth / (float) 100) * oscillator.getNext(speed, true);
 		return frequency * pitch;
 	}
 }
