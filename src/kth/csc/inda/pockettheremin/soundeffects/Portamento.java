@@ -6,7 +6,7 @@ public class Portamento implements SoundEffect {
 
 	public Portamento() {
 		gliding = false;
-		time = 100; // ms
+		time = 30;
 	}
 
 	@Override
@@ -15,27 +15,23 @@ public class Portamento implements SoundEffect {
 	}
 
 	private float glide(float frequency) {
-		if (!gliding) {
-			from = current = frequency;
-			gliding = true;
-		} else {
+		if (gliding)
 			to = frequency;
+
+		if (!gliding && Math.abs(from - to) < 1) {
+			from = current = frequency;
+			this.gliding = true;
+		} else if (Math.abs(current - to) > 10) {
 			distance = Math.abs(from - to);
 			velocity = distance / time;
+			float direction = Float.compare(to, current);
+			current += direction * velocity;
+		} else {
+			this.gliding = false;
+			from = to;
 		}
 
-		if (gliding) {
-			if (to > current)
-				return current += (int) (velocity + 0.5);
+		return current;
 
-			if (to < current)
-				return current -= (int) (velocity + 0.5);
-
-			if (to == current)
-				gliding = false;
-
-			return to;
-		} else
-			return current;
 	}
 }
