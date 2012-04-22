@@ -187,14 +187,10 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Register input listeners.
 		 */
-		if (useSensor) {
-			sensors.registerListener(this, sensor,
-					SensorManager.SENSOR_DELAY_GAME);
-		} else {
+		if (useSensor)
+			sensors.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+		else
 			this.findViewById(android.R.id.content).setOnTouchListener(this);
-			// touchFrequency.setOnTouchListener(this);
-			// touchAmplitude.setOnTouchListener(this);
-		}
 
 		/*
 		 * Start executing audio thread.
@@ -272,17 +268,16 @@ public class PocketThereminActivity extends Activity implements
 
 		final int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_DOWN:
-			// TODO
 		case MotionEvent.ACTION_MOVE:
-			pitch = event.getX() * (frequencyRange / view.getWidth());
-			volume = (view.getHeight() - event.getY())
+			int pointers = event.getPointerCount();
+			volume = (view.getHeight() - event.getY(0))
 					* (amplitudeRange / view.getHeight());
-		case MotionEvent.ACTION_UP:
-			// TODO Fade out.
+			if (pointers == 2)
+				pitch = event.getX(1) * (frequencyRange / view.getWidth());
+
 		}
 
-		return true; // Yes, I want to know about movement.
+		return true;
 	}
 
 	@Override
@@ -311,8 +306,6 @@ public class PocketThereminActivity extends Activity implements
 		 * pitch with the light sensor and amplitude with the proximity sensor.
 		 */
 		if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
-			// TODO Filter noise with a high-pass filter.
 			volume = event.values[0] * volumeStep;
 			pitch = (event.values[1] + SensorManager.STANDARD_GRAVITY)
 					* pitchStep;

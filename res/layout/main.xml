@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:background="@android:drawable/title_bar_tall"
+        android:minWidth="80dp"
         android:orientation="vertical" >
 
         <TextView
@@ -18,6 +19,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:drawableTop="@android:drawable/arrow_up_float"
+            android:gravity="top|center"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -25,7 +27,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="center|center"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -34,7 +36,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:drawableBottom="@android:drawable/arrow_down_float"
-            android:gravity="bottom"
+            android:gravity="bottom|center"
             android:textAppearance="?android:attr/textAppearanceLarge" />
     </LinearLayout>
 
@@ -63,7 +65,8 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/app_instructions" />
+                android:text="@string/app_instructions"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
 
         <LinearLayout
@@ -71,6 +74,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@android:drawable/title_bar"
+            android:minHeight="80dp"
             android:orientation="horizontal" >
 
             <TextView
@@ -80,7 +84,7 @@
                 android:layout_weight="1"
                 android:drawableLeft="@android:drawable/ic_media_previous"
                 android:drawablePadding="5dp"
-                android:gravity="left|bottom"
+                android:gravity="left|center"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -88,7 +92,7 @@
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
-                android:gravity="bottom|center_horizontal"
+                android:gravity="center|center_horizontal"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -98,7 +102,7 @@
                 android:layout_weight="1"
                 android:drawablePadding="5dp"
                 android:drawableRight="@android:drawable/ic_media_next"
-                android:gravity="right|bottom"
+                android:gravity="right|center"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
     </LinearLayout>
