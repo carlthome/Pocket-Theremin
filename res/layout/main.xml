@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/touchInputView"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:keepScreenOn="true"
@@ -42,6 +41,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/touchAmplitude"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
@@ -54,7 +54,6 @@
                     android:drawableLeft="@android:drawable/ic_media_previous"
                     android:drawablePadding="5dp"
                     android:gravity="left|bottom"
-                    android:text="0dB"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -63,7 +62,6 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:gravity="bottom|center_horizontal"
-                    android:text="3dB"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -74,12 +72,12 @@
                     android:drawablePadding="5dp"
                     android:drawableRight="@android:drawable/ic_media_next"
                     android:gravity="right|bottom"
-                    android:text="10dB"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/touchFrequency"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:orientation="vertical" >
@@ -90,7 +88,6 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:drawableTop="@android:drawable/arrow_up_float"
-                android:text="0Hz"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -99,7 +96,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="200Hz"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
@@ -110,7 +106,6 @@
                 android:drawableBottom="@android:drawable/arrow_down_float"
                 android:gravity="bottom"
                 android:paddingBottom="50dp"
-                android:text="20000Hz"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
     </LinearLayout>

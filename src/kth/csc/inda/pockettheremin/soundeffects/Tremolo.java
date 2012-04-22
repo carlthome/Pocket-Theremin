@@ -1,22 +1,36 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
+// TODO Allow parameters such as speed, shape and depth.
 public class Tremolo implements SoundEffect {
-
-	// TODO Allow parameters such as speed, shape and depth.
-	float attentuation = 0.0f;
-	int direction = 1;
+	int sampleRate, sampleSize;
+	int speed, depth;
+	float attentuation;
+	double angle, increment;
+	
+	public Tremolo(int speed, int depth, int sampleRate, int sampleSize) {
+		this.speed = speed;
+		this.depth = depth;
+		this.sampleRate = sampleRate;
+		this.sampleSize = sampleSize;
+		
+		increment = (2 * Math.PI) / sampleSize;
+	}
 
 	@Override
 	public float modify(float amplitude) {
-		step();
-		return attentuation;
+		return (tremble(amplitude));
 	}
 
-	private void step() {
-		if (attentuation >= 1.0f)
-			direction = -1;
-		else if (attentuation <= 0.0f)
-			direction = 1;
-		attentuation += 0.1f * direction;
+	private float tremble(float amplitude) {
+		attentuation = 1 + percentageToDecimal(depth) * ((float) Math.sin(angle));
+		angle += speed * increment;
+
+		return amplitude * attentuation;
+	}
+	
+	private float percentageToDecimal(int percentage) {
+		float decimal = 0.00f;
+		decimal = (percentage / (float) 100);
+		return decimal;
 	}
 }

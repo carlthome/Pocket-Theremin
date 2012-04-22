@@ -2,25 +2,26 @@ package kth.csc.inda.pockettheremin.soundeffects;
 
 public class Vibrato implements SoundEffect {
 	int sampleRate, sampleSize;
-	int range = 5; // percent up and down
-	int speed = 8;
+	int speed, depth;
 	float pitch;
 	double angle, increment;
-	
-	public Vibrato(int sampleRate, int sampleSize) {
+
+	public Vibrato(int speed, int depth, int sampleRate, int sampleSize) {
+		this.speed = speed;
+		this.depth = depth;
 		this.sampleRate = sampleRate;
 		this.sampleSize = sampleSize;
-		
+
 		increment = (2 * Math.PI) / sampleSize;
 	}
-	
+
 	@Override
 	public float modify(float frequency) {
-		return (pitch(frequency));
+		return (vibrate(frequency));
 	}
 
-	private float pitch(float frequency) {
-		pitch = 1 + percentageToDecimal(range) * ((float) Math.sin(angle));
+	private float vibrate(float frequency) {
+		pitch = 1 + percentageToDecimal(depth) * ((float) Math.sin(angle));
 		angle += speed * increment;
 
 		return frequency * pitch;

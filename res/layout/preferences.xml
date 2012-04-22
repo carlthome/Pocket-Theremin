@@ -29,31 +29,69 @@
             android:key="octaveRange"
             android:summary="Select number of octaves."
             android:title="Octave Range" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="sound_effects"
-        android:title="Sound Effects" >
 
         <CheckBoxPreference
-            android:key="tremolo"
-            android:summary="Modulate the amplitude."
-            android:title="Tremolo" />
+            android:key="chiptuneMode"
+            android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
+            android:title="NES" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Vibrato" >
 
         <CheckBoxPreference
             android:key="vibrato"
             android:summary="Modulate the pitch"
             android:title="Vibrato" />
 
+        <ListPreference
+            android:dependency="vibrato"
+            android:entries="@array/speed"
+            android:entryValues="@array/speed"
+            android:key="vibrato_speed"
+            android:summary="Select speed."
+            android:title="Speed" />
+
+        <ListPreference
+            android:dependency="vibrato"
+            android:entries="@array/depth"
+            android:entryValues="@array/depth"
+            android:key="vibrato_depth"
+            android:summary="Select depth."
+            android:title="Depth" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Tremolo" >
+
+        <CheckBoxPreference
+            android:key="tremolo"
+            android:summary="Modulate the amplitude."
+            android:title="Tremolo" />
+
+        <ListPreference
+            android:dependency="tremolo"
+            android:entries="@array/speed"
+            android:entryValues="@array/speed"
+            android:key="tremolo_speed"
+            android:summary="Select speed."
+            android:title="Speed" />
+
+        <ListPreference
+            android:dependency="tremolo"
+            android:entries="@array/depth"
+            android:entryValues="@array/depth"
+            android:key="tremolo_depth"
+            android:summary="Select depth."
+            android:title="Depth" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Portamento" >
+
         <CheckBoxPreference
             android:key="portamento"
             android:summary="Glide between notes."
             android:title="Portamento" />
+    </PreferenceCategory>
 
-        <CheckBoxPreference
-            android:key="chiptuneMode"
-            android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
-            android:title="NES" />
+    <PreferenceCategory android:title="Autotune" >
 
         <CheckBoxPreference
             android:key="autotune"
