@@ -1,18 +1,17 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
+import kth.csc.inda.pockettheremin.Oscillator;
+import kth.csc.inda.pockettheremin.Oscillator.Waveform;
+
 public class Vibrato implements SoundEffect {
 	int sampleRate, sampleSize;
 	int speed, depth;
-	float pitch;
-	double angle, increment;
+	Oscillator oscillator;
 
-	public Vibrato(int speed, int depth, int sampleRate, int sampleSize) {
+	public Vibrato(int speed, int depth, Waveform waveform, int sampleRate, int sampleSize) {
 		this.speed = speed;
 		this.depth = depth;
-		this.sampleRate = sampleRate;
-		this.sampleSize = sampleSize;
-
-		increment = (2 * Math.PI) / sampleSize;
+		oscillator = new Oscillator(waveform, sampleSize, sampleSize);
 	}
 
 	@Override
@@ -21,15 +20,7 @@ public class Vibrato implements SoundEffect {
 	}
 
 	private float vibrate(float frequency) {
-		pitch = 1 + percentageToDecimal(depth) * ((float) Math.sin(angle));
-		angle += speed * increment;
-
+		float pitch = 1 + (depth / (float) 100) * oscillator.getWaveValue(speed);
 		return frequency * pitch;
-	}
-
-	private float percentageToDecimal(int percentage) {
-		float decimal = 0.00f;
-		decimal = (percentage / (float) 100);
-		return decimal;
 	}
 }

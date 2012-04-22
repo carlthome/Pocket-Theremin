@@ -1,12 +1,12 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
 public class Portamento implements SoundEffect {
-	float from, to, current, distance, speed, step;
+	float from, to, current, distance, time, velocity;
 	boolean gliding;
 
 	public Portamento() {
-		speed = 1; // TODO Make speed independent of distance between notes.
 		gliding = false;
+		time = 100; // ms
 	}
 
 	@Override
@@ -20,16 +20,16 @@ public class Portamento implements SoundEffect {
 			gliding = true;
 		} else {
 			to = frequency;
-			distance = Math.signum(to - from);
-			step = speed;
+			distance = Math.abs(from - to);
+			velocity = distance / time;
 		}
 
 		if (gliding) {
 			if (to > current)
-				return current += step;
+				return current += (int) (velocity + 0.5);
 
 			if (to < current)
-				return current -= step;
+				return current -= (int) (velocity + 0.5);
 
 			if (to == current)
 				gliding = false;
@@ -37,9 +37,5 @@ public class Portamento implements SoundEffect {
 			return to;
 		} else
 			return current;
-	}
-	
-	public boolean isGliding() {
-		return gliding;
 	}
 }
