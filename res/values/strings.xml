@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Pocket Theremin</string>
-    <string name="app_instructions">Position your device onto a table and slowly increase its angle in first the vertical direction and then the horizontal direction.</string>
+    <string name="app_instructions"></string>
     <string name="theremin_description_headline">What is a theremin?</string>
     <string name="theremin_description_text">"The theremin is an early electronic musical instrument controlled without discernible physical contact from the player. It is named after its Russian inventor, Professor Léon Theremin, who patented the device in 1928." \n\n- from Wikipedia</string>
     <string name="app_description_headline">About this app</string>

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory
-        android:key="input"
-        android:title="Input" >
+    <PreferenceCategory android:title="Input" >
 
         <CheckBoxPreference
             android:key="accelerometer"
@@ -12,9 +10,7 @@
             android:title="Accelerometer" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:key="output"
-        android:title="Output" >
+    <PreferenceCategory android:title="Synthesizer" >
 
         <ListPreference
             android:entries="@array/waveforms"
@@ -35,9 +31,9 @@
             android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
             android:title="NES" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Vibrato" >
 
-        <CheckBoxPreference
+    <PreferenceCategory android:title="Vibrato" >
+        <CheckBoxPreference
             android:key="vibrato"
             android:summary="Modulate the pitch"
             android:title="Vibrato" />
@@ -57,6 +53,13 @@
             android:key="vibrato_depth"
             android:summary="Select depth."
             android:title="Depth" />
+
+        <ListPreference
+            android:entries="@array/waveforms"
+            android:entryValues="@array/waveforms"
+            android:key="vibrato_waveform"
+            android:summary="Select waveform."
+            android:title="Waveform" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Tremolo" >
@@ -81,6 +84,13 @@
             android:key="tremolo_depth"
             android:summary="Select depth."
             android:title="Depth" />
+
+        <ListPreference
+            android:entries="@array/waveforms"
+            android:entryValues="@array/waveforms"
+            android:key="tremolo_waveform"
+            android:summary="Select waveform."
+            android:title="Waveform" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Portamento" >
