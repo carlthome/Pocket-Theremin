@@ -137,29 +137,29 @@ public class PocketThereminActivity extends Activity implements
 				"SINE"));
 		useChiptuneMode = preferences.getBoolean("chiptuneMode", false);
 
-		// Tremolo
-		useTremolo = preferences.getBoolean("tremolo", false);
-		tremoloWaveform = Waveform.valueOf(preferences.getString(
-				"tremolo_waveform", "SQUARE"));
-		tremoloSpeed = Integer.parseInt(preferences.getString("tremolo_speed",
-				"10"));
-		tremoloDepth = Integer.parseInt(preferences.getString("tremolo_depth",
-				"100"));
-
 		// Vibrato
-		useVibrato = preferences.getBoolean("vibrato", false);
+		useVibrato = preferences.getBoolean("vibrato", true);
 		vibratoWaveform = Waveform.valueOf(preferences.getString(
-				"vibrato_waveform", "SINE"));
+				"vibrato_waveform", "TRIANGLE"));
 		vibratoSpeed = Integer.parseInt(preferences.getString("vibrato_speed",
-				"5"));
+				"8"));
 		vibratoDepth = Integer.parseInt(preferences.getString("vibrato_depth",
+				"4"));
+		
+		// Tremolo
+		useTremolo = preferences.getBoolean("tremolo", true);
+		tremoloWaveform = Waveform.valueOf(preferences.getString(
+				"tremolo_waveform", "SINE"));
+		tremoloSpeed = Integer.parseInt(preferences.getString("tremolo_speed",
+				"1"));
+		tremoloDepth = Integer.parseInt(preferences.getString("tremolo_depth",
 				"10"));
 
 		// Portamento
-		usePortamento = preferences.getBoolean("portamento", false);
+		usePortamento = preferences.getBoolean("portamento", true);
 
 		// Autotune
-		useAutotune = preferences.getBoolean("autotune", false);
+		useAutotune = preferences.getBoolean("autotune", true);
 		key = AutotuneKey.valueOf(preferences.getString("key", "A"));
 		scale = AutotuneScale.valueOf(preferences.getString("scale", "MAJOR"));
 
