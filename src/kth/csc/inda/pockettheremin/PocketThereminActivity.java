@@ -276,9 +276,10 @@ public class PocketThereminActivity extends Activity implements
 			// TODO
 		case MotionEvent.ACTION_MOVE:
 			pitch = event.getX() * (frequencyRange / view.getWidth());
-			volume = (view.getHeight() - event.getY()) * (amplitudeRange / view.getHeight());
+			volume = (view.getHeight() - event.getY())
+					* (amplitudeRange / view.getHeight());
 		case MotionEvent.ACTION_UP:
-			// TODO Fade out. 
+			// TODO Fade out.
 		}
 
 		return true; // Yes, I want to know about movement.
