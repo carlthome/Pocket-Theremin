@@ -40,12 +40,10 @@
             android:summary="Modulate the amplitude."
             android:title="Tremolo" />
 
-        <!--
         <CheckBoxPreference
             android:key="vibrato"
             android:summary="Modulate the pitch"
-            android:title="Vibrato" />
-        -->
+            android:title="Vibrato" />
 
         <CheckBoxPreference
             android:key="portamento"
