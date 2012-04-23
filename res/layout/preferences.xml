@@ -115,8 +115,8 @@
                 android:entries="@array/hundred"
                 android:entryValues="@array/hundred"
                 android:key="vibrato_depth"
-                android:summary="Select depth in percent (%)."
-                android:title="Depth (%)" />
+                android:summary="Select depth in percent (percent)."
+                android:title="Depth (percent)" />
 
             <ListPreference
                 android:defaultValue="TRIANGLE"
@@ -152,8 +152,8 @@
                 android:entries="@array/hundred"
                 android:entryValues="@array/hundred"
                 android:key="tremolo_depth"
-                android:summary="Select depth (%)."
-                android:title="Depth (%)" />
+                android:summary="Select depth (percent)."
+                android:title="Depth (percent)" />
 
             <ListPreference
                 android:defaultValue="SINE"
