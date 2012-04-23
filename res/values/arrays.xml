@@ -2,12 +2,8 @@
 <resources>
 
     <string-array name="octaves">
-        <!-- <item>1</item> -->
         <item>2</item> 
-        <!-- <item>3</item>-->
         <item>4</item>
-        <!-- <item>5</item> -->
-        <item>6</item>
     </string-array>
     <string-array name="scale">
         <item>MAJOR</item>
@@ -15,18 +11,18 @@
         <item>CHROMATIC</item>
     </string-array>
     <string-array name="keys">
-        <item>A</item>
-        <item>Bb</item>
-        <item>B</item>
         <item>C</item>
-        <item>Db</item>
+        <item>Csharp</item>
         <item>D</item>
-        <item>Eb</item>
+        <item>Dsharp</item>
         <item>E</item>
         <item>F</item>
-        <item>Gb</item>
+        <item>Fsharp</item>
         <item>G</item>
-        <item>Ab</item>
+        <item>Gsharp</item>
+        <item>A</item>
+        <item>Asharp</item>
+        <item>B</item>
     </string-array>
     <string-array name="waveforms">
         <item>SINE</item>

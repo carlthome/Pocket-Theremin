@@ -34,7 +34,7 @@
                 android:entries="@array/keys"
                 android:entryValues="@array/keys"
                 android:key="key"
-                android:summary="Select musical key."
+                android:summary="Select key."
                 android:title="Key" />
 
             <ListPreference
@@ -43,7 +43,7 @@
                 android:entries="@array/scale"
                 android:entryValues="@array/scale"
                 android:key="scale"
-                android:summary="Select musical scale."
+                android:summary="Select scale."
                 android:title="Scale" />
         </PreferenceCategory>
     </PreferenceScreen>

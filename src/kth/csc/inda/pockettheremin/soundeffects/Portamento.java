@@ -15,6 +15,7 @@ public class Portamento implements SoundEffect {
 	}
 
 	private double glide(double frequency) {
+		//TODO Fix skipping.
 		if (gliding)
 			to = frequency;
 

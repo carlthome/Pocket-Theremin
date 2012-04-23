@@ -3,12 +3,10 @@ package kth.csc.inda.pockettheremin;
 import java.util.MissingFormatArgumentException;
 
 public class Oscillator {
-	int sampleSize, sampleRate;
 	static final double CIRCLE = 2 * Math.PI;
-
+	private long period, sample;
+	int sampleSize, sampleRate;
 	Waveform waveform;
-	private long period;
-	private long sample;
 
 	public enum Waveform {
 		SINE, SQUARE1, SQUARE2, SQUARE3, TRIANGLE, SAWTOOTH;

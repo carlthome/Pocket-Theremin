@@ -4,11 +4,10 @@ import java.text.DecimalFormat;
 
 import kth.csc.inda.pockettheremin.Oscillator.Waveform;
 import kth.csc.inda.pockettheremin.soundeffects.Autotune;
-import kth.csc.inda.pockettheremin.soundeffects.Autotune.AutotuneKey;
-import kth.csc.inda.pockettheremin.soundeffects.Autotune.AutotuneScale;
-import kth.csc.inda.pockettheremin.soundeffects.Presets.Preset;
+import kth.csc.inda.pockettheremin.soundeffects.Autotune.Note;
+import kth.csc.inda.pockettheremin.soundeffects.Autotune.Scale;
 import kth.csc.inda.pockettheremin.soundeffects.Portamento;
-import kth.csc.inda.pockettheremin.soundeffects.Presets;
+import kth.csc.inda.pockettheremin.soundeffects.Presets.Preset;
 import kth.csc.inda.pockettheremin.soundeffects.SoundEffect;
 import kth.csc.inda.pockettheremin.soundeffects.Tremolo;
 import kth.csc.inda.pockettheremin.soundeffects.Vibrato;
@@ -67,8 +66,8 @@ public class PocketThereminActivity extends Activity implements
 	double maxAmplitude, minAmplitude, amplitudeRange;
 
 	boolean useAutotune;
-	AutotuneKey key;
-	AutotuneScale scale;
+	Note key;
+	Scale scale;
 	int octaveRange;
 
 	boolean usePresets;
@@ -97,7 +96,7 @@ public class PocketThereminActivity extends Activity implements
 		 * Set layout resource.
 		 */
 		setContentView(R.layout.main);
-		
+
 		/*
 		 * Set default preferences according to resource (only once!).
 		 */
@@ -140,12 +139,14 @@ public class PocketThereminActivity extends Activity implements
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		useSensor = preferences.getBoolean("accelerometer", false);
 		useAutotune = preferences.getBoolean("autotune", true);
-		key = AutotuneKey.valueOf(preferences.getString("key", "A"));
-		scale = AutotuneScale.valueOf(preferences.getString("scale", "MAJOR"));
-		octaveRange = Integer.parseInt(preferences.getString("octaveRange", "2"));
+		key = Note.valueOf(preferences.getString("key", "A"));
+		scale = Scale.valueOf(preferences.getString("scale", "MAJOR"));
+		octaveRange = Integer.parseInt(preferences
+				.getString("octaveRange", "2"));
 
 		if (preferences.getBoolean("presets", true)) {
-			Preset preset = Preset.valueOf(preferences.getString("preset", "THEREMIN"));
+			Preset preset = Preset.valueOf(preferences.getString("preset",
+					"THEREMIN"));
 			switch (preset) {
 			case THEREMIN:
 				synthWaveform = Waveform.SINE;
@@ -211,9 +212,9 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calculate operational values.
 		 */
-		minFrequency = 440.00f / (double) Math.pow(2, octaveRange / 2);
-		maxFrequency = 440.00f * (double) Math.pow(2, octaveRange / 2);
-		frequencyRange = maxFrequency - minFrequency;
+		minFrequency = key.frequency(4 - octaveRange / 2); //TODO Improve abstraction.
+		maxFrequency = key.frequency(4 + octaveRange / 2); //TODO Improve abstraction.
+		frequencyRange = maxFrequency - minFrequency;		
 
 		minAmplitude = 0;
 		maxAmplitude = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -224,14 +225,17 @@ public class PocketThereminActivity extends Activity implements
 		 */
 		((TextView) findViewById(R.id.amplitudeMax)).setText(maxAmplitude + "");
 		((TextView) findViewById(R.id.amplitudeMin)).setText(minAmplitude + "");
-		((TextView) findViewById(R.id.frequencyMin)).setText(minFrequency + "Hz");
-		((TextView) findViewById(R.id.frequencyMax)).setText(maxFrequency + "Hz");
+		((TextView) findViewById(R.id.frequencyMin)).setText(minFrequency
+				+ "Hz");
+		((TextView) findViewById(R.id.frequencyMax)).setText(maxFrequency
+				+ "Hz");
 
 		/*
 		 * Register input listeners.
 		 */
 		if (useSensor)
-			sensors.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+			sensors.registerListener(this, sensor,
+					SensorManager.SENSOR_DELAY_GAME);
 		else
 			this.findViewById(android.R.id.content).setOnTouchListener(this);
 
@@ -306,22 +310,21 @@ public class PocketThereminActivity extends Activity implements
 	@Override
 	public boolean onTouch(View view, MotionEvent event) {
 		for (int i = 0; i < event.getPointerCount(); i++)
-			Log.d("Pointer", "Pointer " + (i) + ": x=" + event.getX(i) + ", y="	+ event.getY(i));
+			Log.d("Pointer", "Pointer " + (i) + ": x=" + event.getX(i) + ", y="
+					+ event.getY(i));
 
 		final int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE:
 			if (event.getPointerCount() == 2) {
-				volume = (view.getHeight() - event.getY(0)) * (amplitudeRange / view.getHeight());
-				
-				//Math.log(x)/Math.log(12);
-				//TODO (1.05946)12 = 2
-				
-				if (useAutotune)
-					pitch = event.getX(1) * frequencyRange / view.getWidth();
-				else
-					pitch = event.getX(1) * frequencyRange / view.getWidth();
-					
+				volume = (view.getHeight() - event.getY(0))
+						* (amplitudeRange / view.getHeight());
+
+				// TODO Fix even playing with autotune.
+				// log_12(x) = Math.log(x)/Math.log(12);
+				// (1.05946)12 = 2
+
+				pitch = event.getX(1) * frequencyRange / view.getWidth();
 			}
 		}
 
@@ -329,7 +332,8 @@ public class PocketThereminActivity extends Activity implements
 	}
 
 	/**
-	 * Log sensor accuracy changes for debugging. Required by the OnTouchListener interface.
+	 * Log sensor accuracy changes for debugging. Required by the
+	 * OnTouchListener interface.
 	 */
 	@Override
 	public final void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -422,7 +426,8 @@ public class PocketThereminActivity extends Activity implements
 				 * Set initial volume according to input.
 				 */
 				amplitude = PocketThereminActivity.this.volume;
-				audioStream.setStereoVolume((float) amplitude, (float) amplitude);
+				audioStream.setStereoVolume((float) amplitude,
+						(float) amplitude);
 
 				/*
 				 * Effects chain.
@@ -438,7 +443,8 @@ public class PocketThereminActivity extends Activity implements
 
 				if (tremolo != null) {
 					amplitude = tremolo.modify(amplitude);
-					audioStream.setStereoVolume((float) amplitude, (float) amplitude);
+					audioStream.setStereoVolume((float) amplitude,
+							(float) amplitude);
 				}
 
 				/*
@@ -458,7 +464,7 @@ public class PocketThereminActivity extends Activity implements
 
 		protected void onProgressUpdate(Double... progress) {
 			((TextView) findViewById(R.id.frequency))
-					.setText(new DecimalFormat("#").format(progress[0]) + "Hz");
+					.setText(new DecimalFormat("#.##").format(progress[0]) + "Hz");
 			((TextView) findViewById(R.id.amplitude))
 					.setText(new DecimalFormat("#.#").format(progress[1]) + "");
 		}
