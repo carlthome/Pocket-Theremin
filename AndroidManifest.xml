@@ -30,7 +30,9 @@
         <activity
             android:name=".AboutActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".PreferencesActivity" android:theme="@android:style/Theme.Black" />
+        <activity
+            android:name=".PreferencesActivity"
+            android:theme="@android:style/Theme.Black" />
     </application>
 
 </manifest>

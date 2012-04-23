@@ -97,6 +97,11 @@ public class PocketThereminActivity extends Activity implements
 		 * Set layout resource.
 		 */
 		setContentView(R.layout.main);
+		
+		/*
+		 * Set default preferences according to resource (only once!).
+		 */
+		PreferenceManager.setDefaultValues(this, R.layout.preferences, false);
 
 		/*
 		 * Find input.
@@ -133,17 +138,14 @@ public class PocketThereminActivity extends Activity implements
 		 * Get user preferences.
 		 */
 		preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
 		useSensor = preferences.getBoolean("accelerometer", false);
 		useAutotune = preferences.getBoolean("autotune", true);
 		key = AutotuneKey.valueOf(preferences.getString("key", "A"));
 		scale = AutotuneScale.valueOf(preferences.getString("scale", "MAJOR"));
-		octaveRange = Integer.parseInt(preferences
-				.getString("octaveRange", "2"));
+		octaveRange = Integer.parseInt(preferences.getString("octaveRange", "2"));
 
 		if (preferences.getBoolean("presets", true)) {
-			Preset preset = Preset.valueOf(preferences.getString("preset",
-					"THEREMIN"));
+			Preset preset = Preset.valueOf(preferences.getString("preset", "THEREMIN"));
 			switch (preset) {
 			case THEREMIN:
 				synthWaveform = Waveform.SINE;
@@ -159,7 +161,7 @@ public class PocketThereminActivity extends Activity implements
 				usePortamento = true;
 				break;
 			case ZELDA:
-				synthWaveform = Waveform.SQUARE;
+				synthWaveform = Waveform.SQUARE2;
 				useChiptuneMode = true;
 				useVibrato = false;
 				vibratoWaveform = Waveform.TRIANGLE;
@@ -179,7 +181,7 @@ public class PocketThereminActivity extends Activity implements
 				vibratoSpeed = 1;
 				vibratoDepth = 100;
 				useTremolo = true;
-				tremoloWaveform = Waveform.SQUARE;
+				tremoloWaveform = Waveform.SQUARE1;
 				tremoloSpeed = 10;
 				tremoloDepth = 100;
 				usePortamento = true;

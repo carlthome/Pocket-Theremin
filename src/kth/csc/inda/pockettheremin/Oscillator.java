@@ -5,13 +5,13 @@ import java.util.MissingFormatArgumentException;
 public class Oscillator {
 	int sampleSize, sampleRate;
 	static final double CIRCLE = 2 * Math.PI;
-	
+
 	Waveform waveform;
 	private long period;
 	private long sample;
 
 	public enum Waveform {
-		SINE, COSINE, TAN, SQUARE, TRIANGLE, SAWTOOTH, PHASE;
+		SINE, SQUARE1, SQUARE2, SQUARE3, TRIANGLE, SAWTOOTH;
 	};
 
 	public Oscillator(Waveform waveform, int samplesize, int samplerate) {
@@ -19,11 +19,11 @@ public class Oscillator {
 		this.sampleRate = samplerate;
 		this.sampleSize = samplesize;
 	}
-	
+
 	public void setFrequency(double frequency) {
 		period = (long) (sampleRate / frequency);
 	}
-	
+
 	public short[] getSamples() {
 		short[] samples = new short[sampleSize];
 
@@ -33,7 +33,7 @@ public class Oscillator {
 		return samples;
 	}
 
-	public double getSample() {		
+	public double getSample() {
 		double y = 0;
 		double x = sample / (double) period;
 
@@ -41,27 +41,27 @@ public class Oscillator {
 		case SINE:
 			y = Math.sin(CIRCLE * x);
 			break;
-		case COSINE:
-			y = Math.cos(CIRCLE * x);
-			break;
-		case TAN:
-			y = Math.tan(CIRCLE * x);
-			break;
-		case SQUARE:
-			y = Math.sin(CIRCLE * x) % 2 < 0 ? -1 : 1;
-			break;
 		case TRIANGLE:
-			//y = Math.asin(Math.sin(circle * x));
 			y = Math.abs(2.0 * (x - Math.floor(x + 0.5)));
+			// y = Math.asin(Math.sin(circle * x));
 			break;
-		case SAWTOOTH: 
+		case SAWTOOTH:
 			y = (2.0 * (x - Math.floor(x + 0.5)));
 			break;
-		case PHASE:
-			/*
-			 * if (x > 0.5*circle) y = sin(increment * 0.5*circle / pi); else y
-			 * = sin((increment - 0.5*circle) * pi / (1 - 0.5*circle) + pi);
-			 */
+		case SQUARE1:
+			y = Math.sin(CIRCLE * x) % 2 < 0 ? -1 : 1;
+			break;
+		case SQUARE2:
+			if (sample < (period / 1.1))
+				y = 1.0;
+			else
+				y = -1.0;
+			break;
+		case SQUARE3:
+			if (sample < (period / 2.5))
+				y = 1.0;
+			else
+				y = -1.0;
 			break;
 		default:
 			throw new MissingFormatArgumentException("No waveform was set.");
