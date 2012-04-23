@@ -3,7 +3,6 @@ package kth.csc.inda.pockettheremin.soundeffects;
 final public class Autotune implements SoundEffect {
 	int prime = 57; // A4 is index 57 of the available notes.
 	int[] scaleSteps;
-	int octaveRange;
 	double[] scale;
 
 	public enum AutotuneScale {
@@ -14,9 +13,54 @@ final public class Autotune implements SoundEffect {
 		A, Bb, B, C, Db, D, Eb, E, F, Gb, G, Ab;
 	};
 
-	public Autotune(AutotuneKey key, AutotuneScale scale, int octaveRange) {
-		this.octaveRange = octaveRange;
+	final double[] notes = {
+			16.35, // C0
+			17.32, 18.35,
+			19.45,
+			20.60,
+			21.83,
+			23.12,
+			24.50,
+			25.96,
+			27.50, // A0
+			29.14, 30.87, 32.70, 34.65, 36.71,
+			38.89,
+			41.20,
+			43.65,
+			46.25,
+			49.00,
+			51.91,
+			55.00, // A1
+			58.27, 61.74, 65.41, 69.30, 73.42, 77.78,
+			82.41,
+			87.31,
+			92.50,
+			98.00,
+			103.83,
+			110.00, // A2
+			116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81,
+			174.61,
+			185.00,
+			196.00,
+			207.65,
+			220.00, // A3
+			233.08, 246.94, 261.63, 277.18, 293.66, 311.13, 329.63, 349.23,
+			369.99,
+			392.00,
+			415.30,
+			440.00, // A4
+			466.16, 493.88, 523.25, 554.37, 587.33, 622.25, 659.26, 698.46,
+			739.99, 783.99,
+			830.61,
+			880.00, // A5
+			932.33, 987.77, 1046.50, 1108.73, 1174.66, 1244.51, 1318.51,
+			1396.91, 1479.98, 1567.98, 1661.22,
+			1760.00, // A6
+			1864.66, 1975.53, 2093.00, 2217.46, 2349.32, 2489.02, 2637.02,
+			2793.83, 2959.96, 3135.96, 3322.44, 3520.00, // A7
+			3729.31, 3951.07, 4186.01, 4434.92, 4698.64, 4978.03 };
 
+	public Autotune(AutotuneKey key, AutotuneScale scale, int octaveRange) {
 		switch (key) {
 		case A:
 			prime = 57;
@@ -57,70 +101,25 @@ final public class Autotune implements SoundEffect {
 		}
 
 		switch (scale) {
-		case MAJOR:
+		case MAJOR: {
 			int[] major = { 2, 2, 1, 2, 2, 2, 1 };
 			scaleSteps = major;
 			break;
-		case MINOR:
+		}
+		case MINOR: {
 			int[] minor = { 2, 1, 2, 2, 1, 2, 2 };
 			scaleSteps = minor;
 			break;
-		case CHROMATIC:
-			int[] chromatic = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+		}
+		case CHROMATIC: {
+			int[] chromatic = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 			scaleSteps = chromatic;
 			break;
 		}
-		
-		setupScale();
-	}
+		}
 
-	final double[] notes = {
-			16.35f, // C0
-			17.32f,
-			18.35f,
-			19.45f,
-			20.60f,
-			21.83f,
-			23.12f,
-			24.50f,
-			25.96f,
-			27.50f, // A0
-			29.14f, 30.87f, 32.70f, 34.65f, 36.71f,
-			38.89f,
-			41.20f,
-			43.65f,
-			46.25f,
-			49.00f,
-			51.91f,
-			55.00f, // A1
-			58.27f, 61.74f, 65.41f, 69.30f, 73.42f, 77.78f,
-			82.41f,
-			87.31f,
-			92.50f,
-			98.00f,
-			103.83f,
-			110.00f, // A2
-			116.54f, 123.47f, 130.81f, 138.59f, 146.83f, 155.56f, 164.81f,
-			174.61f,
-			185.00f,
-			196.00f,
-			207.65f,
-			220.00f, // A3
-			233.08f, 246.94f, 261.63f, 277.18f, 293.66f, 311.13f, 329.63f,
-			349.23f, 369.99f,
-			392.00f,
-			415.30f,
-			440.00f, // A4
-			466.16f, 493.88f, 523.25f, 554.37f, 587.33f, 622.25f, 659.26f,
-			698.46f, 739.99f, 783.99f,
-			830.61f,
-			880.00f, // A5
-			932.33f, 987.77f, 1046.50f, 1108.73f, 1174.66f, 1244.51f, 1318.51f,
-			1396.91f, 1479.98f, 1567.98f, 1661.22f,
-			1760.00f, // A6
-			1864.66f, 1975.53f, 2093.00f, 2217.46f, 2349.32f, 2489.02f,
-			2637.02f, 2793.83f, 2959.96f, 3135.96f, 3322.44f, 3520.00f, // A7
-			3729.31f, 3951.07f, 4186.01f, 4434.92f, 4698.64f, 4978.03f };
+		setupScale(octaveRange);
+	}
 
 	@Override
 	public double modify(double frequency) {
@@ -143,16 +142,19 @@ final public class Autotune implements SoundEffect {
 		return closestNote;
 	}
 
-	public void setupScale() throws IllegalArgumentException {
-		
+	private void setupScale(int octaveRange) {
 		scale = new double[(octaveRange * scaleSteps.length) + 1];
 
 		if (octaveRange > 6 || octaveRange < 0)
 			throw new IllegalArgumentException();
 
-		// TODO Fix odd octave ranges.
-		int octavesUp = (octaveRange / 2);
-		int octavesDown = (octaveRange / 2);
+		//TODO Allow odd octave ranges.
+		int octavesUp = 1;
+		int octavesDown = 0;
+		if (octaveRange > 1) {
+			octavesUp = (octaveRange + 1) / 2;
+			octavesDown = octaveRange / 2;
+		}
 
 		int note = prime - (12 * octavesDown);
 		for (int octave = 0; octave < octaveRange; octave++) {

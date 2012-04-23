@@ -62,17 +62,17 @@ public class PocketThereminActivity extends Activity implements
 	AudioManager audioManager;
 	AudioTrack audioStream;
 	AsyncTask<?, ?, ?> soundGenerator;
-	float pitch, volume;
-	float maxFrequency, minFrequency, frequencyRange;
-	float maxAmplitude, minAmplitude, amplitudeRange;
+	double pitch, volume;
+	double maxFrequency, minFrequency, frequencyRange;
+	double maxAmplitude, minAmplitude, amplitudeRange;
 
 	boolean useAutotune;
 	AutotuneKey key;
 	AutotuneScale scale;
+	int octaveRange;
 
 	boolean usePresets;
 
-	int octaveRange;
 	Waveform synthWaveform;
 	boolean useChiptuneMode;
 
@@ -130,7 +130,7 @@ public class PocketThereminActivity extends Activity implements
 		 * Remind user to turn on volume.
 		 */
 		if (0.1 > audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-				/ (float) audioManager
+				/ (double) audioManager
 						.getStreamMaxVolume(AudioManager.STREAM_MUSIC))
 			alert(getString(R.string.low_volume_notice));
 
@@ -161,7 +161,7 @@ public class PocketThereminActivity extends Activity implements
 				usePortamento = true;
 				break;
 			case ZELDA:
-				synthWaveform = Waveform.SQUARE2;
+				synthWaveform = Waveform.SQUARE1;
 				useChiptuneMode = true;
 				useVibrato = false;
 				vibratoWaveform = Waveform.TRIANGLE;
@@ -211,8 +211,8 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calculate operational values.
 		 */
-		minFrequency = 440.00f / (float) Math.pow(2, octaveRange / 2);
-		maxFrequency = 440.00f * (float) Math.pow(2, octaveRange / 2);
+		minFrequency = 440.00f / (double) Math.pow(2, octaveRange / 2);
+		maxFrequency = 440.00f * (double) Math.pow(2, octaveRange / 2);
 		frequencyRange = maxFrequency - minFrequency;
 
 		minAmplitude = 0;
@@ -224,17 +224,14 @@ public class PocketThereminActivity extends Activity implements
 		 */
 		((TextView) findViewById(R.id.amplitudeMax)).setText(maxAmplitude + "");
 		((TextView) findViewById(R.id.amplitudeMin)).setText(minAmplitude + "");
-		((TextView) findViewById(R.id.frequencyMin)).setText(minFrequency
-				+ "Hz");
-		((TextView) findViewById(R.id.frequencyMax)).setText(maxFrequency
-				+ "Hz");
+		((TextView) findViewById(R.id.frequencyMin)).setText(minFrequency + "Hz");
+		((TextView) findViewById(R.id.frequencyMax)).setText(maxFrequency + "Hz");
 
 		/*
 		 * Register input listeners.
 		 */
 		if (useSensor)
-			sensors.registerListener(this, sensor,
-					SensorManager.SENSOR_DELAY_GAME);
+			sensors.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
 		else
 			this.findViewById(android.R.id.content).setOnTouchListener(this);
 
@@ -309,22 +306,31 @@ public class PocketThereminActivity extends Activity implements
 	@Override
 	public boolean onTouch(View view, MotionEvent event) {
 		for (int i = 0; i < event.getPointerCount(); i++)
-			Log.d("Pointer", "Pointer " + (i) + ": x=" + event.getX(i) + ", y="
-					+ event.getY(i));
+			Log.d("Pointer", "Pointer " + (i) + ": x=" + event.getX(i) + ", y="	+ event.getY(i));
 
 		final int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE:
 			if (event.getPointerCount() == 2) {
-				volume = (view.getHeight() - event.getY(0))
-						* (amplitudeRange / view.getHeight());
-				pitch = event.getX(1) * (frequencyRange / view.getWidth());
+				volume = (view.getHeight() - event.getY(0)) * (amplitudeRange / view.getHeight());
+				
+				//Math.log(x)/Math.log(12);
+				//TODO (1.05946)12 = 2
+				
+				if (useAutotune)
+					pitch = event.getX(1) * frequencyRange / view.getWidth();
+				else
+					pitch = event.getX(1) * frequencyRange / view.getWidth();
+					
 			}
 		}
 
 		return true;
 	}
 
+	/**
+	 * Log sensor accuracy changes for debugging. Required by the OnTouchListener interface.
+	 */
 	@Override
 	public final void onAccuracyChanged(Sensor sensor, int accuracy) {
 		Log.d(sensor.getName(), "onAccuracyChanged: " + accuracy);
@@ -343,8 +349,8 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Calibrate sensor stepping.
 		 */
-		float pitchStep = frequencyRange / sensor.getResolution();
-		float volumeStep = amplitudeRange / sensor.getResolution();
+		double pitchStep = frequencyRange / sensor.getResolution();
+		double volumeStep = amplitudeRange / sensor.getResolution();
 
 		/*
 		 * Modulate pitch and amplitude just with the accelerometer, or modulate
