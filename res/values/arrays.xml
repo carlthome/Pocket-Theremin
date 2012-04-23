@@ -2,8 +2,11 @@
 <resources>
 
     <string-array name="octaves">
+        <item>1</item>
         <item>2</item>
+        <item>3</item>
         <item>4</item>
+        <item>5</item>
         <item>6</item>
     </string-array>
     <string-array name="scale">
@@ -27,12 +30,11 @@
     </string-array>
     <string-array name="waveforms">
         <item>SINE</item>
-        <item>COSINE</item>
-        <item>TAN</item>
-        <item>SQUARE</item>
         <item>TRIANGLE</item>
         <item>SAWTOOTH</item>
-        <item>PHASE</item>
+        <item>SQUARE1</item>
+        <item>SQUARE2</item>
+        <item>SQUARE3</item>
     </string-array>
     <string-array name="ten">
         <item>1</item>

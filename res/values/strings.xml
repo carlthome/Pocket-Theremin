@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Pocket Theremin</string>
-    <string name="app_instructions">1) Rest your left thumb on the vertical bar.\n2) Place your right thumb on the horizontal bar.\n3) Slowly slide your thumbs across the bars to generate sounds.\n\nGood luck, and don\'t forget to check out the menu for sound effects!</string>
+    <string name="app_instructions">1) Always keep your left thumb on the vertical bar.\n2) Then touch the horizontal bar with your right thumb.\n3) Slide your right thumb left and right to create sounds.\n\nGood luck, and don\'t forget to check out the menu for sound effects!</string>
     <string name="theremin_description_headline">What is a theremin?</string>
     <string name="theremin_description_text">"The theremin is an early electronic musical instrument controlled without discernible physical contact from the player. It is named after its Russian inventor, Professor Léon Theremin, who patented the device in 1928." \n\n- from Wikipedia</string>
     <string name="app_description_headline">About this app</string>
