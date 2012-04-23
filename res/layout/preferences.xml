@@ -1,128 +1,190 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Input" >
+    <PreferenceScreen
+        android:key="input_preferences"
+        android:summary="Choose sensor or touch input and turn on or off autotune."
+        android:title="Playing style" >
 
         <CheckBoxPreference
             android:key="accelerometer"
             android:summaryOff="Use the accelerometer. If unchecked touch input will be used instead."
             android:summaryOn="Disable this to use touch input instead."
             android:title="Accelerometer" />
+
+        <PreferenceCategory android:title="Autotune" >
+
+            <CheckBoxPreference
+                android:key="autotune"
+                android:summary="Turn on autotune."
+                android:title="Autotune" />
+
+            <ListPreference
+                android:entries="@array/octaves"
+                android:entryValues="@array/octaves"
+                android:key="octaveRange"
+                android:summary="Select number of octaves."
+                android:title="Octave Range" />
+
+            <ListPreference
+                android:dependency="autotune"
+                android:entries="@array/keys"
+                android:entryValues="@array/keys"
+                android:key="key"
+                android:summary="Select key."
+                android:title="Key" />
+
+            <ListPreference
+                android:dependency="autotune"
+                android:entries="@array/scale"
+                android:entryValues="@array/scale"
+                android:key="scale"
+                android:summary="Select scale."
+                android:title="Scale" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+    <ListPreference
+        android:entries="@array/presets"
+        android:entryValues="@array/presets"
+        android:key="preset"
+        android:summary="Select sound preset."
+        android:title="Sound" />
+
+    <PreferenceCategory android:title="Advanced" >
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Synthesizer" >
-
-        <ListPreference
-            android:entries="@array/waveforms"
-            android:entryValues="@array/waveforms"
-            android:key="waveform"
-            android:summary="Select waveform."
-            android:title="Waveform" />
-
-        <ListPreference
-            android:entries="@array/octaves"
-            android:entryValues="@array/octaves"
-            android:key="octaveRange"
-            android:summary="Select number of octaves."
-            android:title="Octave Range" />
+    <PreferenceScreen
+        android:key="sound_effects"
+        android:summary="Advanced settings for sound effects."
+        android:title="Sound Effects" >
 
         <CheckBoxPreference
-            android:key="chiptuneMode"
-            android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
-            android:title="NES" />
-    </PreferenceCategory>
+            android:defaultValue="true"
+            android:disableDependentsState="true"
+            android:key="presets"
+            android:summaryOff="Check this to use the sound preset."
+            android:summaryOn="Disable this to stop using the presets and allow custom settings instead."
+            android:title="Use sound preset" />
 
-    <PreferenceCategory android:title="Vibrato" >
-        <CheckBoxPreference
-            android:key="vibrato"
-            android:summary="Modulate the pitch"
-            android:title="Vibrato" />
+        <PreferenceCategory android:title="Synthesizer" >
 
-        <ListPreference
-            android:dependency="vibrato"
-            android:entries="@array/speed"
-            android:entryValues="@array/speed"
-            android:key="vibrato_speed"
-            android:summary="Select speed."
-            android:title="Speed" />
+            <ListPreference
+                android:dependency="presets"
+                android:entries="@array/waveforms"
+                android:entryValues="@array/waveforms"
+                android:key="waveform"
+                android:summary="Select waveform."
+                android:title="Waveform" />
 
-        <ListPreference
-            android:dependency="vibrato"
-            android:entries="@array/depth"
-            android:entryValues="@array/depth"
-            android:key="vibrato_depth"
-            android:summary="Select depth."
-            android:title="Depth" />
+            <CheckBoxPreference
+                android:dependency="presets"
+                android:key="chiptuneMode"
+                android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
+                android:title="NES" />
+        </PreferenceCategory>
 
-        <ListPreference
-            android:entries="@array/waveforms"
-            android:entryValues="@array/waveforms"
-            android:key="vibrato_waveform"
-            android:summary="Select waveform."
-            android:title="Waveform" />
-    </PreferenceCategory>
+        <PreferenceCategory android:title="Vibrato" >
 
-    <PreferenceCategory android:title="Tremolo" >
+            <CheckBoxPreference
+                android:dependency="presets"
+                android:key="vibrato"
+                android:summary="Modulate the pitch"
+                android:title="Vibrato" />
 
-        <CheckBoxPreference
-            android:key="tremolo"
-            android:summary="Modulate the amplitude."
-            android:title="Tremolo" />
+            <ListPreference
+                android:dependency="vibrato"
+                android:entries="@array/speed"
+                android:entryValues="@array/speed"
+                android:key="vibrato_speed"
+                android:summary="Select speed."
+                android:title="Speed" />
 
-        <ListPreference
-            android:dependency="tremolo"
-            android:entries="@array/speed"
-            android:entryValues="@array/speed"
-            android:key="tremolo_speed"
-            android:summary="Select speed."
-            android:title="Speed" />
+            <ListPreference
+                android:dependency="vibrato"
+                android:entries="@array/depth"
+                android:entryValues="@array/depth"
+                android:key="vibrato_depth"
+                android:summary="Select depth."
+                android:title="Depth" />
 
-        <ListPreference
-            android:dependency="tremolo"
-            android:entries="@array/depth"
-            android:entryValues="@array/depth"
-            android:key="tremolo_depth"
-            android:summary="Select depth."
-            android:title="Depth" />
+            <ListPreference
+                android:dependency="vibrato"
+                android:entries="@array/waveforms"
+                android:entryValues="@array/waveforms"
+                android:key="vibrato_waveform"
+                android:summary="Select waveform."
+                android:title="Waveform" />
+        </PreferenceCategory>
 
-        <ListPreference
-            android:entries="@array/waveforms"
-            android:entryValues="@array/waveforms"
-            android:key="tremolo_waveform"
-            android:summary="Select waveform."
-            android:title="Waveform" />
-    </PreferenceCategory>
+        <PreferenceCategory android:title="Tremolo" >
 
-    <PreferenceCategory android:title="Portamento" >
+            <CheckBoxPreference
+                android:dependency="presets"
+                android:key="tremolo"
+                android:summary="Modulate the amplitude."
+                android:title="Tremolo" />
 
-        <CheckBoxPreference
-            android:key="portamento"
-            android:summary="Glide between notes."
-            android:title="Portamento" />
-    </PreferenceCategory>
+            <ListPreference
+                android:dependency="tremolo"
+                android:entries="@array/speed"
+                android:entryValues="@array/speed"
+                android:key="tremolo_speed"
+                android:summary="Select speed."
+                android:title="Speed" />
 
-    <PreferenceCategory android:title="Autotune" >
+            <ListPreference
+                android:dependency="tremolo"
+                android:entries="@array/depth"
+                android:entryValues="@array/depth"
+                android:key="tremolo_depth"
+                android:summary="Select depth."
+                android:title="Depth" />
 
-        <CheckBoxPreference
-            android:key="autotune"
-            android:summary="Turn on autotune."
-            android:title="Autotune" />
+            <ListPreference
+                android:dependency="tremolo"
+                android:entries="@array/waveforms"
+                android:entryValues="@array/waveforms"
+                android:key="tremolo_waveform"
+                android:summary="Select waveform."
+                android:title="Waveform" />
+        </PreferenceCategory>
 
-        <ListPreference
-            android:dependency="autotune"
-            android:entries="@array/keys"
-            android:entryValues="@array/keys"
-            android:key="key"
-            android:summary="Select key."
-            android:title="Key" />
+        <PreferenceCategory android:title="Portamento" >
 
-        <ListPreference
-            android:dependency="autotune"
-            android:entries="@array/scale"
-            android:entryValues="@array/scale"
-            android:key="scale"
-            android:summary="Select scale."
-            android:title="Scale" />
-    </PreferenceCategory>
+            <CheckBoxPreference
+                android:dependency="presets"
+                android:key="portamento"
+                android:summary="Glide between notes."
+                android:title="Portamento" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:summary="Read about this app."
+        android:title="About" >
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:data="mydata"
+            android:targetClass="kth.csc.inda.pockettheremin.AboutActivity"
+            android:targetPackage="kth.csc.inda.pockettheremin" />
+        <!--
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://www.android.com" />
+        -->
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:summary="Save settings and start playing."
+        android:title="Save" >
+
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:data="mydata"
+            android:targetClass="kth.csc.inda.pockettheremin.PocketThereminActivity"
+            android:targetPackage="kth.csc.inda.pockettheremin" />
+    </PreferenceScreen>
 
 </PreferenceScreen>

@@ -1,5 +1,7 @@
 package kth.csc.inda.pockettheremin;
 
+import java.util.MissingFormatArgumentException;
+
 import android.util.FloatMath;
 
 public class Oscillator {
@@ -46,7 +48,7 @@ public class Oscillator {
 			y = (float) Math.abs(Math.asin(Math.sin(angle)));
 			break;
 		default:
-			y = 0;
+			throw new MissingFormatArgumentException("No waveform was set.");
 		}
 
 		float circle = (float) (2 * Math.PI);

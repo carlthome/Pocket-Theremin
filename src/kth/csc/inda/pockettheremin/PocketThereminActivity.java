@@ -6,7 +6,9 @@ import kth.csc.inda.pockettheremin.Oscillator.Waveform;
 import kth.csc.inda.pockettheremin.soundeffects.Autotune;
 import kth.csc.inda.pockettheremin.soundeffects.Autotune.AutotuneKey;
 import kth.csc.inda.pockettheremin.soundeffects.Autotune.AutotuneScale;
+import kth.csc.inda.pockettheremin.soundeffects.Presets.Preset;
 import kth.csc.inda.pockettheremin.soundeffects.Portamento;
+import kth.csc.inda.pockettheremin.soundeffects.Presets;
 import kth.csc.inda.pockettheremin.soundeffects.SoundEffect;
 import kth.csc.inda.pockettheremin.soundeffects.Tremolo;
 import kth.csc.inda.pockettheremin.soundeffects.Vibrato;
@@ -43,6 +45,9 @@ import android.widget.Toast;
  */
 public class PocketThereminActivity extends Activity implements
 		SensorEventListener, OnTouchListener {
+
+	SharedPreferences preferences;
+
 	/*
 	 * Input
 	 */
@@ -60,8 +65,14 @@ public class PocketThereminActivity extends Activity implements
 	float pitch, volume;
 	float maxFrequency, minFrequency, frequencyRange;
 	float maxAmplitude, minAmplitude, amplitudeRange;
-	int octaveRange;
 
+	boolean useAutotune;
+	AutotuneKey key;
+	AutotuneScale scale;
+
+	boolean usePresets;
+
+	int octaveRange;
 	Waveform synthWaveform;
 	boolean useChiptuneMode;
 
@@ -76,18 +87,12 @@ public class PocketThereminActivity extends Activity implements
 	boolean usePortamento;
 	int portamentoSpeed;
 
-	boolean useAutotune;
-	AutotuneKey key;
-	AutotuneScale scale;
-
 	/**
 	 * When the app is started: load graphics and find resources.
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// The activity is being created.
-
 		/*
 		 * Set layout resource.
 		 */
@@ -101,6 +106,9 @@ public class PocketThereminActivity extends Activity implements
 		touchFrequency = findViewById(R.id.touchFrequency);
 		touchAmplitude = findViewById(R.id.touchAmplitude);
 
+		/*
+		 * Find necessary system services.
+		 */
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 	}
 
@@ -124,44 +132,79 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Get user preferences.
 		 */
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-		// Input
 		useSensor = preferences.getBoolean("accelerometer", false);
-
-		// Synth
-		octaveRange = Integer.parseInt(preferences
-				.getString("octaveRange", "2"));
-		synthWaveform = Waveform.valueOf(preferences.getString("waveform",
-				"SINE"));
-		useChiptuneMode = preferences.getBoolean("chiptuneMode", false);
-
-		// Vibrato
-		useVibrato = preferences.getBoolean("vibrato", true);
-		vibratoWaveform = Waveform.valueOf(preferences.getString(
-				"vibrato_waveform", "TRIANGLE"));
-		vibratoSpeed = Integer.parseInt(preferences.getString("vibrato_speed",
-				"8"));
-		vibratoDepth = Integer.parseInt(preferences.getString("vibrato_depth",
-				"4"));
-		
-		// Tremolo
-		useTremolo = preferences.getBoolean("tremolo", true);
-		tremoloWaveform = Waveform.valueOf(preferences.getString(
-				"tremolo_waveform", "SINE"));
-		tremoloSpeed = Integer.parseInt(preferences.getString("tremolo_speed",
-				"1"));
-		tremoloDepth = Integer.parseInt(preferences.getString("tremolo_depth",
-				"10"));
-
-		// Portamento
-		usePortamento = preferences.getBoolean("portamento", true);
-
-		// Autotune
 		useAutotune = preferences.getBoolean("autotune", true);
 		key = AutotuneKey.valueOf(preferences.getString("key", "A"));
 		scale = AutotuneScale.valueOf(preferences.getString("scale", "MAJOR"));
+		octaveRange = Integer.parseInt(preferences
+				.getString("octaveRange", "2"));
+
+		if (preferences.getBoolean("presets", true)) {
+			Preset preset = Preset.valueOf(preferences.getString("preset",
+					"THEREMIN"));
+			switch (preset) {
+			case THEREMIN:
+				synthWaveform = Waveform.SINE;
+				useChiptuneMode = false;
+				useVibrato = true;
+				vibratoWaveform = Waveform.TRIANGLE;
+				vibratoSpeed = 8;
+				vibratoDepth = 4;
+				useTremolo = true;
+				tremoloWaveform = Waveform.SINE;
+				tremoloSpeed = 1;
+				tremoloDepth = 10;
+				usePortamento = true;
+				break;
+			case ZELDA:
+				synthWaveform = Waveform.SQUARE;
+				useChiptuneMode = true;
+				useVibrato = false;
+				vibratoWaveform = Waveform.TRIANGLE;
+				vibratoSpeed = 8;
+				vibratoDepth = 10;
+				useTremolo = false;
+				tremoloWaveform = Waveform.SINE;
+				tremoloSpeed = 1;
+				tremoloDepth = 10;
+				usePortamento = false;
+				break;
+			case SPACE:
+				synthWaveform = Waveform.TRIANGLE;
+				useChiptuneMode = false;
+				useVibrato = true;
+				vibratoWaveform = Waveform.SINE;
+				vibratoSpeed = 1;
+				vibratoDepth = 100;
+				useTremolo = true;
+				tremoloWaveform = Waveform.SQUARE;
+				tremoloSpeed = 10;
+				tremoloDepth = 100;
+				usePortamento = true;
+				break;
+			}
+		} else {
+			synthWaveform = Waveform.valueOf(preferences.getString("waveform",
+					"SINE"));
+			useChiptuneMode = preferences.getBoolean("chiptuneMode", false);
+			useVibrato = preferences.getBoolean("vibrato", true);
+			vibratoWaveform = Waveform.valueOf(preferences.getString(
+					"vibrato_waveform", "TRIANGLE"));
+			vibratoSpeed = Integer.parseInt(preferences.getString(
+					"vibrato_speed", "8"));
+			vibratoDepth = Integer.parseInt(preferences.getString(
+					"vibrato_depth", "4"));
+			useTremolo = preferences.getBoolean("tremolo", true);
+			tremoloWaveform = Waveform.valueOf(preferences.getString(
+					"tremolo_waveform", "SINE"));
+			tremoloSpeed = Integer.parseInt(preferences.getString(
+					"tremolo_speed", "1"));
+			tremoloDepth = Integer.parseInt(preferences.getString(
+					"tremolo_depth", "10"));
+			usePortamento = preferences.getBoolean("portamento", true);
+		}
 
 		/*
 		 * Calculate operational values.
@@ -188,7 +231,8 @@ public class PocketThereminActivity extends Activity implements
 		 * Register input listeners.
 		 */
 		if (useSensor)
-			sensors.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+			sensors.registerListener(this, sensor,
+					SensorManager.SENSOR_DELAY_GAME);
 		else
 			this.findViewById(android.R.id.content).setOnTouchListener(this);
 
@@ -269,12 +313,11 @@ public class PocketThereminActivity extends Activity implements
 		final int action = event.getAction();
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE:
-			int pointers = event.getPointerCount();
-			volume = (view.getHeight() - event.getY(0))
-					* (amplitudeRange / view.getHeight());
-			if (pointers == 2)
+			if (event.getPointerCount() == 2) {
+				volume = (view.getHeight() - event.getY(0))
+						* (amplitudeRange / view.getHeight());
 				pitch = event.getX(1) * (frequencyRange / view.getWidth());
-
+			}
 		}
 
 		return true;
