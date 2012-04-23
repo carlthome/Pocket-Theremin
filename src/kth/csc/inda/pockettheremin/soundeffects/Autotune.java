@@ -1,69 +1,19 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
+import kth.csc.inda.pockettheremin.music.Note;
+import kth.csc.inda.pockettheremin.music.Scale;
+
 final public class Autotune implements SoundEffect {
 	int prime = 57; // A4 is index 57 of the available notes.
-	int[] scaleSteps;
 	Note key;
 	int octaveRange;
-	double[] scale;
-
-	public enum Scale {
-		MAJOR, MINOR, CHROMATIC;
-	};
-
-	/**
-	 * Fourth octave notes with frequencies and index according to key position
-	 * in a piano.
-	 */
-	public enum Note {
-		C(40, 261.63), Csharp(41, 277.18), D(42, 293.66), Dsharp(43, 311.13), E(
-				44, 329.63), F(45, 349.23), Fsharp(46, 369.99), G(47, 392.00), Gsharp(
-				48, 415.30), A(49, 440.00), Asharp(50, 466.16), B(51, 493.88);
-
-		private final int index;
-		private final double frequency;
-
-		Note(int index, double frequency) {
-			this.index = index;
-			this.frequency = frequency;
-		}
-
-		public double frequency() {
-			return this.frequency;
-		}
-
-		public double frequency(int octave) {
-			octave -= 4;
-			return frequency * Math.pow(2, octave);
-		}
-
-		public int index() {
-			return this.index;
-		}
-	};
+	int[] scaleSteps;
+	double[] scaleFrequencies;
 
 	public Autotune(Note key, Scale scale, int octaveRange) {
 		this.key = key;
 		this.octaveRange = octaveRange;
-
-		switch (scale) {
-		case MAJOR: {
-			int[] major = { 2, 2, 1, 2, 2, 2, 1 };
-			scaleSteps = major;
-			break;
-		}
-		case MINOR: {
-			int[] minor = { 2, 1, 2, 2, 1, 2, 2 };
-			scaleSteps = minor;
-			break;
-		}
-		case CHROMATIC: {
-			int[] chromatic = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
-			scaleSteps = chromatic;
-			break;
-		}
-		}
-
+		scaleSteps = scale.steps();
 		setupScale();
 	}
 
@@ -76,7 +26,7 @@ final public class Autotune implements SoundEffect {
 		double min = Double.MAX_VALUE;
 		double closestNote = frequency;
 
-		for (double note : scale) {
+		for (double note : scaleFrequencies) {
 			final double diff = Math.abs(note - frequency);
 
 			if (diff < min) {
@@ -89,7 +39,7 @@ final public class Autotune implements SoundEffect {
 	}
 
 	private void setupScale() {
-		scale = new double[(octaveRange * scaleSteps.length) + 1];
+		scaleFrequencies = new double[(octaveRange * scaleSteps.length) + 1];
 
 		if (octaveRange > 6 || octaveRange < 0)
 			throw new IllegalArgumentException();
@@ -105,11 +55,11 @@ final public class Autotune implements SoundEffect {
 		int note = key.index() - (12 * octavesDown);
 		for (int octave = 0; octave < octaveRange; octave++) {
 			for (int step = 0; step < scaleSteps.length; step++) {
-				scale[step + (scaleSteps.length * octave)] = absoluteFrequency(note);
+				scaleFrequencies[step + (scaleSteps.length * octave)] = absoluteFrequency(note);
 				note += scaleSteps[step];
 			}
 		}
-		scale[scale.length - 1] = absoluteFrequency(note);
+		scaleFrequencies[scaleFrequencies.length - 1] = absoluteFrequency(note);
 	}
 
 	private double absoluteFrequency(int n) {

@@ -4,14 +4,14 @@ import kth.csc.inda.pockettheremin.Oscillator;
 import kth.csc.inda.pockettheremin.Oscillator.Waveform;
 
 public class Tremolo implements SoundEffect {
-	int sampleRate, sampleSize;
+	int sampleRate, bufferSize;
 	int speed, depth;
 	Oscillator oscillator;
 	
-	public Tremolo(int speed, int depth, Waveform waveform, int sampleRate, int sampleSize) {
+	public Tremolo(int speed, int depth, Waveform waveform, int sampleRate, int bufferSize) {
 		this.speed = speed;
 		this.depth = depth;
-		oscillator = new Oscillator(waveform, sampleSize, sampleSize);
+		oscillator = new Oscillator(waveform, bufferSize, bufferSize);
 	}
 
 	@Override

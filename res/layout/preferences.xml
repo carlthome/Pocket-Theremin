@@ -20,6 +20,7 @@
             android:key="octaveRange"
             android:summary="Select the range of possible sounds. If too low certain melodies cannot be played. If too high finding a note will become too hard."
             android:title="Octave Range" />
+
         <PreferenceCategory android:title="Autotune" >
 
             <CheckBoxPreference
@@ -173,6 +174,15 @@
                 android:key="portamento"
                 android:summary="Glide between notes."
                 android:title="Portamento" />
+
+            <ListPreference
+                android:defaultValue="50"
+                android:dependency="portamento"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
+                android:key="portamento_speed"
+                android:summary="Select speed (ms)."
+                android:title="Speed (ms)" />
         </PreferenceCategory>
     </PreferenceScreen>
 
@@ -197,7 +207,7 @@
             android:data="mydata"
             android:targetClass="kth.csc.inda.pockettheremin.PocketThereminActivity"
             android:targetPackage="kth.csc.inda.pockettheremin" />
-    </PreferenceScreen>
+    </PreferenceScreen>
     -->
 
 </PreferenceScreen>

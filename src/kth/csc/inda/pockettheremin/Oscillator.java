@@ -5,17 +5,17 @@ import java.util.MissingFormatArgumentException;
 public class Oscillator {
 	static final double CIRCLE = 2 * Math.PI;
 	private long period, sample;
-	int sampleSize, sampleRate;
+	int bufferSize, sampleRate;
 	Waveform waveform;
 
 	public enum Waveform {
 		SINE, SQUARE1, SQUARE2, SQUARE3, TRIANGLE, SAWTOOTH;
 	};
 
-	public Oscillator(Waveform waveform, int samplesize, int samplerate) {
+	public Oscillator(Waveform waveform, int bufferSize, int sampleRate) {
 		this.waveform = waveform;
-		this.sampleRate = samplerate;
-		this.sampleSize = samplesize;
+		this.sampleRate = sampleRate;
+		this.bufferSize = bufferSize;
 	}
 
 	public void setFrequency(double frequency) {
@@ -23,7 +23,7 @@ public class Oscillator {
 	}
 
 	public short[] getSamples() {
-		short[] samples = new short[sampleSize];
+		short[] samples = new short[bufferSize];
 
 		for (int i = 0; i < samples.length; i++)
 			samples[i] = (short) (getSample() * Short.MAX_VALUE);
@@ -65,7 +65,10 @@ public class Oscillator {
 			throw new MissingFormatArgumentException("No waveform was set.");
 		}
 
+		// TODO Avoid garbage collection.
+		// TODO Avoid pops.
 		sample = (sample + 1) % period;
+
 		return y;
 	}
 }
