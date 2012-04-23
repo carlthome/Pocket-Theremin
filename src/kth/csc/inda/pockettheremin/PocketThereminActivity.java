@@ -359,9 +359,10 @@ public class PocketThereminActivity extends Activity implements
 	 * Generate sounds in a separate thread (as an AsyncTask) by sampling a
 	 * frequency. The frequency is modulated by the user input.
 	 */
-	private class AudioThread extends AsyncTask<Float, Float, Void> {
+	private class AudioThread extends AsyncTask<Void, Double, Void> {
 		boolean play;
-		float frequency, amplitude;
+		double frequency;
+		double amplitude;
 		final int sampleSize = 256;
 		final int sampleRate = 44100;
 		Oscillator oscillator;
@@ -395,7 +396,7 @@ public class PocketThereminActivity extends Activity implements
 			audioStream.play();
 		}
 
-		protected Void doInBackground(Float... params) {
+		protected Void doInBackground(Void... params) {
 			while (play) {
 
 				/*
@@ -413,7 +414,7 @@ public class PocketThereminActivity extends Activity implements
 				 * Set initial volume according to input.
 				 */
 				amplitude = PocketThereminActivity.this.volume;
-				audioStream.setStereoVolume(amplitude, amplitude);
+				audioStream.setStereoVolume((float) amplitude, (float) amplitude);
 
 				/*
 				 * Effects chain.
@@ -429,13 +430,14 @@ public class PocketThereminActivity extends Activity implements
 
 				if (tremolo != null) {
 					amplitude = tremolo.modify(amplitude);
-					audioStream.setStereoVolume(amplitude, amplitude);
+					audioStream.setStereoVolume((float) amplitude, (float) amplitude);
 				}
 
 				/*
 				 * Generate sound samples.
 				 */
-				short[] samples = oscillator.getSamples(frequency);
+				oscillator.setFrequency(frequency);
+				short[] samples = oscillator.getSamples();
 
 				// Write samples.
 				audioStream.write(samples, 0, sampleSize);
@@ -446,7 +448,7 @@ public class PocketThereminActivity extends Activity implements
 			return null;
 		}
 
-		protected void onProgressUpdate(Float... progress) {
+		protected void onProgressUpdate(Double... progress) {
 			((TextView) findViewById(R.id.frequency))
 					.setText(new DecimalFormat("#").format(progress[0]) + "Hz");
 			((TextView) findViewById(R.id.amplitude))

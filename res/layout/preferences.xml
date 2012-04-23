@@ -94,19 +94,19 @@
 
             <ListPreference
                 android:dependency="vibrato"
-                android:entries="@array/speed"
-                android:entryValues="@array/speed"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="vibrato_speed"
-                android:summary="Select speed."
-                android:title="Speed" />
+                android:summary="Select speed (Hz)."
+                android:title="Speed (Hz)" />
 
             <ListPreference
                 android:dependency="vibrato"
-                android:entries="@array/depth"
-                android:entryValues="@array/depth"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
                 android:key="vibrato_depth"
-                android:summary="Select depth."
-                android:title="Depth" />
+                android:summary="Select depth in percent (%)."
+                android:title="Depth (%)" />
 
             <ListPreference
                 android:dependency="vibrato"
@@ -127,19 +127,19 @@
 
             <ListPreference
                 android:dependency="tremolo"
-                android:entries="@array/speed"
-                android:entryValues="@array/speed"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="tremolo_speed"
-                android:summary="Select speed."
-                android:title="Speed" />
+                android:summary="Select speed (Hz)."
+                android:title="Speed (Hz)" />
 
             <ListPreference
                 android:dependency="tremolo"
-                android:entries="@array/depth"
-                android:entryValues="@array/depth"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
                 android:key="tremolo_depth"
-                android:summary="Select depth."
-                android:title="Depth" />
+                android:summary="Select depth (%)."
+                android:title="Depth (%)" />
 
             <ListPreference
                 android:dependency="tremolo"

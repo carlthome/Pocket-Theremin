@@ -4,7 +4,7 @@ final public class Autotune implements SoundEffect {
 	int prime = 57; // A4 is index 57 of the available notes.
 	int[] scaleSteps;
 	int octaveRange;
-	float[] scale;
+	double[] scale;
 
 	public enum AutotuneScale {
 		MAJOR, MINOR, CHROMATIC;
@@ -74,7 +74,7 @@ final public class Autotune implements SoundEffect {
 		setupScale();
 	}
 
-	final float[] notes = {
+	final double[] notes = {
 			16.35f, // C0
 			17.32f,
 			18.35f,
@@ -123,16 +123,16 @@ final public class Autotune implements SoundEffect {
 			3729.31f, 3951.07f, 4186.01f, 4434.92f, 4698.64f, 4978.03f };
 
 	@Override
-	public float modify(float frequency) {
+	public double modify(double frequency) {
 		return snap(frequency);
 	}
 
-	private float snap(float frequency) {
-		float min = Float.MAX_VALUE;
-		float closestNote = frequency;
+	private double snap(double frequency) {
+		double min = Double.MAX_VALUE;
+		double closestNote = frequency;
 
-		for (float note : scale) {
-			final float diff = Math.abs(note - frequency);
+		for (double note : scale) {
+			final double diff = Math.abs(note - frequency);
 
 			if (diff < min) {
 				min = diff;
@@ -145,7 +145,7 @@ final public class Autotune implements SoundEffect {
 
 	public void setupScale() throws IllegalArgumentException {
 		
-		scale = new float[(octaveRange * scaleSteps.length) + 1];
+		scale = new double[(octaveRange * scaleSteps.length) + 1];
 
 		if (octaveRange > 6 || octaveRange < 0)
 			throw new IllegalArgumentException();

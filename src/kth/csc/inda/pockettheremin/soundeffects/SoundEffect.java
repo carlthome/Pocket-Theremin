@@ -1,5 +1,5 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
 public interface SoundEffect {
-	public float modify(float input);
+	public double modify(double input);
 }

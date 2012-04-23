@@ -27,12 +27,14 @@
     </string-array>
     <string-array name="waveforms">
         <item>SINE</item>
+        <item>COSINE</item>
         <item>TAN</item>
         <item>SQUARE</item>
         <item>TRIANGLE</item>
         <item>SAWTOOTH</item>
+        <item>PHASE</item>
     </string-array>
-    <string-array name="speed">
+    <string-array name="ten">
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -44,7 +46,7 @@
         <item>9</item>
         <item>10</item>
     </string-array>
-    <string-array name="depth">
+    <string-array name="hundred">
         <item>1</item>
         <item>2</item>
         <item>3</item>

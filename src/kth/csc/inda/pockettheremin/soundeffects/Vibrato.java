@@ -15,12 +15,13 @@ public class Vibrato implements SoundEffect {
 	}
 
 	@Override
-	public float modify(float frequency) {
+	public double modify(double frequency) {
 		return (vibrate(frequency));
 	}
 
-	private float vibrate(float frequency) {
-		float pitch = 1 + (depth / (float) 100) * oscillator.getNext(speed, true);
+	private double vibrate(double frequency) {
+		oscillator.setFrequency(speed);
+		double pitch = 1 + (depth / (double) 100) * oscillator.getSample();
 		return frequency * pitch;
 	}
 }

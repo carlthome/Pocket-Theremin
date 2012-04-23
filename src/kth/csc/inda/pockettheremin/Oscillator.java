@@ -2,15 +2,16 @@ package kth.csc.inda.pockettheremin;
 
 import java.util.MissingFormatArgumentException;
 
-import android.util.FloatMath;
-
 public class Oscillator {
 	int sampleSize, sampleRate;
-	float angle;
+	static final double CIRCLE = 2 * Math.PI;
+	
 	Waveform waveform;
+	private long period;
+	private long sample;
 
 	public enum Waveform {
-		SINE, TAN, SQUARE, TRIANGLE, SAWTOOTH;
+		SINE, COSINE, TAN, SQUARE, TRIANGLE, SAWTOOTH, PHASE;
 	};
 
 	public Oscillator(Waveform waveform, int samplesize, int samplerate) {
@@ -18,49 +19,55 @@ public class Oscillator {
 		this.sampleRate = samplerate;
 		this.sampleSize = samplesize;
 	}
-
-	public short[] getSamples(float frequency) {
+	
+	public void setFrequency(double frequency) {
+		period = (long) (sampleRate / frequency);
+	}
+	
+	public short[] getSamples() {
 		short[] samples = new short[sampleSize];
 
-		for (int i = 0; i < samples.length; i++) 
-			samples[i] = (short) (getNext(frequency, false) * Short.MAX_VALUE);
+		for (int i = 0; i < samples.length; i++)
+			samples[i] = (short) (getSample() * Short.MAX_VALUE);
 
 		return samples;
 	}
 
-	public float getNext(float increment, boolean fixedSampleSize) {
-		float y;
-	
+	public double getSample() {		
+		double y = 0;
+		double x = sample / (double) period;
+
 		switch (waveform) {
 		case SINE:
-			y = FloatMath.sin(angle);
+			y = Math.sin(CIRCLE * x);
+			break;
+		case COSINE:
+			y = Math.cos(CIRCLE * x);
 			break;
 		case TAN:
-			y = FloatMath.sin(angle) / FloatMath.cos(angle);
+			y = Math.tan(CIRCLE * x);
 			break;
 		case SQUARE:
-			y = (FloatMath.sin(angle) % 2 < 0 ? -1 : 1);
+			y = Math.sin(CIRCLE * x) % 2 < 0 ? -1 : 1;
 			break;
-		case TRIANGLE: 
-			y = (float) Math.asin(Math.sin(angle));
+		case TRIANGLE:
+			//y = Math.asin(Math.sin(circle * x));
+			y = Math.abs(2.0 * (x - Math.floor(x + 0.5)));
 			break;
-		case SAWTOOTH: // TODO This is probably wrong.
-			y = (float) Math.abs(Math.asin(Math.sin(angle)));
+		case SAWTOOTH: 
+			y = (2.0 * (x - Math.floor(x + 0.5)));
+			break;
+		case PHASE:
+			/*
+			 * if (x > 0.5*circle) y = sin(increment * 0.5*circle / pi); else y
+			 * = sin((increment - 0.5*circle) * pi / (1 - 0.5*circle) + pi);
+			 */
 			break;
 		default:
 			throw new MissingFormatArgumentException("No waveform was set.");
 		}
 
-		float circle = (float) (2 * Math.PI);
-		
-		if (fixedSampleSize)
-			increment /= sampleSize;
-		else
-			increment /= sampleRate;
-		
-		angle += (increment * circle) % circle;
-		if (angle > circle) angle = 0;
-
+		sample = (sample + 1) % period;
 		return y;
 	}
 }

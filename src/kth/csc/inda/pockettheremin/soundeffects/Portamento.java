@@ -1,7 +1,7 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
 public class Portamento implements SoundEffect {
-	float from, to, current, distance, time, velocity;
+	double from, to, current, distance, time, velocity;
 	boolean gliding;
 
 	public Portamento() {
@@ -10,11 +10,11 @@ public class Portamento implements SoundEffect {
 	}
 
 	@Override
-	public float modify(float frequency) {
+	public double modify(double frequency) {
 		return glide(frequency);
 	}
 
-	private float glide(float frequency) {
+	private double glide(double frequency) {
 		if (gliding)
 			to = frequency;
 
@@ -24,7 +24,7 @@ public class Portamento implements SoundEffect {
 		} else if (Math.abs(current - to) > 10) {
 			distance = Math.abs(from - to);
 			velocity = distance / time;
-			float direction = Float.compare(to, current);
+			double direction = Double.compare(to, current);
 			current += direction * velocity;
 		} else {
 			this.gliding = false;
