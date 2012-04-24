@@ -6,6 +6,9 @@ public class Oscillator {
 	static final double CIRCLE = 2 * Math.PI;
 	private long period, sample;
 	int bufferSize, sampleRate;
+	short[] samples;
+	double frequency;
+	boolean frequencyChanged;
 	Waveform waveform;
 
 	public enum Waveform {
@@ -16,17 +19,26 @@ public class Oscillator {
 		this.waveform = waveform;
 		this.sampleRate = sampleRate;
 		this.bufferSize = bufferSize;
+		this.samples = new short[bufferSize];
 	}
 
 	public void setFrequency(double frequency) {
-		period = (long) (sampleRate / frequency);
+		if (this.frequency != frequency) {
+			this.frequency = frequency;
+			period = (long) (sampleRate / frequency);
+			frequencyChanged = true;
+		}
+		else
+			frequencyChanged = false;
 	}
 
 	public short[] getSamples() {
-		short[] samples = new short[bufferSize];
 
-		for (int i = 0; i < samples.length; i++)
-			samples[i] = (short) (getSample() * Short.MAX_VALUE);
+		if (frequencyChanged) {
+			for (int i = 0; i < samples.length; i++)
+				samples[i] = (short) (getSample() * Short.MAX_VALUE);
+			frequencyChanged = false;
+		}
 
 		return samples;
 	}
@@ -68,6 +80,11 @@ public class Oscillator {
 		// TODO Avoid garbage collection.
 		// TODO Avoid pops.
 		sample = (sample + 1) % period;
+		
+		/*
+		if (sample > period)
+			sample = 0;
+		*/
 
 		return y;
 	}
