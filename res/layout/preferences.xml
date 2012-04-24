@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen android:key="root" xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceScreen
         android:key="input_preferences"
@@ -58,6 +58,13 @@
         android:title="Sound" />
 
     <PreferenceCategory android:title="Advanced" >
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="advanced_toggle"
+            android:summaryOff="Check this to stop using the presets and allow advanced settings instead."
+            android:summaryOn="Disable this to use the instrument presets."
+            android:title="Enable advanced" />
     </PreferenceCategory>
 
     <PreferenceScreen
@@ -65,19 +72,10 @@
         android:summary="Advanced settings for sound effects."
         android:title="Sound Effects" >
 
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:disableDependentsState="true"
-            android:key="presets"
-            android:summaryOff="Check this to use the sound preset."
-            android:summaryOn="Disable this to stop using the presets and allow custom settings instead."
-            android:title="Use sound preset" />
-
         <PreferenceCategory android:title="Synthesizer" >
 
             <ListPreference
                 android:defaultValue="SINE"
-                android:dependency="presets"
                 android:entries="@array/waveforms"
                 android:entryValues="@array/waveforms"
                 android:key="waveform"
@@ -86,7 +84,6 @@
 
             <CheckBoxPreference
                 android:defaultValue="false"
-                android:dependency="presets"
                 android:key="chiptuneMode"
                 android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
                 android:title="NES" />
@@ -96,7 +93,6 @@
 
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:dependency="presets"
                 android:key="vibrato"
                 android:summary="Modulate the pitch"
                 android:title="Vibrato" />
@@ -104,8 +100,8 @@
             <ListPreference
                 android:defaultValue="8"
                 android:dependency="vibrato"
-                android:entries="@array/ten"
-                android:entryValues="@array/ten"
+                android:entries="@array/speed"
+                android:entryValues="@array/speed"
                 android:key="vibrato_speed"
                 android:summary="Select speed (Hz)."
                 android:title="Speed (Hz)" />
@@ -113,8 +109,8 @@
             <ListPreference
                 android:defaultValue="4"
                 android:dependency="vibrato"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/depth"
+                android:entryValues="@array/depth"
                 android:key="vibrato_depth"
                 android:summary="Select depth in percent (percent)."
                 android:title="Depth (percent)" />
@@ -133,7 +129,6 @@
 
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:dependency="presets"
                 android:key="tremolo"
                 android:summary="Modulate the amplitude."
                 android:title="Tremolo" />
@@ -141,8 +136,8 @@
             <ListPreference
                 android:defaultValue="1"
                 android:dependency="tremolo"
-                android:entries="@array/ten"
-                android:entryValues="@array/ten"
+                android:entries="@array/speed"
+                android:entryValues="@array/speed"
                 android:key="tremolo_speed"
                 android:summary="Select speed (Hz)."
                 android:title="Speed (Hz)" />
@@ -150,8 +145,8 @@
             <ListPreference
                 android:defaultValue="10"
                 android:dependency="tremolo"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/depth"
+                android:entryValues="@array/depth"
                 android:key="tremolo_depth"
                 android:summary="Select depth (percent)."
                 android:title="Depth (percent)" />
@@ -170,7 +165,6 @@
 
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:dependency="presets"
                 android:key="portamento"
                 android:summary="Glide between notes."
                 android:title="Portamento" />
@@ -178,8 +172,8 @@
             <ListPreference
                 android:defaultValue="50"
                 android:dependency="portamento"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/speed"
+                android:entryValues="@array/speed"
                 android:key="portamento_speed"
                 android:summary="Select speed (ms)."
                 android:title="Speed (ms)" />
@@ -207,7 +201,7 @@
             android:data="mydata"
             android:targetClass="kth.csc.inda.pockettheremin.PocketThereminActivity"
             android:targetPackage="kth.csc.inda.pockettheremin" />
-    </PreferenceScreen>
+    </PreferenceScreen>
     -->
 
 </PreferenceScreen>
