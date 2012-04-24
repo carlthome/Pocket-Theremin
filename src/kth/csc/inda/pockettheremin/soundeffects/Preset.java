@@ -4,8 +4,8 @@ import kth.csc.inda.pockettheremin.Oscillator.Waveform;
 
 //TODO Place presets here so the main activity is less of a mess.
 public enum Preset {
-	THEREMIN(Waveform.SINE, false, true, Waveform.TRIANGLE, 8, 4, true,
-			Waveform.SINE, 1, 10, true, 25),
+	THEREMIN(Waveform.SINE, false, true, Waveform.TRIANGLE, 80, 4, true,
+			Waveform.SINE, 10, 10, true, 25),
 
 	ZELDA(Waveform.SQUARE1, true, false, Waveform.TRIANGLE, 8, 10, false,
 			Waveform.SINE, 1, 10, false, 0),

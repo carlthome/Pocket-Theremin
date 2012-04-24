@@ -11,7 +11,7 @@ public class Tremolo implements SoundEffect {
 	public Tremolo(int speed, int depth, Waveform waveform, int sampleRate, int bufferSize) {
 		this.speed = speed;
 		this.depth = depth;
-		oscillator = new Oscillator(waveform, bufferSize, bufferSize);
+		oscillator = new Oscillator(waveform, bufferSize, sampleRate);
 	}
 
 	@Override

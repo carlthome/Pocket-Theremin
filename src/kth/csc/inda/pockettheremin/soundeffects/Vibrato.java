@@ -11,7 +11,7 @@ public class Vibrato implements SoundEffect {
 	public Vibrato(int speed, int depth, Waveform waveform, int sampleRate, int bufferSize) {
 		this.speed = speed;
 		this.depth = depth;
-		oscillator = new Oscillator(waveform, bufferSize, bufferSize);
+		oscillator = new Oscillator(waveform, bufferSize, sampleRate);
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class Vibrato implements SoundEffect {
 	}
 
 	private double vibrate(double frequency) {
-		oscillator.setFrequency(speed);
+		oscillator.setFrequency(speed); // THEREMIN 80Hz
 		double pitch = 1 + (depth / (double) 100) * oscillator.getSample();
 		return frequency * pitch;
 	}
