@@ -13,7 +13,9 @@ import kth.csc.inda.pockettheremin.soundeffects.Vibrato;
 import kth.csc.inda.pockettheremin.soundeffects.Preset;
 import android.R.anim;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -45,8 +47,10 @@ import android.widget.Toast;
  * To be frank, this is not like a theremin at all since there are no radiowaves
  * involved, but it's still a fun toy.
  * 
+ * @param <MyActivity>
+ * 
  */
-public class PocketThereminActivity extends Activity implements
+public class PocketThereminActivity<MyActivity> extends Activity implements
 		SensorEventListener, OnTouchListener {
 
 	static final boolean useExperimentalNewMultitouch = true;
@@ -71,7 +75,7 @@ public class PocketThereminActivity extends Activity implements
 	 * Output variables.
 	 */
 	AudioManager audioManager;
-	AsyncTask<?, ?, ?> soundGenerator;
+	AsyncTask<?, ?, ?> oldSoundGenerator;
 	double pitch, volume;
 	double maxFrequency, minFrequency, frequencyRange;
 	double maxAmplitude, minAmplitude, amplitudeRange;
@@ -125,15 +129,6 @@ public class PocketThereminActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// The activity has become visible (it is now "resumed").
-
-		/*
-		 * Remind user to turn up the volume.
-		 */
-		if (0.1 > audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-				/ (double) audioManager
-						.getStreamMaxVolume(AudioManager.STREAM_MUSIC))
-			alert(getString(R.string.low_volume_notice));
 
 		/*
 		 * Get user preferences.
@@ -146,13 +141,24 @@ public class PocketThereminActivity extends Activity implements
 		refreshAudioManager();
 
 		/*
+		 * Remind user to turn up the volume.
+		 */
+		if (0.1 > audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+				/ (double) audioManager
+						.getStreamMaxVolume(AudioManager.STREAM_MUSIC))
+			alert(getString(R.string.notice_low_volume), false);
+
+		/*
 		 * Register input listeners.
 		 */
-		if (useSensor)
+		if (useSensor) {
 			sensors.registerListener(this, sensor,
 					SensorManager.SENSOR_DELAY_GAME);
-		else
+			alert(getString(R.string.notice_accelerometer_input_instructions), false);
+		} else {
 			this.findViewById(android.R.id.content).setOnTouchListener(this);
+			alert(getString(R.string.notice_touch_input_instructions), false);
+		}
 
 		/*
 		 * Start executing audio thread.
@@ -164,8 +170,7 @@ public class PocketThereminActivity extends Activity implements
 			if (useTremolo)
 				tremoloThread = new TremoloThread("Tremolo Thread", 40);
 		} else
-			soundGenerator = new AudioThread().execute();
-
+			oldSoundGenerator = new AudioThread().execute();
 	}
 
 	/**
@@ -185,8 +190,8 @@ public class PocketThereminActivity extends Activity implements
 		if (touchAmplitude != null)
 			touchAmplitude.setOnTouchListener(null);
 
-		if (soundGenerator != null)
-			soundGenerator.cancel(true);
+		if (oldSoundGenerator != null)
+			oldSoundGenerator.cancel(true);
 
 		if (useExperimentalNewMultithreading) {
 			if (soundGeneratorB != null)
@@ -202,8 +207,10 @@ public class PocketThereminActivity extends Activity implements
 	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(Menu.NONE, 0, 0, "About").setIcon(android.R.drawable.ic_menu_info_details);
-		menu.add(Menu.NONE, 1, 1, "Settings").setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(Menu.NONE, 0, 0, "About").setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 1, 1, "Settings").setIcon(
+				android.R.drawable.ic_menu_preferences);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -212,7 +219,7 @@ public class PocketThereminActivity extends Activity implements
 	 * a menu item is selected by the user).
 	 */
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {		
+	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case 0:
 			startActivity(new Intent(this, AboutActivity.class));
@@ -227,8 +234,23 @@ public class PocketThereminActivity extends Activity implements
 	/**
 	 * Provide feedback to the user.
 	 */
-	private void alert(String s) {
-		Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+	private void alert(String s, boolean requireUserToDismissAlert) {
+		if (requireUserToDismissAlert) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(s)
+					.setCancelable(true)
+					.setNeutralButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			builder.show();
+		} else
+			// A simple toast will do.
+			Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG)
+					.show();
 	}
 
 	/**
