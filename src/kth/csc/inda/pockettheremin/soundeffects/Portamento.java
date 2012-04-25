@@ -1,12 +1,14 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
+
 public class Portamento implements SoundEffect {
 	int sampleRate, bufferSize;
-	double from, to, current, distance, time, velocity;
-	boolean gliding;
+	double from, to, current, distance, time, velocity, direction;
+	boolean gliding, init;
 
 	public Portamento(int time, int sampleRate, int bufferSize) {
 		this.gliding = false;
+		this.init = true;
 		this.time = time;
 		this.sampleRate = sampleRate;
 		this.bufferSize = bufferSize;
@@ -17,33 +19,38 @@ public class Portamento implements SoundEffect {
 		return glide(frequency);
 	}
 
-	double newFreq, freq;
-
 	private double glide(double frequency) {
-		// TODO Fix skipping.
+		if (time == 0)
+			return frequency;
 
-		/*
-		 * Log.e("Portamento (Gliding:" + gliding + ")", "Current:" + current +
-		 * ", From:" + from + ", To:" + to);
-		 */
-
-		if (gliding && from != to)
-			to = frequency;
-
-		if (!gliding && Math.abs(from - to) < 1) {
+		if (!gliding) {
 			from = current = frequency;
-			this.gliding = true;
-		} else if (Math.abs(current - to) > 10) {
-			distance = Math.abs(from - to);
-			velocity = (distance / time); // / (sampleRate / 1000);
-			double direction = Double.compare(to, current);
-			current += direction * velocity;
-		} else {
-			this.gliding = false;
-			from = current = to;
+			gliding = true;
+			init = true;
+			return current;
+		}
+		
+		if (to != frequency) {
+			to = frequency;
+			init = true;
 		}
 
-		return current;
+		if (init) {
+			distance = Math.abs(to - current);
+			velocity = (distance / time);
+			direction = Double.compare(to, current);
+			init = false;
+		}
+		
+		if (gliding && (Math.min(current, to) / Math.max(current, to) < 0.95)) {
+			current += direction * velocity;
 
+			if (Math.abs(current - to) < 10)
+				gliding = false;
+
+			return current;
+		}
+		
+		return current;
 	}
 }
