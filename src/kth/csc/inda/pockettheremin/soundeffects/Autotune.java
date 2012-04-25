@@ -6,13 +6,13 @@ import kth.csc.inda.pockettheremin.music.Scale;
 final public class Autotune implements SoundEffect {
 	int prime = 57; // A4 is index 57 of the available notes.
 	Note key;
-	int octaveRange;
+	int octaves;
 	int[] scaleSteps;
 	double[] scaleFrequencies;
 
-	public Autotune(Note key, Scale scale, int octaveRange) {
+	public Autotune(Note key, Scale scale, int octaves) {
 		this.key = key;
-		this.octaveRange = octaveRange;
+		this.octaves = octaves;
 		scaleSteps = scale.steps();
 		setupScale();
 	}
@@ -39,21 +39,21 @@ final public class Autotune implements SoundEffect {
 	}
 
 	private void setupScale() {
-		scaleFrequencies = new double[(octaveRange * scaleSteps.length) + 1];
+		scaleFrequencies = new double[(octaves * scaleSteps.length) + 1];
 
-		if (octaveRange > 6 || octaveRange < 0)
+		if (octaves > 6 || octaves < 0)
 			throw new IllegalArgumentException();
 
 		// TODO Allow odd octave ranges.
 		int octavesUp = 1;
 		int octavesDown = 0;
-		if (octaveRange > 1) {
-			octavesUp = (octaveRange + 1) / 2;
-			octavesDown = octaveRange / 2;
+		if (octaves > 1) {
+			octavesUp = (octaves + 1) / 2;
+			octavesDown = octaves / 2;
 		}
 
 		int note = key.index() - (12 * octavesDown);
-		for (int octave = 0; octave < octaveRange; octave++) {
+		for (int octave = 0; octave < octaves; octave++) {
 			for (int step = 0; step < scaleSteps.length; step++) {
 				scaleFrequencies[step + (scaleSteps.length * octave)] = absoluteFrequency(note);
 				note += scaleSteps[step];
@@ -73,5 +73,10 @@ final public class Autotune implements SoundEffect {
 		double temp3 = A * temp2;
 		frequency = temp3;
 		return frequency;
+	}
+
+	@Override
+	public void sync() {
+		// TODO Auto-generated method stub	
 	}
 }

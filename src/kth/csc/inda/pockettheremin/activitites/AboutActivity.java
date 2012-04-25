@@ -1,5 +1,7 @@
-package kth.csc.inda.pockettheremin;
+package kth.csc.inda.pockettheremin.activitites;
 
+import kth.csc.inda.pockettheremin.R;
+import kth.csc.inda.pockettheremin.R.layout;
 import android.app.Activity;
 import android.os.Bundle;
 

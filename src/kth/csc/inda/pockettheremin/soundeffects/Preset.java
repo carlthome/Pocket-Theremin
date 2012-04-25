@@ -1,95 +1,85 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
-import kth.csc.inda.pockettheremin.Oscillator.Waveform;
+import kth.csc.inda.pockettheremin.synth.Oscillator.Waveform;
 
-//TODO Place presets here so the main activity is less of a mess.
 public enum Preset {
-	THEREMIN(Waveform.SINE, false, true, Waveform.TRIANGLE, 80, 4, true,
-			Waveform.SINE, 10, 10, true, 25),
+	THEREMIN(// Synth
+			Waveform.SINE, false, false,
+			// Vibrato
+			Waveform.TRIANGLE, 3, 4,
+			// Tremolo
+			Waveform.SINE, 1, 10,
+			// Portamento
+			25),
 
-	ZELDA(Waveform.SQUARE1, true, false, Waveform.TRIANGLE, 8, 10, false,
-			Waveform.SINE, 1, 10, false, 0),
+	ZELDA(// Synth
+			Waveform.TRIANGLE, true, false,
+			// Vibrato
+			Waveform.TRIANGLE, 10, 1,
+			// Tremolo
+			Waveform.SINE, 1, 10,
+			// Portamento
+			0),
 
-	SPACE(Waveform.TRIANGLE, false, true, Waveform.SINE, 1, 100, true,
-			Waveform.SQUARE1, 10, 100, true, 100);
+	BAGPIPE(// Synth
+			Waveform.SAWTOOTH, false, false,
+			// Vibrato
+			Waveform.NONE, 0, 0,
+			// Tremolo
+			Waveform.SINE, 1, 5,
+			// Portamento
+			10),
 
-	final Waveform synthWaveform;
-	final boolean useChiptuneMode;
-	final boolean useVibrato;
-	final Waveform vibratoWaveform;
-	final int vibratoSpeed;
-	final int vibratoDepth;
-	final boolean useTremolo;
-	final Waveform tremoloWaveform;
-	final int tremoloSpeed;
-	final int tremoloDepth;
-	final boolean usePortamento;
-	final int portamentoSpeed;
+	FLUTTER(// Synth
+			Waveform.SQUARE, true, false,
+			// Vibrato
+			Waveform.NONE, 0, 0,
+			// Tremolo
+			Waveform.SQUARE, 10, 100,
+			// Portamento
+			5),
 
-	Preset(Waveform synthWaveform, boolean useChiptuneMode, boolean useVibrato,
-			Waveform vibratoWaveform, int vibratoSpeed, int vibratoDepth,
-			boolean useTremolo, Waveform tremoloWaveform, int tremoloSpeed,
-			int tremoloDepth, boolean usePortamento, int portamentoSpeed) {
-		this.synthWaveform = synthWaveform;
-		this.useChiptuneMode = useChiptuneMode;
-		this.useVibrato = useVibrato;
-		this.vibratoWaveform = vibratoWaveform;
-		this.vibratoSpeed = vibratoSpeed;
-		this.vibratoDepth = vibratoDepth;
-		this.useTremolo = useTremolo;
-		this.tremoloWaveform = tremoloWaveform;
-		this.tremoloSpeed = tremoloSpeed;
-		this.tremoloDepth = tremoloDepth;
-		this.usePortamento = usePortamento;
-		this.portamentoSpeed = portamentoSpeed;
+	SPACE(// Synth
+			Waveform.SINE, true, false,
+			// Vibrato
+			Waveform.SINE, 1, 50,
+			// Tremolo
+			Waveform.NONE, 0, 0,
+			// Portamento
+			100);
+
+	public Waveform SYNTH_WAVEFORM;
+	public boolean SYNTH_IMD;
+	public boolean SYNTH_CHIPTUNE;
+
+	public Waveform VIBRATO_SHAPE;
+	public int VIBRATO_SPEED;
+	public int VIBRATO_DEPTH;
+
+	public Waveform TREMOLO_SHAPE;
+	public int TREMOLO_SPEED;
+	public int TREMOLO_DEPTH;
+
+	public int PORTAMENTO_SPEED;
+
+	Preset( // Synth
+	Waveform synthWaveform, boolean synthIMD, boolean synthChiptune,
+	// Vibrato
+			Waveform vibratoShape, int vibratoSpeed, int vibratoDepth,
+			// Tremolo
+			Waveform tremoloShape, int tremoloSpeed, int tremoloDepth,
+			// Portamento
+			int portamentoSpeed) {
+
+		SYNTH_WAVEFORM = synthWaveform;
+		SYNTH_IMD = synthIMD;
+		SYNTH_CHIPTUNE = synthChiptune;
+		VIBRATO_SHAPE = vibratoShape;
+		VIBRATO_SPEED = vibratoSpeed;
+		VIBRATO_DEPTH = vibratoDepth;
+		TREMOLO_SHAPE = tremoloShape;
+		TREMOLO_SPEED = tremoloSpeed;
+		TREMOLO_DEPTH = tremoloDepth;
+		PORTAMENTO_SPEED = portamentoSpeed;
 	}
-
-	public Waveform getSynthWaveform() {
-		return synthWaveform;
-	}
-
-	public boolean isUseChiptuneMode() {
-		return useChiptuneMode;
-	}
-
-	public boolean isUseVibrato() {
-		return useVibrato;
-	}
-
-	public Waveform getVibratoWaveform() {
-		return vibratoWaveform;
-	}
-
-	public int getVibratoSpeed() {
-		return vibratoSpeed;
-	}
-
-	public int getVibratoDepth() {
-		return vibratoDepth;
-	}
-
-	public boolean isUseTremolo() {
-		return useTremolo;
-	}
-
-	public Waveform getTremoloWaveform() {
-		return tremoloWaveform;
-	}
-
-	public int getTremoloSpeed() {
-		return tremoloSpeed;
-	}
-
-	public int getTremoloDepth() {
-		return tremoloDepth;
-	}
-
-	public boolean isUsePortamento() {
-		return usePortamento;
-	}
-
-	public int getPortamentoSpeed() {
-		return portamentoSpeed;
-	}
-
 };

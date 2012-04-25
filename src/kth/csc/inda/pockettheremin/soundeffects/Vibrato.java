@@ -1,17 +1,18 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
-import kth.csc.inda.pockettheremin.Oscillator;
-import kth.csc.inda.pockettheremin.Oscillator.Waveform;
+import kth.csc.inda.pockettheremin.activitites.PocketThereminActivity;
+import kth.csc.inda.pockettheremin.synth.Oscillator;
+import kth.csc.inda.pockettheremin.synth.Oscillator.Waveform;
 
 public class Vibrato implements SoundEffect {
-	int sampleRate, bufferSize;
+	MasterClock clock = PocketThereminActivity.clock;
 	int speed, depth;
 	Oscillator oscillator;
 
-	public Vibrato(int speed, int depth, Waveform waveform, int sampleRate, int bufferSize) {
+	public Vibrato(int speed, int depth, Waveform waveform) {
 		this.speed = speed;
 		this.depth = depth;
-		oscillator = new Oscillator(waveform, bufferSize, sampleRate);
+		oscillator = new Oscillator(waveform);
 	}
 
 	@Override
@@ -20,8 +21,18 @@ public class Vibrato implements SoundEffect {
 	}
 
 	private double vibrate(double frequency) {
-		oscillator.setFrequency(speed); // THEREMIN 80Hz
+		if (speed == 0 || depth == 0)
+			return frequency;
+
+		oscillator.setFrequency(speed);
+
 		double pitch = 1 + (depth / (double) 100) * oscillator.getSample();
 		return frequency * pitch;
+	}
+
+	@Override
+	public void sync() {
+		oscillator.setSampleRate((int) PocketThereminActivity.clock
+				.getFrequency());
 	}
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen android:key="root" xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="root" >
 
     <PreferenceScreen
         android:key="input_preferences"
@@ -8,16 +9,25 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:disableDependentsState="true"
             android:key="accelerometer"
             android:summaryOff="Enable to generate sounds by rotating your device."
             android:summaryOn="Disable to generate sounds by touching the screen instead."
             android:title="Accelerometer" />
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="accelerometer"
+            android:key="multitouch"
+            android:shouldDisableView="true"
+            android:summary="Experimental new multi-touch."
+            android:title="Multi-touch" />
+
         <ListPreference
             android:defaultValue="2"
             android:entries="@array/octaves"
             android:entryValues="@array/octaves"
-            android:key="octaveRange"
+            android:key="octaves"
             android:summary="Select the range of possible sounds. If too low certain melodies cannot be played. If too high finding a note will become too hard."
             android:title="Octave Range" />
 
@@ -83,8 +93,14 @@
                 android:title="Waveform" />
 
             <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="imd"
+                android:summary="Disable for a pure sound. Enable for more fun."
+                android:title="IMD" />
+
+            <CheckBoxPreference
                 android:defaultValue="false"
-                android:key="chiptuneMode"
+                android:key="chiptune"
                 android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
                 android:title="NES" />
         </PreferenceCategory>
@@ -100,8 +116,8 @@
             <ListPreference
                 android:defaultValue="8"
                 android:dependency="vibrato"
-                android:entries="@array/speed"
-                android:entryValues="@array/speed"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="vibrato_speed"
                 android:summary="Select speed (Hz)."
                 android:title="Speed (Hz)" />
@@ -109,8 +125,8 @@
             <ListPreference
                 android:defaultValue="4"
                 android:dependency="vibrato"
-                android:entries="@array/depth"
-                android:entryValues="@array/depth"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
                 android:key="vibrato_depth"
                 android:summary="Select depth in percent (percent)."
                 android:title="Depth (percent)" />
@@ -136,8 +152,8 @@
             <ListPreference
                 android:defaultValue="1"
                 android:dependency="tremolo"
-                android:entries="@array/speed"
-                android:entryValues="@array/speed"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="tremolo_speed"
                 android:summary="Select speed (Hz)."
                 android:title="Speed (Hz)" />
@@ -145,8 +161,8 @@
             <ListPreference
                 android:defaultValue="10"
                 android:dependency="tremolo"
-                android:entries="@array/depth"
-                android:entryValues="@array/depth"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
                 android:key="tremolo_depth"
                 android:summary="Select depth (percent)."
                 android:title="Depth (percent)" />
@@ -172,36 +188,12 @@
             <ListPreference
                 android:defaultValue="50"
                 android:dependency="portamento"
-                android:entries="@array/speed"
-                android:entryValues="@array/speed"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
                 android:key="portamento_speed"
                 android:summary="Select speed (ms)."
                 android:title="Speed (ms)" />
         </PreferenceCategory>
     </PreferenceScreen>
-
-    <!--
-    <PreferenceScreen
-        android:summary="Read about this app."
-        android:title="About" >
-
-        <intent
-            android:action="android.intent.action.MAIN"
-            android:data="mydata"
-            android:targetClass="kth.csc.inda.pockettheremin.AboutActivity"
-            android:targetPackage="kth.csc.inda.pockettheremin" />
-    </PreferenceScreen>
-
-    <PreferenceScreen
-        android:summary="Store settings and start playing."
-        android:title="Save" >
-
-        <intent
-            android:action="android.intent.action.MAIN"
-            android:data="mydata"
-            android:targetClass="kth.csc.inda.pockettheremin.PocketThereminActivity"
-            android:targetPackage="kth.csc.inda.pockettheremin" />
-    </PreferenceScreen>
-    -->
 
 </PreferenceScreen>

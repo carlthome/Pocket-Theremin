@@ -1,17 +1,12 @@
-package kth.csc.inda.pockettheremin;
+package kth.csc.inda.pockettheremin.activitites;
 
-import android.content.Intent;
-import android.net.Uri;
+import kth.csc.inda.pockettheremin.R;
+import kth.csc.inda.pockettheremin.R.layout;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceScreen;
-import android.util.Log;
 
 public class PreferencesActivity extends PreferenceActivity implements
 		OnPreferenceChangeListener {
