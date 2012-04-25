@@ -1,17 +1,16 @@
 package kth.csc.inda.pockettheremin.soundeffects;
 
+import kth.csc.inda.pockettheremin.activitites.PocketThereminActivity;
+
 
 public class Portamento implements SoundEffect {
-	int sampleRate, bufferSize;
-	double from, to, current, distance, time, velocity, direction;
+	double from, to, current, distance, time, sampleRate, velocity, direction;
 	boolean gliding, init;
 
-	public Portamento(int time, int sampleRate, int bufferSize) {
+	public Portamento(int time) {
 		this.gliding = false;
 		this.init = true;
 		this.time = time;
-		this.sampleRate = sampleRate;
-		this.bufferSize = bufferSize;
 	}
 
 	@Override
@@ -29,7 +28,7 @@ public class Portamento implements SoundEffect {
 			init = true;
 			return current;
 		}
-		
+
 		if (to != frequency) {
 			to = frequency;
 			init = true;
@@ -37,11 +36,11 @@ public class Portamento implements SoundEffect {
 
 		if (init) {
 			distance = Math.abs(to - current);
-			velocity = (distance / time);
+			velocity = (distance / time) / (frequency / 1000);
 			direction = Double.compare(to, current);
 			init = false;
 		}
-		
+
 		if (gliding && (Math.min(current, to) / Math.max(current, to) < 0.95)) {
 			current += direction * velocity;
 
@@ -50,7 +49,12 @@ public class Portamento implements SoundEffect {
 
 			return current;
 		}
-		
+
 		return current;
+	}
+
+	@Override
+	public void sync() {
+		sampleRate = PocketThereminActivity.clock.getFrequency();
 	}
 }
