@@ -43,8 +43,6 @@ import android.widget.Toast;
  * To be frank, this is not like a theremin at all since there are no radiowaves
  * involved, but it's still a fun toy.
  * 
- * @param <MyActivity>
- * 
  */
 public class PocketThereminActivity extends Activity implements
 		SensorEventListener, OnTouchListener {
@@ -539,7 +537,8 @@ public class PocketThereminActivity extends Activity implements
 			/*
 			 * Reduce buffer size so that sound effects get some room.
 			 */
-			bufferSize = bufferSize / 4; //TODO Integrate effects in the oscillator.
+			bufferSize = bufferSize / 4; // TODO Integrate effects in the
+											// oscillator.
 
 			Log.i(this.getClass().getSimpleName(), "Sample rate: " + sampleRate
 					+ ", Buffer size: " + bufferSize);

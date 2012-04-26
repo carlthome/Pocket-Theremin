@@ -1,7 +1,6 @@
 package kth.csc.inda.pockettheremin.activitites;
 
 import kth.csc.inda.pockettheremin.R;
-import kth.csc.inda.pockettheremin.R.layout;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
