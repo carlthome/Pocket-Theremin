@@ -125,8 +125,8 @@
             <ListPreference
                 android:defaultValue="4"
                 android:dependency="vibrato"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="vibrato_depth"
                 android:summary="Select depth in percent (percent)."
                 android:title="Depth (percent)" />
@@ -161,8 +161,8 @@
             <ListPreference
                 android:defaultValue="10"
                 android:dependency="tremolo"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="tremolo_depth"
                 android:summary="Select depth (percent)."
                 android:title="Depth (percent)" />
@@ -188,8 +188,8 @@
             <ListPreference
                 android:defaultValue="50"
                 android:dependency="portamento"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/ten"
+                android:entryValues="@array/ten"
                 android:key="portamento_speed"
                 android:summary="Select speed (ms)."
                 android:title="Speed (ms)" />

@@ -1,7 +1,4 @@
-package kth.csc.inda.pockettheremin.soundeffects;
-
-import kth.csc.inda.pockettheremin.activitites.PocketThereminActivity;
-
+package kth.csc.inda.pockettheremin.synth;
 
 public class Portamento implements SoundEffect {
 	double from, to, current, distance, time, sampleRate, velocity, direction;
@@ -36,7 +33,15 @@ public class Portamento implements SoundEffect {
 
 		if (init) {
 			distance = Math.abs(to - current);
-			velocity = (distance / time) / (frequency / 1000);
+			velocity = (distance / time) / (sampleRate / 1000);
+
+			/*
+			 * If the sample rate is too low then portamento cannot be performed
+			 * so simple do one full step instead.
+			 */
+			if (velocity > distance)
+				velocity = distance;
+
 			direction = Double.compare(to, current);
 			init = false;
 		}
@@ -55,6 +60,6 @@ public class Portamento implements SoundEffect {
 
 	@Override
 	public void sync() {
-		sampleRate = PocketThereminActivity.clock.getFrequency();
+		sampleRate = clock.getFrequency();
 	}
 }

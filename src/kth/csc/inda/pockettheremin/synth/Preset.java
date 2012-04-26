@@ -1,16 +1,14 @@
-package kth.csc.inda.pockettheremin.soundeffects;
-
-import kth.csc.inda.pockettheremin.synth.Oscillator.Waveform;
+package kth.csc.inda.pockettheremin.synth;
 
 public enum Preset {
 	THEREMIN(// Synth
 			Waveform.SINE, false, false,
 			// Vibrato
-			Waveform.TRIANGLE, 3, 4,
+			Waveform.TRIANGLE, 4, 2,
 			// Tremolo
 			Waveform.SINE, 1, 10,
 			// Portamento
-			25),
+			10),
 
 	ZELDA(// Synth
 			Waveform.TRIANGLE, true, false,
@@ -37,7 +35,7 @@ public enum Preset {
 			// Tremolo
 			Waveform.SQUARE, 10, 100,
 			// Portamento
-			5),
+			1),
 
 	SPACE(// Synth
 			Waveform.SINE, true, false,
@@ -46,7 +44,7 @@ public enum Preset {
 			// Tremolo
 			Waveform.NONE, 0, 0,
 			// Portamento
-			100);
+			10);
 
 	public Waveform SYNTH_WAVEFORM;
 	public boolean SYNTH_IMD;
