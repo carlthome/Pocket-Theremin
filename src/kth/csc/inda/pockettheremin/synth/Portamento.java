@@ -3,6 +3,7 @@ package kth.csc.inda.pockettheremin.synth;
 public class Portamento implements SoundEffect {
 	double from, to, current, distance, time, velocity, direction;
 	boolean sliding, calculateTravel;
+	static final int ERROR_MARGIN = 5; // %
 
 	public Portamento(int time) {
 		this.sliding = false;
@@ -38,7 +39,8 @@ public class Portamento implements SoundEffect {
 			calculateTravel = false;
 		}
 
-		if (sliding && (Math.min(current, to) / Math.max(current, to) < 0.95)) {
+		if (sliding
+				&& (Math.min(current, to) / Math.max(current, to) < 100 - ERROR_MARGIN / 100d)) {
 			current += direction * velocity;
 
 			/*
@@ -49,8 +51,10 @@ public class Portamento implements SoundEffect {
 					|| (current < to && direction < 0))
 				current = to;
 
-			if (Math.abs(current - to) < 10)
+			if ((Math.min(current, to) / Math.max(current, to) > 100 - ERROR_MARGIN / 100d)) {
 				sliding = false;
+				return to;
+			}
 
 			return current;
 		}
