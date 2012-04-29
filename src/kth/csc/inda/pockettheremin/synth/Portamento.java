@@ -34,20 +34,20 @@ public class Portamento implements SoundEffect {
 		if (calculateTravel) {
 			distance = Math.abs(to - current);
 			velocity = (distance / time) / (clock.getFrequency() / 1000);
-
-			/*
-			 * If the sample rate is too low then portamento cannot be performed
-			 * so simple do one full step instead.
-			 */
-			if (velocity > distance)
-				velocity = distance;
-
 			direction = Double.compare(to, current);
 			calculateTravel = false;
 		}
 
 		if (sliding && (Math.min(current, to) / Math.max(current, to) < 0.95)) {
 			current += direction * velocity;
+
+			/*
+			 * We overshot the target, so simply say that we reached the
+			 * destination.
+			 */
+			if ((current > to && direction > 0)
+					|| (current < to && direction < 0))
+				current = to;
 
 			if (Math.abs(current - to) < 10)
 				sliding = false;
