@@ -1,10 +1,12 @@
 package kth.csc.inda.pockettheremin.synth;
 
 public class Oscillator implements SoundGenerator {
-	private long period, x;
-	private int sampleRate;
 	private Waveform waveform;
 	private boolean imd;
+
+	//private double period, sample;
+	private long period, sample; //TODO
+	private double sampleRate, y, x;
 
 	public Oscillator(Waveform waveform) {
 		this.waveform = waveform;
@@ -33,10 +35,11 @@ public class Oscillator implements SoundGenerator {
 		if (frequency > sampleRate)
 			frequency = sampleRate;
 
-		period = (long) (sampleRate / frequency);
+		//period = sampleRate / frequency;
+		period = (long) (sampleRate / frequency); //TODO
 	}
 
-	public void setSampleRate(int sampleRate) {
+	public void setSampleRate(double sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 
@@ -55,35 +58,34 @@ public class Oscillator implements SoundGenerator {
 	}
 
 	public double getSample() {
-		double y = 0;
-		double angle = x / (double) period;
+		x = sample / (double) period;
 
 		switch (waveform) {
-		default:
 		case SINE:
-			y = Math.sin(2 * Math.PI * angle);
+			y = Math.sin(2 * Math.PI * x);
 			break;
 		case SQUARE:
-			y = Math.sin(2 * Math.PI * angle) % 2 < 0 ? -1 : 1;
+			y = Math.sin(2 * Math.PI * x) % 2 < 0 ? -1 : 1;
 			// Alternative: if (sample < (period / 2)) y = 1.0; else y = -1.0;
 			break;
 		case TRIANGLE:
-			y = Math.abs(2.0 * (angle - Math.floor(angle + 0.5)));
+			y = Math.abs(2.0 * (x - Math.floor(x + 0.5)));
 			// Alternative: y = Math.asin(Math.sin(2 * Math.PI * x));
 			break;
 		case SAWTOOTH:
-			y = (2.0 * (angle - Math.floor(angle + 0.5)));
+			y = (2.0 * (x - Math.floor(x + 0.5)));
 			break;
+		default:
 		case NONE:
 			y = 0;
 		}
 
 		if (!imd) {
-			x = (x + 1) % period;
+			sample = (sample + 1) % period;			
 		} else {
-			x++;
-			if (x > period)
-				x = 0;
+			sample++;
+			if (sample > period)
+				sample = 0;
 		}
 
 		return y;

@@ -4,16 +4,16 @@ public enum Preset {
 	THEREMIN(// Synth
 			Waveform.SINE, false, false,
 			// Vibrato
-			Waveform.TRIANGLE, 4, 10,
+			Waveform.SINE, 4, 3,
 			// Tremolo
 			Waveform.SINE, 1, 10,
 			// Portamento
-			50),
+			100),
 
 	ZELDA(// Synth
 			Waveform.TRIANGLE, true, false,
 			// Vibrato
-			Waveform.TRIANGLE, 10, 1,
+			Waveform.TRIANGLE, 9, 2,
 			// Tremolo
 			Waveform.SINE, 1, 10,
 			// Portamento
@@ -22,9 +22,9 @@ public enum Preset {
 	BAGPIPE(// Synth
 			Waveform.SAWTOOTH, true, false,
 			// Vibrato
-			Waveform.NONE, 0, 0,
+			Waveform.SINE, 1, 1,
 			// Tremolo
-			Waveform.SINE, 1, 5,
+			Waveform.NONE, 0, 0,
 			// Portamento
 			25),
 
@@ -38,7 +38,7 @@ public enum Preset {
 			0),
 
 	SPACE(// Synth
-			Waveform.SINE, true, false,
+			Waveform.SINE, false, false,
 			// Vibrato
 			Waveform.SINE, 1, 50,
 			// Tremolo

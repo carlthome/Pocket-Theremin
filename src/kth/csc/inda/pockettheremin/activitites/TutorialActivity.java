@@ -9,11 +9,14 @@ import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * Animated tutorials with instructions about how to use the application. This
+ * activity assumes that it is launched on top of the main activity.
+ */
 public class TutorialActivity extends Activity implements OnTouchListener {
 
 	/*
@@ -157,7 +160,7 @@ public class TutorialActivity extends Activity implements OnTouchListener {
 	}
 
 	private void singleTouchTutorial() {
-		//TODO Improve instruction.
+		// TODO Improve instruction.
 
 		Animation animation1 = new TranslateAnimation(
 				TranslateAnimation.ABSOLUTE, 0f, TranslateAnimation.ABSOLUTE,
@@ -243,36 +246,42 @@ public class TutorialActivity extends Activity implements OnTouchListener {
 		volume.setVisibility(View.INVISIBLE);
 		pitch.setVisibility(View.INVISIBLE);
 
-		//TODO Improve instruction.
+		// TODO Improve instruction.
 		switch (frame) {
 		case 0:
 			instructionSubject.setText("How to play");
-			instructionBody.setText("This is a quick instruction on how to play music with the accelerometer.\n\nNote that the accelerometer support is still experimental and might not work with your device.");
+			instructionBody
+					.setText("This is a quick instruction on how to play music with the accelerometer.\n\nNote that the accelerometer support is still experimental and might not work with your device.");
 			instructionAction.setText("Touch the screen to continue.");
 			break;
 		case 1:
 			instructionSubject.setText("Position your device");
-			instructionBody.setText("The accelerometer depends on earth\'s gravity. First, place your device flat on a table.");
+			instructionBody
+					.setText("The accelerometer depends on earth\'s gravity. First, place your device flat on a table.");
 			instructionAction.setText("Touch the screen to continue.");
 			break;
 		case 2:
 			instructionSubject.setText("How to control volume");
-			instructionBody.setText("Angle your device towards you to increase volume. A perpendicular angle with the table is the most loud.");
+			instructionBody
+					.setText("Angle your device towards you to increase volume. A perpendicular angle with the table is the most loud.");
 			instructionAction.setText("Touch the screen to continue.");
 			break;
 		case 3:
 			instructionSubject.setText("How to select notes");
-			instructionBody.setText("Rotate your device like a steering wheel to select notes. The further right the higher the note.");
+			instructionBody
+					.setText("Rotate your device like a steering wheel to select notes. The further right the higher the note.");
 			instructionAction.setText("Touch the screen to continue.");
 			break;
 		case 4:
 			instructionSubject.setText("How to play melodies");
-			instructionBody.setText("Combine these two movements to perform music. With a little practice you\'ll be churning out melodies in no time.");
+			instructionBody
+					.setText("Combine these two movements to perform music. With a little practice you\'ll be churning out melodies in no time.");
 			instructionAction.setText("Touch the screen to continue.");
 			break;
 		case 5:
 			instructionSubject.setText("Let\'s play!");
-			instructionBody.setText("There are different sounds available in the menu. Make sure to try them out.");
+			instructionBody
+					.setText("There are different sounds available in the menu. Make sure to try them out.");
 			instructionAction.setText("Touch the screen to start playing.");
 			break;
 		default:

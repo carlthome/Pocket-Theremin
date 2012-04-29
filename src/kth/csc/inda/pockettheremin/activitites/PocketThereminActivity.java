@@ -1,11 +1,9 @@
 package kth.csc.inda.pockettheremin.activitites;
 
 import java.text.DecimalFormat;
-import java.util.LinkedList;
+import java.util.List;
 
 import kth.csc.inda.pockettheremin.R;
-import kth.csc.inda.pockettheremin.gui.DrawPoints;
-import kth.csc.inda.pockettheremin.gui.Point;
 import kth.csc.inda.pockettheremin.synth.Autotune;
 import kth.csc.inda.pockettheremin.synth.LFO;
 import kth.csc.inda.pockettheremin.synth.Oscillator;
@@ -13,6 +11,7 @@ import kth.csc.inda.pockettheremin.synth.Portamento;
 import kth.csc.inda.pockettheremin.synth.Preset;
 import kth.csc.inda.pockettheremin.synth.SoundEffect;
 import kth.csc.inda.pockettheremin.synth.Waveform;
+import kth.csc.inda.pockettheremin.utils.RangedDouble;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -42,7 +41,7 @@ import android.widget.Toast;
 
 /**
  * This activity provides a playable theremin by using either the device's
- * accelerometer or touch input.
+ * sensors or touch input.
  * 
  * To be frank, this is not like a theremin at all since there are no radiowaves
  * involved, but it's still a fun toy.
@@ -52,74 +51,38 @@ public class PocketThereminActivity extends Activity implements
 		SensorEventListener, OnTouchListener {
 
 	/*
-	 * Activity variables.
+	 * Sensors
 	 */
-	private SharedPreferences preferences;
+	private SensorManager sensorManager;
+	private Sensor sensors;
+
+	/*
+	 * Audio
+	 */
 	private AudioManager audioManager;
-
-	/*
-	 * Input variables.
-	 */
-	private SensorManager sensors;
-	private Sensor sensor;
-
-	/*
-	 * Output variables.
-	 */
-	private AudioTrack audio; // TODO Sampler/synth.
 	public static final boolean SAMPLER = true; // TODO Sampler/synth.
+	private AudioTrack audio;
 	private boolean play;
 	private RangedDouble volume, pitch;
 
-	private class RangedDouble {
-		final private double maximum, minimum, range;
-		private double current;
-
-		RangedDouble(double maximum, double minimum) {
-			this.maximum = maximum;
-			this.minimum = minimum;
-			this.range = maximum - minimum;
-		}
-
-		public boolean set(double value) {
-
-			if (value > maximum)
-				return false;
-
-			if (value < minimum)
-				return false;
-
-			this.current = value;
-			return true;
-		}
-
-		public double get() {
-			/*
-			 * double value = current + minimum; if (value > maximum) return
-			 * maximum; else
-			 */
-			return current;
-		}
-	}
-
 	/*
-	 * User settings.
+	 * Views
 	 */
-	private Waveform synthWaveform, tremoloShape, vibratoShape;
-	private boolean useSensors, useMultitouch, useAutotune, synthIMD,
-			synthChiptune;
-	private Autotune.Note key;
-	private Autotune.Scale scale;
-	private int octaves, tremoloSpeed, tremoloDepth, vibratoSpeed,
-			vibratoDepth, portamentoSpeed;
-
-	/*
-	 * GUI variables.
-	 */
-	private View touchAmplitude, touchFrequency;
+	private LinearLayout touchAmplitude, touchFrequency, noteIndicator;
 	private TextView textAmplitudeMax, textAmplitudeMin, textFrequencyMax,
 			textFrequencyMin;
-	private LinearLayout noteIndicator;
+
+	/*
+	 * Preferences
+	 */
+	private SharedPreferences preferences;
+	private Waveform synthWaveform, tremoloShape, vibratoShape;
+	private Autotune.Note key;
+	private Autotune.Scale scale;
+	private boolean useSensors, useMultitouch, useAutotune, synthIMD,
+			synthChiptune;
+	private int octaves, tremoloSpeed, tremoloDepth, vibratoSpeed,
+			vibratoDepth, portamentoSpeed;
 
 	/**
 	 * When the app is started: load graphics and find resources.
@@ -136,8 +99,8 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Get dynamic views.
 		 */
-		touchFrequency = findViewById(R.id.touchFrequency);
-		touchAmplitude = findViewById(R.id.touchAmplitude);
+		touchFrequency = (LinearLayout) findViewById(R.id.touchFrequency);
+		touchAmplitude = (LinearLayout) findViewById(R.id.touchAmplitude);
 		noteIndicator = ((LinearLayout) findViewById(R.id.notes));
 		textAmplitudeMax = ((TextView) findViewById(R.id.amplitudeMax));
 		textAmplitudeMin = ((TextView) findViewById(R.id.amplitudeMin));
@@ -152,9 +115,9 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Get system services.
 		 */
-		sensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		sensor = sensors.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+		sensors = sensorManager.getDefaultSensor(Sensor.TYPE_ALL);
 
 		/*
 		 * Run tutorial on first launch.
@@ -194,14 +157,21 @@ public class PocketThereminActivity extends Activity implements
 		/*
 		 * Register input listeners.
 		 */
-		if (useSensors)
+		if (useSensors) {
 			/*
 			 * TODO Touch input seems to be registered at this stage, even
 			 * though is shouldn't be.
 			 */
-			sensors.registerListener(this, sensor,
-					SensorManager.SENSOR_DELAY_GAME);
-		else
+			sensorManager.registerListener(this, sensors,
+					SensorManager.SENSOR_DELAY_NORMAL);
+
+			/*
+			 * Log available sensors for debugging.
+			 */
+			List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
+			for (Sensor sensor : sensors)
+				Log.d("Sensors", sensor.getName());
+		} else
 			this.findViewById(android.R.id.content).setOnTouchListener(this);
 
 		/*
@@ -224,8 +194,8 @@ public class PocketThereminActivity extends Activity implements
 	protected void onPause() {
 		super.onPause();
 
-		if (sensors != null)
-			sensors.unregisterListener(this);
+		if (sensorManager != null)
+			sensorManager.unregisterListener(this);
 
 		if (touchFrequency != null)
 			touchFrequency.setOnTouchListener(null);
@@ -326,9 +296,13 @@ public class PocketThereminActivity extends Activity implements
 			y = event.getY();
 			x = event.getX();
 
-			volume.current = (view.getHeight() - y)
-					* (volume.range / view.getHeight());
-			pitch.current = x * pitch.range / view.getWidth();
+			volume.set((view.getHeight() - y)
+					* (volume.range / view.getHeight()));
+			pitch.set(x * pitch.range / view.getWidth());
+
+			if (useAutotune) {
+				// TODO Implement logarithmic scale if autotune is enabled.
+			}
 		}
 
 		return true;
@@ -348,19 +322,37 @@ public class PocketThereminActivity extends Activity implements
 	 */
 	@Override
 	public final void onSensorChanged(SensorEvent event) {
+		/*
+		 * TODO Remove sensor support. Rely solely on touchscreens instead.
+		 */
+
 		Sensor sensor = event.sensor;
-		if (sensor.getType() == Sensor.TYPE_ORIENTATION) {
-			
-			pitch.set(event.values[1] * (pitch.range / sensor.getResolution()));
-			volume.set(event.values[2] * (volume.range / sensor.getResolution()));
+		if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+			// TODO Test several devices.
+			pitch.set((event.values[1] + SensorManager.STANDARD_GRAVITY)
+					* (pitch.range / sensor.getMaximumRange()));
+			// volume.set((SensorManager.STANDARD_GRAVITY - event.values[0]) *
+			// (volume.range / sensor.getMaximumRange()));
 
-			Log.d("onSensorChanged",
-					"Pitch: " + event.values[1] + ", Roll: " + event.values[2]
-							+ ", Resolution: " + sensor.getResolution()
-							+ ", Range: " + sensor.getMaximumRange());
+			if (useAutotune) {
+				// TODO Implement logarithmic scale if autotune is enabled.
+			}
 
-			// TODO Implement logarithmic scale if autotune is enabled.
+			/*
+			 * Print debug information.
+			 */
+			int i = 0;
+			String s = "";
+			for (float value : event.values)
+				s += (i++) + ": " + value + ", ";
+			Log.d(sensor.getName(),
+					s + ", Resolution: " + sensor.getResolution() + ", Range: "
+							+ sensor.getMaximumRange());
 		}
+
+		if (sensor.getType() == Sensor.TYPE_PROXIMITY)
+			volume.set(event.values[0]
+					* (volume.range / sensor.getMaximumRange()));
 	}
 
 	/**
@@ -628,8 +620,6 @@ public class PocketThereminActivity extends Activity implements
 			sampleRate = AudioTrack
 					.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
 
-			// sampleRate /= 2;
-
 			bufferSize = AudioTrack.getMinBufferSize(sampleRate,
 					AudioFormat.CHANNEL_CONFIGURATION_MONO, audioFormat);
 
@@ -682,6 +672,13 @@ public class PocketThereminActivity extends Activity implements
 				audio.play();
 				play = false;
 			}
+
+			/*
+			 * Let sound effects have some playing room by generating smaller
+			 * buffers. This introduces occasional buffer underruns and should
+			 * be improved upon.
+			 */
+			bufferSize /= 10;
 
 			Log.d(this.getClass().getSimpleName(), "Sample rate: " + sampleRate
 					+ ", Buffer size: " + bufferSize);

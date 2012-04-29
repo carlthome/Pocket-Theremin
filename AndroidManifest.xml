@@ -5,15 +5,12 @@
     android:versionName="1.1" >
 
     <uses-sdk
-        android:minSdkVersion="7"
+        android:minSdkVersion="9"
         android:targetSdkVersion="15" />
 
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="true" />
-    <uses-feature
-        android:name="android.hardware.sensor.accelerometer"
-        android:required="false" />
     <uses-feature
         android:name="android.hardware.touchscreen.multitouch"
         android:required="true" />

@@ -9,14 +9,14 @@ public interface SoundEffect {
 		/*
 		 * Guaranteed Hz for sound effect operations.
 		 */
-		private static final int MINIMUM_FREQUENCY = 10;
+		private static final double MINIMUM_FREQUENCY = 10.00;
 
 		private long time, timestamp;
-		private int tick, frequency;
+		private double tick, frequency;
 		private boolean stable;
 
 		public void tick() {
-			tick++; // Approximate frequency
+			tick++; // Approximate frequency.
 
 			long newTimestamp = SystemClock.elapsedRealtime();
 			long dt = newTimestamp - timestamp;
@@ -29,7 +29,7 @@ public interface SoundEffect {
 			 * When 1000 ms (one second) has passed: store the calculated
 			 * frequency and reset the clock.
 			 */
-			if (time > 1000) {
+			if (time > 1000) {				
 				frequency = tick;
 				Log.i(this.getClass().getSimpleName(), frequency + "Hz");
 
@@ -44,7 +44,7 @@ public interface SoundEffect {
 			}
 		}
 
-		public int getFrequency() {
+		public double getFrequency() {
 			return frequency;
 		}
 
