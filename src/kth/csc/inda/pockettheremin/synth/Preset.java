@@ -4,11 +4,11 @@ public enum Preset {
 	THEREMIN(// Synth
 			Waveform.SINE, false, false,
 			// Vibrato
-			Waveform.TRIANGLE, 4, 2,
+			Waveform.TRIANGLE, 4, 10,
 			// Tremolo
 			Waveform.SINE, 1, 10,
 			// Portamento
-			10),
+			50),
 
 	ZELDA(// Synth
 			Waveform.TRIANGLE, true, false,
@@ -20,13 +20,13 @@ public enum Preset {
 			0),
 
 	BAGPIPE(// Synth
-			Waveform.SAWTOOTH, false, false,
+			Waveform.SAWTOOTH, true, false,
 			// Vibrato
 			Waveform.NONE, 0, 0,
 			// Tremolo
 			Waveform.SINE, 1, 5,
 			// Portamento
-			10),
+			25),
 
 	FLUTTER(// Synth
 			Waveform.SQUARE, true, false,
@@ -35,7 +35,7 @@ public enum Preset {
 			// Tremolo
 			Waveform.SQUARE, 10, 100,
 			// Portamento
-			1),
+			0),
 
 	SPACE(// Synth
 			Waveform.SINE, true, false,
@@ -44,31 +44,23 @@ public enum Preset {
 			// Tremolo
 			Waveform.NONE, 0, 0,
 			// Portamento
-			10);
+			100);
 
 	public Waveform SYNTH_WAVEFORM;
-	public boolean SYNTH_IMD;
-	public boolean SYNTH_CHIPTUNE;
-
+	public boolean SYNTH_IMD, SYNTH_CHIPTUNE;
 	public Waveform VIBRATO_SHAPE;
-	public int VIBRATO_SPEED;
-	public int VIBRATO_DEPTH;
-
+	public int VIBRATO_SPEED, VIBRATO_DEPTH;
 	public Waveform TREMOLO_SHAPE;
-	public int TREMOLO_SPEED;
-	public int TREMOLO_DEPTH;
-
+	public int TREMOLO_SPEED, TREMOLO_DEPTH;
 	public int PORTAMENTO_SPEED;
 
-	Preset( // Synth
-	Waveform synthWaveform, boolean synthIMD, boolean synthChiptune,
-	// Vibrato
-			Waveform vibratoShape, int vibratoSpeed, int vibratoDepth,
-			// Tremolo
-			Waveform tremoloShape, int tremoloSpeed, int tremoloDepth,
-			// Portamento
-			int portamentoSpeed) {
+	Preset(Waveform synthWaveform, boolean synthIMD, boolean synthChiptune,
 
+	Waveform vibratoShape, int vibratoSpeed, int vibratoDepth,
+
+	Waveform tremoloShape, int tremoloSpeed, int tremoloDepth,
+
+	int portamentoSpeed) {
 		SYNTH_WAVEFORM = synthWaveform;
 		SYNTH_IMD = synthIMD;
 		SYNTH_CHIPTUNE = synthChiptune;

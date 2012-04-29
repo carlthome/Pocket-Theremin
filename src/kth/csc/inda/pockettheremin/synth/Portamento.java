@@ -1,12 +1,12 @@
 package kth.csc.inda.pockettheremin.synth;
 
 public class Portamento implements SoundEffect {
-	double from, to, current, distance, time, sampleRate, velocity, direction;
-	boolean gliding, init;
+	double from, to, current, distance, time, velocity, direction;
+	boolean sliding, calculateTravel;
 
 	public Portamento(int time) {
-		this.gliding = false;
-		this.init = true;
+		this.sliding = false;
+		this.calculateTravel = true;
 		this.time = time;
 	}
 
@@ -19,21 +19,21 @@ public class Portamento implements SoundEffect {
 		if (time == 0)
 			return frequency;
 
-		if (!gliding) {
+		if (!sliding) {
 			from = current = frequency;
-			gliding = true;
-			init = true;
+			sliding = true;
+			calculateTravel = true;
 			return current;
 		}
 
 		if (to != frequency) {
 			to = frequency;
-			init = true;
+			calculateTravel = true;
 		}
 
-		if (init) {
+		if (calculateTravel) {
 			distance = Math.abs(to - current);
-			velocity = (distance / time) / (sampleRate / 1000);
+			velocity = (distance / time) / (clock.getFrequency() / 1000);
 
 			/*
 			 * If the sample rate is too low then portamento cannot be performed
@@ -43,23 +43,18 @@ public class Portamento implements SoundEffect {
 				velocity = distance;
 
 			direction = Double.compare(to, current);
-			init = false;
+			calculateTravel = false;
 		}
 
-		if (gliding && (Math.min(current, to) / Math.max(current, to) < 0.95)) {
+		if (sliding && (Math.min(current, to) / Math.max(current, to) < 0.95)) {
 			current += direction * velocity;
 
 			if (Math.abs(current - to) < 10)
-				gliding = false;
+				sliding = false;
 
 			return current;
 		}
 
 		return current;
-	}
-
-	@Override
-	public void sync() {
-		sampleRate = clock.getFrequency();
 	}
 }

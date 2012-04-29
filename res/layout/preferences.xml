@@ -10,17 +10,17 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:disableDependentsState="true"
-            android:key="accelerometer"
-            android:summaryOff="Enable to generate sounds by rotating your device."
+            android:key="sensors"
+            android:summaryOff="Enable to generate sounds by rotating your device instead of touching the screen."
             android:summaryOn="Disable to generate sounds by touching the screen instead."
-            android:title="Accelerometer" />
+            android:title="Sensors" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:dependency="accelerometer"
+            android:dependency="sensors"
             android:key="multitouch"
             android:shouldDisableView="true"
-            android:summary="Experimental new multi-touch."
+            android:summary="Allow setting volume and pitch simultaneously."
             android:title="Multi-touch" />
 
         <ListPreference
@@ -93,7 +93,7 @@
                 android:title="Waveform" />
 
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:key="imd"
                 android:summary="Disable for a pure sound. Enable for more fun."
                 android:title="IMD" />
@@ -114,7 +114,7 @@
                 android:title="Vibrato" />
 
             <ListPreference
-                android:defaultValue="8"
+                android:defaultValue="4"
                 android:dependency="vibrato"
                 android:entries="@array/ten"
                 android:entryValues="@array/ten"
@@ -123,7 +123,7 @@
                 android:title="Speed (Hz)" />
 
             <ListPreference
-                android:defaultValue="4"
+                android:defaultValue="2"
                 android:dependency="vibrato"
                 android:entries="@array/ten"
                 android:entryValues="@array/ten"
@@ -186,10 +186,10 @@
                 android:title="Portamento" />
 
             <ListPreference
-                android:defaultValue="50"
+                android:defaultValue="10"
                 android:dependency="portamento"
-                android:entries="@array/ten"
-                android:entryValues="@array/ten"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
                 android:key="portamento_speed"
                 android:summary="Select speed (ms)."
                 android:title="Speed (ms)" />

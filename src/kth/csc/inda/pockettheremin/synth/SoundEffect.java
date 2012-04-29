@@ -4,10 +4,16 @@ import android.os.SystemClock;
 import android.util.Log;
 
 public interface SoundEffect {
-	static final class MasterClock {
-		long time, tick, timestamp;
-		double frequency;
-		boolean stable;
+	static final class Clock {
+
+		/*
+		 * Guaranteed Hz for sound effect operations.
+		 */
+		private static final int MINIMUM_FREQUENCY = 10;
+
+		private long time, timestamp;
+		private int tick, frequency;
+		private boolean stable;
 
 		public void tick() {
 			tick++; // Approximate frequency
@@ -20,23 +26,25 @@ public interface SoundEffect {
 				time += dt;
 
 			/*
-			 * When 1000ms (one second) has passed: store the calculated frequency
-			 * and reset the clock.
+			 * When 1000 ms (one second) has passed: store the calculated
+			 * frequency and reset the clock.
 			 */
 			if (time > 1000) {
 				frequency = tick;
 				Log.i(this.getClass().getSimpleName(), frequency + "Hz");
 
-				if (frequency >= 10) // 10 Hz is guaranteed for sound effects.
+				if (frequency >= MINIMUM_FREQUENCY)
 					stable = true;
 				else
 					stable = false;
 
-				tick = time = 0; // Reset counters.
+				// Reset counters.
+				tick = 0;
+				time = 0;
 			}
 		}
 
-		public double getFrequency() {
+		public int getFrequency() {
 			return frequency;
 		}
 
@@ -44,10 +52,8 @@ public interface SoundEffect {
 			return stable;
 		}
 	}
-	
-	static final MasterClock clock = new MasterClock();
+
+	static final Clock clock = new Clock();
 
 	public double modify(double input);
-
-	public void sync();
 }

@@ -1,30 +1,28 @@
 package kth.csc.inda.pockettheremin.synth;
 
-public class Oscillator {
-	public static final double MAX_FREQUENCY = 20000;
-	public static final double MIN_FREQUENCY = 1;
-
+public class Oscillator implements SoundGenerator {
 	private long period, x;
-	int bufferSize, sampleRate;
-	Waveform waveform;
-	boolean imd;
+	private int sampleRate;
+	private Waveform waveform;
+	private boolean imd;
 
 	public Oscillator(Waveform waveform) {
 		this.waveform = waveform;
-	}
-
-	public void setIMD(boolean b) {
-		imd = b;
+		imd = false; // Default is false.
 	}
 
 	public void setFrequency(double frequency) {
-		if (frequency < MIN_FREQUENCY)
-			throw new IllegalArgumentException("Frequency"
-					+ (frequency - MIN_FREQUENCY) + "Hz out of bounds.");
 
-		if (frequency > MAX_FREQUENCY)
-			throw new IllegalArgumentException("Frequency"
-					+ (MAX_FREQUENCY - frequency) + "Hz out of bounds.");
+		/*
+		 * As a precaution clamp the input value to the maximum or minimum in
+		 * case it goes out of the allowed range set by the SoundGenerator
+		 * interface.
+		 */
+		if (frequency < FREQUENCY_MIN)
+			frequency = FREQUENCY_MIN;
+
+		if (frequency > FREQUENCY_MAX)
+			frequency = FREQUENCY_MAX;
 
 		/*
 		 * The sample rate could theoretically become very low occasionally if
@@ -38,12 +36,17 @@ public class Oscillator {
 		period = (long) (sampleRate / frequency);
 	}
 
-	public void setSampleRate(int frequency) {
-		sampleRate = frequency;
+	public void setSampleRate(int sampleRate) {
+		this.sampleRate = sampleRate;
 	}
 
-	public short[] getSamples(int bufferSize) {
-		short[] samples = new short[bufferSize];
+	public void setIMD(boolean b) {
+		imd = b;
+	}
+
+	@Override
+	public short[] getSamples(int amount) {
+		short[] samples = new short[amount];
 
 		for (int i = 0; i < samples.length; i++)
 			samples[i] = (short) Math.round(getSample() * Short.MAX_VALUE);

@@ -1,6 +1,11 @@
 package kth.csc.inda.pockettheremin.synth;
 
+import java.util.Arrays;
+
+import android.util.Log;
+
 final public class Autotune implements SoundEffect {
+	public static final double TEMPERAMENT = Math.pow((double) 2, (double) 1 / 12);	
 	Note key;
 	int octaves;
 	int[] scaleSteps;
@@ -28,7 +33,7 @@ final public class Autotune implements SoundEffect {
 		}
 
 		public double frequency(int octave) {
-			octave -= 4; // Method assumes 0 equals octave 0
+			octave -= 4; // Method assumes 0 equals octave 0.
 			return frequency * Math.pow(2, octave);
 		}
 
@@ -64,6 +69,10 @@ final public class Autotune implements SoundEffect {
 		this.octaves = octaves;
 		scaleSteps = scale.steps();
 		setupScale();
+		Log.d(this.getClass().getSimpleName(),
+				"Key: " + key.toString() + ", Scale: " + scale.toString()
+						+ ", Number of notes: " + scaleFrequencies.length
+						+ ", Frequencies: " + Arrays.toString(scaleFrequencies));
 	}
 
 	@Override
@@ -72,23 +81,23 @@ final public class Autotune implements SoundEffect {
 	}
 
 	private double snap(double frequency) {
-		double min = Double.MAX_VALUE;
-		double closestNote = frequency;
+		double shortestDistance = Double.MAX_VALUE;
+		double closestFrequency = frequency;
 
-		for (double note : scaleFrequencies) {
-			final double diff = Math.abs(note - frequency);
+		for (double noteFrequency : scaleFrequencies) {
+			final double distance = Math.abs(noteFrequency - frequency);
 
-			if (diff < min) {
-				min = diff;
-				closestNote = note;
+			if (distance < shortestDistance) {
+				shortestDistance = distance;
+				closestFrequency = noteFrequency;
 			}
 		}
 
-		return closestNote;
+		return closestFrequency;
 	}
 
 	private void setupScale() {
-		scaleFrequencies = new double[(octaves * scaleSteps.length) + 1];
+		scaleFrequencies = new double[(octaves * scaleSteps.length) + octaves];
 
 		if (!(0 < octaves || octaves < 6))
 			throw new IllegalArgumentException();
@@ -96,7 +105,7 @@ final public class Autotune implements SoundEffect {
 		int note = key.index() - (12 * (octaves / 2));
 		for (int octave = 0; octave < octaves; octave++) {
 			for (int step = 0; step < scaleSteps.length; step++) {
-				scaleFrequencies[step + (scaleSteps.length * octave)] = getFrequency(note);
+				scaleFrequencies[step + (scaleSteps.length * octave) + octave] = getFrequency(note);
 				note += scaleSteps[step];
 			}
 		}
@@ -104,14 +113,6 @@ final public class Autotune implements SoundEffect {
 	}
 
 	private double getFrequency(int note) {
-		double temperament = Math.pow((double) 2, (double) 1 / 12);
-		return (key.frequency() * Math.pow(temperament, note - key.index()));
-	}
-
-	/**
-	 * Autotune isn't time dependent so this method is probably redundant.
-	 */
-	@Override
-	public void sync() {
+		return (key.frequency() * Math.pow(TEMPERAMENT, note - key.index()));
 	}
 }

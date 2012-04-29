@@ -16,8 +16,7 @@ public class PreferencesActivity extends PreferenceActivity implements
 		addPreferencesFromResource(R.layout.preferences);
 
 		/*
-		 * Toggle between enabling/disabling either sound presets or the
-		 * advanced sound effect settings.
+		 * Toggle between using sound presets or the advanced sound effect settings.
 		 */
 		CheckBoxPreference advancedToggle = (CheckBoxPreference) findPreference("advanced_toggle");
 		advancedToggle.setOnPreferenceChangeListener(this);
