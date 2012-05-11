@@ -23,7 +23,6 @@ public class GraphView extends View implements Global {
 	public GraphView(Context context) {
 		super(context);
 		canvas = new Canvas();
-
 		paint = new Paint();
 		paint.setAntiAlias(true);
 		paint.setColor(Color.parseColor("#FFFFFFFF"));
@@ -73,7 +72,8 @@ public class GraphView extends View implements Global {
 			 * Fill points array with Y values.
 			 */
 			for (int i = 0, j = 1; j < points.length; i++, j += 2)
-				points[j] = (-1 * samples[i] / height) + (height / 2);
+				points[j] = (-1 * samples[i] / (float) Short.MAX_VALUE)
+						* height + (height / 2);
 
 			/*
 			 * Clear previous canvas.
