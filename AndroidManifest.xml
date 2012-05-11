@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kth.csc.inda.pockettheremin"
-    android:versionCode="14"
-    android:versionName="1.4" >
+    android:versionCode="15"
+    android:versionName="1.5" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -22,7 +22,7 @@
         android:required="false" />
     <uses-feature
         android:name="android.hardware.audio.low_latency"
-        android:required="true" />
+        android:required="false" />
 
     <application
         android:icon="@drawable/ic_launcher"
