@@ -24,19 +24,13 @@
                 android:title="Autotune" />
 
             <ListPreference
-                android:defaultValue="A"
                 android:dependency="autotune"
-                android:entries="@array/keys"
-                android:entryValues="@array/keys"
                 android:key="key"
                 android:summary="Select key."
                 android:title="Key" />
 
             <ListPreference
-                android:defaultValue="MAJOR"
                 android:dependency="autotune"
-                android:entries="@array/scale"
-                android:entryValues="@array/scale"
                 android:key="scale"
                 android:summary="Select scale."
                 android:title="Scale" />
@@ -44,9 +38,6 @@
     </PreferenceScreen>
 
     <ListPreference
-        android:defaultValue="THEREMIN"
-        android:entries="@array/presets"
-        android:entryValues="@array/presets"
         android:key="preset"
         android:summary="Select an instrument."
         android:title="Sound" />
@@ -287,11 +278,11 @@
             <ListPreference
                 android:defaultValue="100"
                 android:dependency="delay"
-                android:entries="@array/hundred"
-                android:entryValues="@array/hundred"
+                android:entries="@array/twoHundred"
+                android:entryValues="@array/twoHundred"
                 android:key="delay_bpm"
-                android:summary="Select time (ms)."
-                android:title="Time (ms)" />
+                android:summary="Select how often to repeat the quarter-note delay in beats-per-minute."
+                android:title="Time (BPM)" />
 
             <ListPreference
                 android:defaultValue="10"

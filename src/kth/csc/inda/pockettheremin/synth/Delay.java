@@ -8,7 +8,7 @@ public class Delay extends Sampler {
 	private final Range time;
 	private final Range feedback;
 
-	private final short[] memory = new short[AudioThread.SAMPLE_RATE];
+	private final short[] memory = new short[AudioThread.SAMPLE_RATE * 2];
 	private int readIndex;
 	private int writeIndex;
 
@@ -21,7 +21,6 @@ public class Delay extends Sampler {
 
 	@Override
 	protected short processSample(short sample) {
-
 		/*
 		 * Calculate output sample.
 		 */
@@ -68,9 +67,16 @@ public class Delay extends Sampler {
 		feedback.set(feedbackPercent);
 	}
 
-	public void setTimeInBPM(int BPM) { // TODO Not really BPM.
-		int delayInMs = (int) ((BPM / (double) 60) * 1000);
-		time.set(delayInMs);
+	/**
+	 * Set BPM for a quarter-note delay.
+	 */
+	public void setBPM(int BPM) {
+
+		if (BPM <= 0)
+			time.set(0);
+		else
+			time.set((int) (60 * 1000 / (double) BPM));
+
 		int delayInSamples = (int) (time.get() / 1000 * AudioThread.SAMPLE_RATE);
 
 		readIndex = writeIndex - delayInSamples;

@@ -2,11 +2,15 @@ package kth.csc.inda.pockettheremin.activitites;
 
 import kth.csc.inda.pockettheremin.R;
 import kth.csc.inda.pockettheremin.input.Autotune;
+import kth.csc.inda.pockettheremin.input.Autotune.Note;
+import kth.csc.inda.pockettheremin.input.Autotune.Scale;
 import kth.csc.inda.pockettheremin.synth.Oscillator.Waveform;
 import kth.csc.inda.pockettheremin.utils.Global.G;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
@@ -47,6 +51,37 @@ public class Preferences extends PreferenceActivity implements
 		 * Make sure to run the toggle once on launch.
 		 */
 		onPreferenceChange(advancedToggle, advancedToggle.isChecked());
+
+		/*
+		 * Populate list preferences.
+		 */
+		CharSequence[] entries;
+		int i;
+		ListPreference list; 
+
+		list = (ListPreference) findPreference("preset");
+		i = 0;
+		entries = new CharSequence[Preset.values().length];
+		for (Preset preset : Preset.values())
+			entries[i++] = preset.name();
+		list.setEntries(entries);
+		list.setEntryValues(entries);
+
+		list = (ListPreference) findPreference("scale");
+		i = 0;
+		entries = new CharSequence[Autotune.Scale.values().length];
+		for (Scale scale : Autotune.Scale.values())
+			entries[i++] = scale.name();
+		list.setEntries(entries);
+		list.setEntryValues(entries);
+		
+		list = (ListPreference) findPreference("key");
+		i = 0;
+		entries = new CharSequence[Autotune.Note.values().length];
+		for (Note key : Autotune.Note.values())
+			entries[i++] = key.name();
+		list.setEntries(entries);
+		list.setEntryValues(entries);
 	}
 
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -64,6 +99,14 @@ public class Preferences extends PreferenceActivity implements
 
 		return false;
 	}
+
+	/**
+	 * Set default values by resource.
+	 */
+	public static void setDefaults(Context context) {
+		PreferenceManager
+				.setDefaultValues(context, R.layout.preferences, false);
+	};
 
 	/**
 	 * Loads application preferences into static class fields so that user
@@ -120,7 +163,7 @@ public class Preferences extends PreferenceActivity implements
 			/*
 			 * Vibrato
 			 */
-			if (p.getBoolean("vibrato", true)) {
+			if (p.getBoolean("vibrato", false)) {
 				G.vibratoShape = new Waveform(
 
 				Integer.parseInt(p.getString("vibrato_sine", "100"))
@@ -144,7 +187,7 @@ public class Preferences extends PreferenceActivity implements
 			/*
 			 * Tremolo
 			 */
-			if (p.getBoolean("tremolo", true)) {
+			if (p.getBoolean("tremolo", false)) {
 				G.tremoloShape = new Waveform(
 
 				Integer.parseInt(p.getString("tremolo_sine", "100"))
@@ -168,7 +211,7 @@ public class Preferences extends PreferenceActivity implements
 			/*
 			 * Portamento
 			 */
-			if (p.getBoolean("portamento", true)) {
+			if (p.getBoolean("portamento", false)) {
 				G.portamentoSpeed = Integer.parseInt(p.getString(
 						"portamento_speed", "10"));
 			} else
@@ -177,8 +220,8 @@ public class Preferences extends PreferenceActivity implements
 			/*
 			 * Delay
 			 */
-			if (p.getBoolean("delay", true)) {
-				G.delayBPM = Integer.parseInt(p.getString("delay_time", "100"));
+			if (p.getBoolean("delay", false)) {
+				G.delayBPM = Integer.parseInt(p.getString("delay_time", "75"));
 				G.delayFeedback = Integer.parseInt(p.getString(
 						"delay_feedback", "10"));
 				G.delayMix = Integer.parseInt(p.getString("delay_mix", "50"));
@@ -197,7 +240,7 @@ public class Preferences extends PreferenceActivity implements
 				// Portamento
 				50,
 				// Delay
-				5, 25, 15),
+				0, 0, 0),
 
 		ZELDA(// Synth
 				new Waveform(0.0, 0.0, 1.0, 1.0), true, true,
@@ -252,7 +295,7 @@ public class Preferences extends PreferenceActivity implements
 				// Portamento
 				100,
 				// Delay
-				10, 50, 50),
+				75, 50, 50),
 
 		SIREN(// Synth
 				new Waveform(0.0, 0, 1.0, 0.0), false, false,
@@ -299,5 +342,5 @@ public class Preferences extends PreferenceActivity implements
 			DELAY_FEEDBACK = delayFeedback;
 			DELAY_MIX = delayMix;
 		}
-	};
+	}
 }

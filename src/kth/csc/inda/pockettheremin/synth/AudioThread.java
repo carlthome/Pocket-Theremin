@@ -84,7 +84,7 @@ public class AudioThread implements Runnable {
 			synth.setVibratoShape(G.vibratoShape);
 			synth.setVibratoSpeed(G.vibratoSpeed);
 			synth.setVibratoDepth(G.vibratoDepth);
-			delay.setTimeInBPM(G.delayBPM);
+			delay.setBPM(G.delayBPM);
 			delay.setMix(G.delayMix);
 			delay.setFeedback(G.delayFeedback);
 

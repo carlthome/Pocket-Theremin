@@ -64,8 +64,8 @@ public class Main extends Activity implements OnTouchListener, Global {
 		/*
 		 * Set default preferences by resource.
 		 */
-		PreferenceManager.setDefaultValues(this, R.layout.preferences, false);
-
+		Preferences.setDefaults(this);
+		
 		/*
 		 * Get system services.
 		 */
@@ -101,10 +101,9 @@ public class Main extends Activity implements OnTouchListener, Global {
 		super.onResume();
 
 		/*
-		 * Get user preferences.
+		 * Load user preferences.
 		 */
-		Preferences.loadPreferences(PreferenceManager
-				.getDefaultSharedPreferences(this));
+		Preferences.loadPreferences(PreferenceManager.getDefaultSharedPreferences(this));
 
 		/*
 		 * Remind the user to turn up the volume on their device.
