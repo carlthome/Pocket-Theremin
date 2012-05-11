@@ -40,8 +40,6 @@ import android.view.View.OnTouchListener;
  */
 public class Main extends Activity implements OnTouchListener, Global {
 
-	public static boolean noteOn; // TODO
-
 	private AudioThread audioThread;
 	private Timer graphThread;
 	private AudioManager audioManager;
@@ -102,7 +100,7 @@ public class Main extends Activity implements OnTouchListener, Global {
 		 */
 		if (0.1 > audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setIcon(android.R.drawable.ic_lock_silent_mode)
+			builder.setIcon(android.R.drawable.ic_dialog_alert)
 					.setTitle(getString(R.string.dialog_low_volume_headline))
 					.setMessage(getString(R.string.dialog_low_volume_text))
 					.setNeutralButton("OK",
@@ -216,12 +214,6 @@ public class Main extends Activity implements OnTouchListener, Global {
 		final int width = view.getWidth();
 
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_DOWN:
-			noteOn = true;
-			break;
-		case MotionEvent.ACTION_UP:
-			noteOn = false;
-			break;
 		case MotionEvent.ACTION_MOVE: // TODO Allow one synth per pointer.
 			for (int i = 0; i < pointers; i++) {
 				x = event.getX(i);
