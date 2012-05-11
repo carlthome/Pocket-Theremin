@@ -22,7 +22,7 @@ public class Synth extends Sampler implements Global {
 		super(input);
 		frequency = new Range(G.frequency.max, G.frequency.min);
 		volume = new Range(G.volume.max, G.volume.min);
-		fadeSpeed = 100; // Default 
+		fadeSpeed = 10; 
 		synth = new Oscillator();
 		tremolo = new Oscillator();
 		vibrato = new Oscillator();
@@ -81,7 +81,6 @@ public class Synth extends Sampler implements Global {
 			double samples = AudioThread.SAMPLE_RATE / 1000;
 			volumeStep = step / samples;
 		}
-		
 	}
 
 	private void fade() {

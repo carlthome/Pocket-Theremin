@@ -71,16 +71,10 @@ public class AudioThread implements Runnable {
 		while (play) {
 
 			/*
-			 * Get frequency and volume.
-			 */
-			double frequency = G.frequency.get();
-			double volume = G.volume.get() / G.volume.range * 2;
-
-			/*
 			 * Update settings.
 			 */
-			synth.setFrequency(frequency);
-			synth.setVolume(volume);
+			synth.setFrequency(G.frequency.get());
+			synth.setVolume(G.volume.get());
 			synth.setShape(G.synthShape);
 			synth.setImd(G.synthIMD);
 			synth.setPortamentoSpeed(G.portamentoSpeed);
