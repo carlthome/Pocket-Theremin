@@ -76,11 +76,11 @@ public class Oscillator implements Global {
 		}
 
 		/*
-		 * Make sure the sum of percentages don't exceed 100%.
+		 * Convert values to parts of 100%.
 		 */
 		private void evenOut() {
 			double sum = sine + square + triangle + sawtooth;
-			if (sum > 1.0) {
+			if (sum != 1.0) {
 				sine = sine / sum;
 				square = square / sum;
 				triangle = triangle / sum;
