@@ -7,14 +7,13 @@ import kth.csc.inda.pockettheremin.utils.Range;
  * Oscillator with support for additive synthesis of the four basic waveforms.
  */
 public class Oscillator implements Global {
-	private Range frequency = new Range(20000.00, 1.00);
-	private Range volume = new Range(1.0, 0.0);
+	private Range frequency;
 	private Waveform shape;
 	private long period, sample;
 	private boolean imd;
 
 	public Oscillator() {
-		volume.set(1.0);
+		frequency = new Range(20000, 1);
 		imd = false;
 	}
 
@@ -28,7 +27,8 @@ public class Oscillator implements Global {
 
 		y += shape.sine * (Math.sin(2 * Math.PI * x));
 		y += shape.square * (Math.sin(2 * Math.PI * x) % 2 < 0 ? -1 : 1);
-		y += shape.triangle * (Math.asin(Math.sin(2 * Math.PI * x)));
+		y += shape.triangle
+				* (Math.asin(Math.sin(2 * Math.PI * x)) * 2 / Math.PI);
 		y += shape.sawtooth * (2.0 * (x - Math.floor(x + 0.5)));
 
 		if (!imd) {
@@ -43,7 +43,7 @@ public class Oscillator implements Global {
 			if (y < -1 || y > 1)
 				throw new IllegalArgumentException();
 
-		return y * volume.get();
+		return y;
 	}
 
 	public void setImd(boolean imd) {
@@ -56,10 +56,6 @@ public class Oscillator implements Global {
 
 	public void setFrequency(double frequency) {
 		this.frequency.set(frequency);
-	}
-
-	public void setVolume(double volume) {
-		this.volume.set(volume);
 	}
 
 	public static class Waveform {
@@ -81,10 +77,10 @@ public class Oscillator implements Global {
 		private void evenOut() {
 			double sum = sine + square + triangle + sawtooth;
 			if (sum != 1.0) {
-				sine = sine / sum;
-				square = square / sum;
-				triangle = triangle / sum;
-				sawtooth = sawtooth / sum;
+				sine = Math.floor(sine / sum * 100) / 100;
+				square = Math.floor(square / sum * 100) / 100;
+				triangle = Math.floor(triangle / sum * 100) / 100;
+				sawtooth = Math.floor(sawtooth / sum * 100) / 100;
 			}
 		}
 

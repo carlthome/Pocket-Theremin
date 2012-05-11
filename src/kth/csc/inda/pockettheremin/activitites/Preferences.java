@@ -193,18 +193,18 @@ public class Preferences extends PreferenceActivity implements
 				// Vibrato
 				new Waveform(1.0, 0.0, 0.0, 0.0), 4, 3,
 				// Tremolo
-				new Waveform(1.0, 0, 0, 0), 1, 10,
+				new Waveform(1.0, 0.0, 0.0, 0.0), 1, 10,
 				// Portamento
 				50,
 				// Delay
 				5, 25, 15),
 
 		ZELDA(// Synth
-				new Waveform(0, 0, 1.0, 1.0), true, false,
+				new Waveform(0.0, 0.0, 1.0, 1.0), true, true,
 				// Vibrato
-				new Waveform(0, 0, 1.0, 0), 9, 2,
+				new Waveform(0.0, 0.0, 1.0, 0.0), 9, 2,
 				// Tremolo
-				new Waveform(1.0, 0, 0, 0), 1, 10,
+				new Waveform(1.0, 0.0, 0.0, 0.0), 1, 10,
 				// Portamento
 				0,
 				// Delay
@@ -213,31 +213,31 @@ public class Preferences extends PreferenceActivity implements
 		MARIO(// Synth
 				new Waveform(0.0, 1.0, 0.0, 0.25), true, false,
 				// Vibrato
-				new Waveform(1.0, 0, 1.0, 0), 100, 1,
+				new Waveform(1.0, 0.0, 1.0, 0.0), 100, 1,
 				// Tremolo
-				new Waveform(0.0, 1.0, 0, 0), 100, 20,
+				new Waveform(0.0, 1.0, 0.0, 0.0), 100, 20,
 				// Portamento
 				0,
 				// Delay
 				0, 0, 0),
 
 		BAGPIPE(// Synth
-				new Waveform(0.1, 0, 0, 1.0), true, false,
+				new Waveform(0.1, 0.0, 0.0, 1.0), true, false,
 				// Vibrato
 				new Waveform(0.1, 0.1, 0.1, 0.1), 1, 1,
 				// Tremolo
-				new Waveform(1.0, 0.0, 0, 0), 1, 20,
+				new Waveform(1.0, 0.0, 0.0, 0.0), 1, 20,
 				// Portamento
 				25,
 				// Delay
 				5, 20, 20),
 
 		FLUTTER(// Synth
-				new Waveform(0, 1.0, 0, 0), false, false,
+				new Waveform(0.0, 1.0, 0.0, 0.0), false, false,
 				// Vibrato
 				null, 0, 0,
 				// Tremolo
-				new Waveform(0, 1.0, 0, 0), 10, 100,
+				new Waveform(0.0, 1.0, 0.0, 0.0), 10, 100,
 				// Portamento
 				0,
 				// Delay
@@ -248,7 +248,7 @@ public class Preferences extends PreferenceActivity implements
 				// Vibrato
 				new Waveform(1.0, 0.0, 0.0, 0.0), 4, 3,
 				// Tremolo
-				new Waveform(1.0, 0, 0, 0), 1, 10,
+				new Waveform(1.0, 0.0, 0.0, 0.0), 1, 10,
 				// Portamento
 				100,
 				// Delay

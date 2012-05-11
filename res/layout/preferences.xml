@@ -79,7 +79,7 @@
             <CheckBoxPreference
                 android:defaultValue="false"
                 android:key="chiptune"
-                android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
+                android:summary="Limit sound samples to 8-bits, as to simulate an old video game console. Note: experimental feature."
                 android:title="NES" />
 
             <PreferenceCategory android:title="Shape" >
@@ -290,8 +290,8 @@
                 android:entries="@array/hundred"
                 android:entryValues="@array/hundred"
                 android:key="delay_bpm"
-                android:summary="Select time (BPM)."
-                android:title="Time (BPM)" />
+                android:summary="Select time (ms)."
+                android:title="Time (ms)" />
 
             <ListPreference
                 android:defaultValue="10"

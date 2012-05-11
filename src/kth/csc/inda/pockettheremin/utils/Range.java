@@ -7,7 +7,7 @@ public class Range {
 	public Range(double max, double min) {
 		this.max = max;
 		this.min = min;
-		this.range = max - min;
+		this.range = Math.abs(max - min);
 		this.current = min;
 	}
 

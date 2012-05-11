@@ -72,8 +72,7 @@ public class GraphView extends View implements Global {
 			 * Fill points array with Y values.
 			 */
 			for (int i = 0, j = 1; j < points.length; i++, j += 2)
-				points[j] = (-1 * samples[i] / (float) Short.MAX_VALUE)
-						* height + (height / 2);
+				points[j] = ((samples[i] / (2 * (float) Short.MAX_VALUE)) * height) + (height / 2);
 
 			/*
 			 * Clear previous canvas.
@@ -88,9 +87,6 @@ public class GraphView extends View implements Global {
 				path.lineTo(points[i], points[i + 1]);
 			this.canvas.drawPath(path, paint);
 			path.reset();
-
-			if (DEBUG)
-				this.canvas.drawPoints(points, paint);
 
 			/*
 			 * Render result.

@@ -2,6 +2,7 @@ package kth.csc.inda.pockettheremin.synth;
 
 import kth.csc.inda.pockettheremin.synth.Oscillator.Waveform;
 import kth.csc.inda.pockettheremin.utils.Global;
+import kth.csc.inda.pockettheremin.utils.Range;
 
 /**
  * Sampler consisting of three oscillators: one for sound generation, one for AM
@@ -11,13 +12,15 @@ import kth.csc.inda.pockettheremin.utils.Global;
  */
 public class Synth extends Sampler implements Global {
 
-	private double frequency, volume;
+	private final Range frequency, volume;
 	private Oscillator synth, tremolo, vibrato;
 	private double tremoloDepth, vibratoDepth;
 	private double portamentoSpeed, portamentoStep, newFrequency;
 
 	public Synth(Sampler input) {
 		super(input);
+		frequency = new Range(G.frequency.max, G.frequency.min);
+		volume = new Range(G.volume.max, G.volume.min);
 		synth = new Oscillator();
 		tremolo = new Oscillator();
 		vibrato = new Oscillator();
@@ -27,8 +30,8 @@ public class Synth extends Sampler implements Global {
 	protected short processSample(short s) {
 
 		// Set initial frequency and volume.
-		double frequency = this.frequency;
-		double volume = this.volume;
+		double frequency = this.frequency.get();
+		double volume = this.volume.get() / this.volume.range * 2;
 
 		// Portamento
 		portamento();
@@ -39,32 +42,25 @@ public class Synth extends Sampler implements Global {
 		// Tremolo
 		volume = tremolo(volume);
 
-		// Set final frequency and volume.
+		// Set oscillation frequency
 		synth.setFrequency(frequency);
-		synth.setVolume(volume);
 
-		// Get sample.
-		double sample = synth.getSample();
-
-		// Process sample.
-		short ss = (short) Math.round(sample * (Short.MAX_VALUE / 2));
-
-		if (DEBUG) {
-			if (volume < 0 || volume > 1)
+		if (DEBUG) 
+			if (volume < -1 || volume > 1)
 				throw new IllegalArgumentException();
-			if (sample < -1 || sample > 1)
-				throw new IllegalArgumentException();
-		}
+		
+		// Get and process sample.
+		short sample = (short) Math.round(synth.getSample() * volume * Short.MAX_VALUE);
 
-		return ss;
+		return sample;
 	}
 
 	public void setFrequency(double frequency) {
 		if (portamentoSpeed == 0)
-			this.frequency = frequency;
+			this.frequency.set(frequency);
 		else {
 			newFrequency = frequency;
-			double step = (newFrequency - this.frequency)
+			double step = (newFrequency - this.frequency.get())
 					/ (double) portamentoSpeed;
 			double samples = AudioThread.SAMPLE_RATE / 1000;
 			portamentoStep = step / samples;
@@ -72,17 +68,17 @@ public class Synth extends Sampler implements Global {
 	}
 
 	public void setVolume(double volume) {
-		this.volume = volume;
+		this.volume.set(volume);
 	}
 
 	private void portamento() {
-		if (frequency != newFrequency)
-			if (Math.abs(frequency - newFrequency) < 0.1f)
-				frequency = newFrequency;
+		if (frequency.get() != newFrequency)
+			if (Math.abs(frequency.get() - newFrequency) < 0.1f)
+				frequency.set(newFrequency);
 			else
-				frequency += portamentoStep;
+				frequency.set(frequency.get() + portamentoStep);
 		else
-			frequency = newFrequency;
+			frequency.set(newFrequency);
 	}
 
 	private double vibrato(double frequency) {

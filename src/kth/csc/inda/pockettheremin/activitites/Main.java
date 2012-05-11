@@ -14,8 +14,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.media.AudioTrack;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -45,6 +46,7 @@ public class Main extends Activity implements OnTouchListener, Global {
 	private AudioManager audioManager;
 	private Autotune autotune;
 	private GraphView graph;
+	private boolean hasMultiTouch;
 
 	/**
 	 * Load graphics and find resources on application launch.
@@ -68,6 +70,15 @@ public class Main extends Activity implements OnTouchListener, Global {
 		 * Get system services.
 		 */
 		audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+		/*
+		 * Check for multi-touch support. Distinct multi-touch support was
+		 * implemented in API 8.
+		 */
+		hasMultiTouch = false; // Assume false.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+			hasMultiTouch = this.getPackageManager().hasSystemFeature(
+					PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT);
 
 		/*
 		 * Run tutorial on first launch.
@@ -204,54 +215,80 @@ public class Main extends Activity implements OnTouchListener, Global {
 	}
 
 	/**
-	 * Set pitch and volume by touch.
+	 * Interpret touch events to set frequency and volume.
 	 */
 	@Override
 	public boolean onTouch(View view, MotionEvent event) {
-		int pointers = event.getPointerCount();
 		float x, y;
-		final int height = view.getHeight();
 		final int width = view.getWidth();
+		final int height = view.getHeight();
 
-		switch (event.getAction() & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_MOVE: // TODO Allow one synth per pointer.
-			for (int i = 0; i < pointers; i++) {
-				x = event.getX(i);
-				y = event.getY(i);
+		if (hasMultiTouch) {
+			/*
+			 * The running device features multi-touch.
+			 */
+			int pointers = event.getPointerCount();
+			switch (event.getAction() & MotionEvent.ACTION_MASK) {
+			case MotionEvent.ACTION_MOVE: // TODO Allow one synth per pointer.
+				for (int i = 0; i < pointers; i++) {
+					x = event.getX(i);
+					y = event.getY(i);
 
-				/*
-				 * Set volume.
-				 */
-				G.volume.set((2 * Math.abs(y - (height / 2)))
-						* (G.volume.range / height));
-
-				/*
-				 * Set pitch.
-				 */
-				if (!G.useAutotune) {
-					G.frequency.set((x) * (G.frequency.range / (width))
-							+ G.frequency.min);
-				} else {
-					G.frequency
-							.set(autotune.snap(Math.pow(
-									Autotune.TEMPERAMENT,
-									(x
-											* (Math.log(G.frequency.max
-													/ G.frequency.min) / Math
-														.log(Autotune.TEMPERAMENT)) / width)
-											+ (Math.log(G.frequency.min) / Math
-													.log(Autotune.TEMPERAMENT)))
-
-							));
+					setFrequency(x, width);
+					setVolume(y, height);
 				}
-
-				if (DEBUG)
-					Log.d("onTouch", "Volume: " + G.volume.get() + ", Y:" + y
-							+ ", Frequency: " + G.frequency.get() + ", X:" + x);
+				break;
 			}
-			break;
+		} else {
+			/*
+			 * The device cannot handle multi-touch. Either because the current
+			 * Android version is too old and doesn't support multi-touch, or
+			 * because the running device doesn't allow it.
+			 */
+			x = event.getX();
+			y = event.getY();
+			setFrequency(x, width);
+			setVolume(y, height);
 		}
-		return true;
+
+		return true; // Consume event so that ACTION_MOVE is handled.
+	}
+
+	/**
+	 * Set frequency.
+	 */
+	private void setFrequency(float x, int width) {
+		if (!G.useAutotune) {
+			G.frequency.set((x) * (G.frequency.range / (width))
+					+ G.frequency.min);
+		} else {
+			G.frequency
+					.set(autotune.snap(Math.pow(
+							Autotune.TEMPERAMENT,
+							(x
+									* (Math.log(G.frequency.max
+											/ G.frequency.min) / Math
+												.log(Autotune.TEMPERAMENT)) / width)
+									+ (Math.log(G.frequency.min) / Math
+											.log(Autotune.TEMPERAMENT)))
+
+					));
+		}
+
+		if (DEBUG)
+			Log.d("onTouch", "Frequency: " + G.frequency.get() + ", X:" + x);
+	}
+
+	/**
+	 * Set volume.
+	 */
+	private void setVolume(float y, int height) {
+		G.volume.set(-1
+				* (2 * Math.signum(y - (height / 2)) * Math.abs(y
+						- (height / 2))) * (G.volume.range / height));
+
+		if (DEBUG)
+			Log.d("onTouch", "Volume: " + G.volume.get() + ", Y:" + y);
 	}
 
 	/**
@@ -300,9 +337,12 @@ public class Main extends Activity implements OnTouchListener, Global {
 		 */
 		G.frequency = new Range(G.key.frequency(4 + G.octaves / 2),
 				G.key.frequency(4 - G.octaves / 2));
+		// G.volume = new
+		// Range(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),
+		// AudioTrack.getMinVolume());
 		G.volume = new Range(
 				audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),
-				AudioTrack.getMinVolume());
+				-audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
 
 		/*
 		 * Restore the current values within the new ranges. The current value

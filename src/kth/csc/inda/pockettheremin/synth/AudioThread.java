@@ -19,35 +19,31 @@ import android.util.Log;
  *      >Check out the Android Dev Guide for more information.</a>
  */
 public class AudioThread implements Runnable {
-	public static int SAMPLE_RATE = AudioTrack
-			.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
-	public static int AUDIO_FORMAT = (G.chiptune) ? AudioFormat.ENCODING_PCM_8BIT
-			: AudioFormat.ENCODING_PCM_16BIT;
-	public static int BUFFER_SIZE = AudioTrack.getMinBufferSize(SAMPLE_RATE,
-			AudioFormat.CHANNEL_CONFIGURATION_MONO, AUDIO_FORMAT);
-	public static int SAMPLES_PER_BUFFER = (G.chiptune) ? BUFFER_SIZE
-			: BUFFER_SIZE / 2;
-
 	private Thread thread;
-
-	private AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
-			AudioThread.SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
-			AudioThread.AUDIO_FORMAT, AudioThread.BUFFER_SIZE,
-			AudioTrack.MODE_STREAM);
-	private byte[] buffer = new byte[AudioThread.BUFFER_SIZE];
-
 	private boolean play;
 	private Synth synth;
 	private Delay delay;
 	private Send aux;
 	private Sampler sampler;
 
-	public AudioThread() {
+	public static final int SAMPLE_RATE = AudioTrack
+			.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
+	public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+	public static final int BUFFER_SIZE = AudioTrack.getMinBufferSize(
+			SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO, AUDIO_FORMAT);
+	public static final int SAMPLES_PER_BUFFER = BUFFER_SIZE / 2;
 
+	private final AudioTrack track = new AudioTrack(AudioManager.STREAM_MUSIC,
+			AudioThread.SAMPLE_RATE, AudioFormat.CHANNEL_CONFIGURATION_MONO,
+			AudioThread.AUDIO_FORMAT, AudioThread.BUFFER_SIZE,
+			AudioTrack.MODE_STREAM);
+	private final byte[] buffer = new byte[AudioThread.BUFFER_SIZE];
+
+	public AudioThread() {
 		/*
 		 * Audio chain.
 		 */
-		synth = new Synth(null);
+		synth = new Synth(null); // First in chain.
 		delay = new Delay(synth);
 		aux = new Send(delay);
 		this.sampler = aux; // Last in chain.
@@ -78,11 +74,13 @@ public class AudioThread implements Runnable {
 			 * Get frequency and volume.
 			 */
 			double frequency = G.frequency.get();
-			double volume = G.volume.getPercent();
+			double volume = G.volume.get() / G.volume.range * 2;
 
 			/*
 			 * Update settings.
 			 */
+			synth.setFrequency(frequency);
+			synth.setVolume(volume);
 			synth.setShape(G.synthShape);
 			synth.setImd(G.synthIMD);
 			synth.setPortamentoSpeed(G.portamentoSpeed);
@@ -95,19 +93,12 @@ public class AudioThread implements Runnable {
 			delay.setTimeInBPM(G.delayBPM);
 			delay.setMix(G.delayMix);
 			delay.setFeedback(G.delayFeedback);
-			synth.setFrequency(frequency);
-			synth.setVolume(volume);
 
 			/*
 			 * Write and play samples.
 			 */
 			sampler.fillBuffer(buffer);
 			track.write(buffer, 0, BUFFER_SIZE);
-
-			/*
-			 * Set playback volume.
-			 */
-			track.setStereoVolume((float) volume, (float) volume);
 		}
 
 		track.flush();
@@ -117,5 +108,6 @@ public class AudioThread implements Runnable {
 
 	public void cancel() {
 		play = false;
+
 	}
 }

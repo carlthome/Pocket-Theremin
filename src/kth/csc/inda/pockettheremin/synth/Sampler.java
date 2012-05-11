@@ -1,6 +1,7 @@
 package kth.csc.inda.pockettheremin.synth;
 
-import kth.csc.inda.pockettheremin.utils.Global.G;
+import android.util.Log;
+import kth.csc.inda.pockettheremin.utils.Global;
 
 /**
  * This is an element in a linked list. Samplers generate audio samples in
@@ -12,26 +13,26 @@ import kth.csc.inda.pockettheremin.utils.Global.G;
  * will ask its own preceding sampler and so on, effectively generating buffers
  * through a sound effect chain. Pretty sweet!
  */
-public abstract class Sampler {
+public abstract class Sampler implements Global {
 	private Sampler input;
-
-	protected abstract short processSample(short sample);
 
 	Sampler(Sampler input) {
 		this.input = input;
 	}
 
-	public void chain(Sampler input) {
+	protected abstract short processSample(short sample);
+
+	final public void chain(Sampler input) {
 		this.input = input;
 	}
 
-	public void fillBuffer(byte[] samples) {
+	final public void fillBuffer(byte[] buffer) {
 
 		/*
 		 * Get parent buffer.
 		 */
 		if (input != null)
-			input.fillBuffer(samples);
+			input.fillBuffer(buffer);
 
 		for (int i = 0, j = 0; i < AudioThread.SAMPLES_PER_BUFFER; i++) {
 
@@ -40,11 +41,9 @@ public abstract class Sampler {
 			 */
 			short sample;
 			if (G.chiptune)
-				// 8-bit PCM
-				sample = (short) samples[i]; //TODO
+				sample = (short) (buffer[j + 1] << 8);
 			else
-				// 16-bit PCM
-				sample = (short) ((samples[j + 1] << 8) + samples[j]);
+				sample = (short) ((buffer[j + 1] << 8) | (buffer[j] & 0xFF));
 
 			/*
 			 * Process the short sample.
@@ -54,13 +53,18 @@ public abstract class Sampler {
 			/*
 			 * Store the processed sample as bytes.
 			 */
-			if (G.chiptune) { // 8-bit PCM
-				samples[i] = (byte) (sample >> 8);
-			} else { // 16-bit PCM
-				samples[j] = (byte) (sample & 0xff);
-				samples[j + 1] = (byte) ((sample >>> 8) & 0xff);
-				j += 2;
+			byte high = (byte) ((sample >> 8) & 0xFF);
+			byte low = (byte) (sample & 0xFF);
+			if (G.chiptune) {
+				// Simulate 8-bit PCM (unsigned, little endian) by downsampling.
+				buffer[j + 1] = (byte) (high ^ 0x00000080);
+			} else {
+				// 16-bit PCM (signed, little endian)
+				buffer[j] = low;
+				buffer[j + 1] = high;
 			}
+
+			j += 2;
 		}
 	}
 }
