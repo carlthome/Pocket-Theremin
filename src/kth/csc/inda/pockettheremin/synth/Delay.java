@@ -4,33 +4,59 @@ import kth.csc.inda.pockettheremin.utils.Range;
 
 public class Delay extends Sampler {
 
-	private final Range mix = new Range(100.0, 0.0);
-	private final Range time = new Range(2000, 1);
-	private final Range feedback = new Range(100.0, 0.0);
+	private final Range mix;
+	private final Range time;
+	private final Range feedback;
 
-	private final short[] memory = new short[AudioThread.SAMPLE_RATE * 3];
+	private final short[] memory = new short[AudioThread.SAMPLE_RATE];
 	private int readIndex;
 	private int writeIndex;
 
 	public Delay(Sampler input) {
 		super(input);
+		mix = new Range(100.0, 0.0);
+		time = new Range(2000, 1);
+		feedback = new Range(100.0, 0.0);
 	}
 
 	@Override
-	protected short processSample(short inputSample) {
-		short delayedSample = memory[readIndex++];
+	protected short processSample(short sample) {
 
-		double dry = ((100.0 - mix.get()) * inputSample) / 100.0;
-		double wet = (mix.get() * delayedSample) / 100.0;
+		/*
+		 * Calculate output sample.
+		 */
+		short outputSample;
 
-		short outputSample = (short) (dry + wet);
+		double dry = sample * ((mix.max - mix.get()) / mix.range);
+		double wet = memory[readIndex] * mix.getPercent();
 
-		inputSample += (delayedSample * feedback.get()) / 100.0;
+		if (dry + wet > Short.MAX_VALUE)
+			outputSample = Short.MAX_VALUE;
+		else if (dry + wet < Short.MIN_VALUE)
+			outputSample = Short.MIN_VALUE;
+		else
+			outputSample = (short) (dry + wet);
 
-		memory[writeIndex++] = inputSample;
-		readIndex %= memory.length;
-		writeIndex %= memory.length;
+		/*
+		 * Calculate and store sample in memory.
+		 */
+		double newSample = sample + memory[readIndex] * feedback.getPercent();
+		if (newSample > Short.MAX_VALUE)
+			memory[writeIndex] = Short.MAX_VALUE;
+		else if (newSample < Short.MIN_VALUE)
+			memory[writeIndex] = Short.MIN_VALUE;
+		else
+			memory[writeIndex] = (short) newSample;
 
+		/*
+		 * Update counters.
+		 */
+		readIndex = (readIndex + 1) % memory.length;
+		writeIndex = (writeIndex + 1) % memory.length;
+
+		/*
+		 * Return resulting sample.
+		 */
 		return outputSample;
 	}
 
@@ -42,12 +68,10 @@ public class Delay extends Sampler {
 		feedback.set(feedbackPercent);
 	}
 
-	public void setTimeInBPM(int BPM) {
+	public void setTimeInBPM(int BPM) { // TODO Not really BPM.
 		int delayInMs = (int) ((BPM / (double) 60) * 1000);
-
 		time.set(delayInMs);
-
-		int delayInSamples = (int) (0.001 * time.get() * AudioThread.SAMPLE_RATE);
+		int delayInSamples = (int) (time.get() / 1000 * AudioThread.SAMPLE_RATE);
 
 		readIndex = writeIndex - delayInSamples;
 		if (readIndex < 0) {
