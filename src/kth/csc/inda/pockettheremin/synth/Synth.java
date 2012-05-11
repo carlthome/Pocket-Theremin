@@ -15,12 +15,14 @@ public class Synth extends Sampler implements Global {
 	private final Range frequency, volume;
 	private Oscillator synth, tremolo, vibrato;
 	private double tremoloDepth, vibratoDepth;
-	private double portamentoSpeed, portamentoStep, newFrequency;
+	private double portamentoSpeed, frequencyStep, newFrequency;
+	private double fadeSpeed, volumeStep, newVolume;
 
 	public Synth(Sampler input) {
 		super(input);
 		frequency = new Range(G.frequency.max, G.frequency.min);
 		volume = new Range(G.volume.max, G.volume.min);
+		fadeSpeed = 100; // Default 
 		synth = new Oscillator();
 		tremolo = new Oscillator();
 		vibrato = new Oscillator();
@@ -35,6 +37,9 @@ public class Synth extends Sampler implements Global {
 
 		// Portamento
 		portamento();
+		
+		// Fade
+		fade();
 
 		// Vibrato
 		frequency = vibrato(frequency);
@@ -63,12 +68,30 @@ public class Synth extends Sampler implements Global {
 			double step = (newFrequency - this.frequency.get())
 					/ (double) portamentoSpeed;
 			double samples = AudioThread.SAMPLE_RATE / 1000;
-			portamentoStep = step / samples;
+			frequencyStep = step / samples;
 		}
 	}
 
-	public void setVolume(double volume) {
-		this.volume.set(volume);
+	public void setVolume(double volume) {	
+		if (fadeSpeed == 0)
+			this.volume.set(volume);
+		else {
+			newVolume = volume;
+			double step = (newVolume - this.volume.get()) / (double) fadeSpeed;
+			double samples = AudioThread.SAMPLE_RATE / 1000;
+			volumeStep = step / samples;
+		}
+		
+	}
+
+	private void fade() {
+		if (volume.get() != newVolume)
+			if (Math.abs(volume.get() - newVolume) < 0.1f)
+				volume.set(newVolume);
+			else
+				volume.set(volume.get() + volumeStep);
+		else
+			volume.set(newVolume);
 	}
 
 	private void portamento() {
@@ -76,7 +99,7 @@ public class Synth extends Sampler implements Global {
 			if (Math.abs(frequency.get() - newFrequency) < 0.1f)
 				frequency.set(newFrequency);
 			else
-				frequency.set(frequency.get() + portamentoStep);
+				frequency.set(frequency.get() + frequencyStep);
 		else
 			frequency.set(newFrequency);
 	}
