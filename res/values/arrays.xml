@@ -8,9 +8,11 @@
     <string-array name="presets">
         <item>THEREMIN</item>
         <item>ZELDA</item>
+        <item>MARIO</item>
         <item>BAGPIPE</item>
         <item>FLUTTER</item>
         <item>SPACE</item>
+        <item>SIREN</item>
     </string-array>
     <string-array name="scale">
         <item>MAJOR</item>
@@ -30,12 +32,6 @@
         <item>A</item>
         <item>Asharp</item>
         <item>B</item>
-    </string-array>
-    <string-array name="waveforms">
-        <item>SINE</item>
-        <item>SQUARE</item>
-        <item>TRIANGLE</item>
-        <item>SAWTOOTH</item>
     </string-array>
     <string-array name="ten">
         <item>1</item>

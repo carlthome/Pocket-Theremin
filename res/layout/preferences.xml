@@ -4,24 +4,8 @@
 
     <PreferenceScreen
         android:key="input_preferences"
-        android:summary="Play by touching the screen or by rotating your device. Get help with selecting musical notes."
-        android:title="Playing style" >
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:disableDependentsState="true"
-            android:key="sensors"
-            android:summaryOff="Enable to generate sounds by rotating your device instead of touching the screen."
-            android:summaryOn="Disable to generate sounds by touching the screen instead."
-            android:title="Sensors" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:dependency="sensors"
-            android:key="multitouch"
-            android:shouldDisableView="true"
-            android:summary="Allow setting volume and pitch simultaneously."
-            android:title="Multi-touch" />
+        android:summary="Choose how to play."
+        android:title="Input" >
 
         <ListPreference
             android:defaultValue="2"
@@ -72,25 +56,19 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="advanced_toggle"
-            android:summaryOff="Check this to stop using the presets and allow advanced settings instead."
-            android:summaryOn="Disable this to use the instrument presets."
-            android:title="Enable advanced" />
+            android:summaryOff="Stop using the presets and allow advanced settings instead."
+            android:summaryOn="Disable to use the instrument presets instead."
+            android:title="Enable advanced settings" />
     </PreferenceCategory>
 
     <PreferenceScreen
         android:key="sound_effects"
-        android:summary="Advanced settings for sound effects."
+        android:summary="Advanced sounds settings."
         android:title="Sound Effects" >
 
-        <PreferenceCategory android:title="Synthesizer" >
-
-            <ListPreference
-                android:defaultValue="SINE"
-                android:entries="@array/waveforms"
-                android:entryValues="@array/waveforms"
-                android:key="waveform"
-                android:summary="Select waveform."
-                android:title="Waveform" />
+        <PreferenceScreen
+            android:summary="Shape the sound."
+            android:title="Synthesizer" >
 
             <CheckBoxPreference
                 android:defaultValue="false"
@@ -103,14 +81,71 @@
                 android:key="chiptune"
                 android:summary="Limit sound samples to 8-bits, as to simulate an old video game console."
                 android:title="NES" />
-        </PreferenceCategory>
 
-        <PreferenceCategory android:title="Vibrato" >
+            <PreferenceCategory android:title="Shape" >
+
+                <ListPreference
+                    android:defaultValue="100"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="synth_sine"
+                    android:summary="Volume in percent."
+                    android:title="Sine (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="synth_square"
+                    android:summary="Volume in percent."
+                    android:title="Square (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="synth_triangle"
+                    android:summary="Volume in percent."
+                    android:title="Triangle (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="synth_sawtooth"
+                    android:summary="Volume in percent."
+                    android:title="Sawtooth (percent)" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:summary="Glide between frequencies."
+            android:title="Portamento" >
 
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
+                android:key="portamento"
+                android:summary="Enable gliding."
+                android:title="Portamento" />
+
+            <ListPreference
+                android:defaultValue="10"
+                android:dependency="portamento"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
+                android:key="portamento_speed"
+                android:summary="Select speed (ms)."
+                android:title="Speed (ms)" />
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:summary="Modulate the pitch"
+            android:title="Vibrato" >
+
+            <CheckBoxPreference
+                android:defaultValue="false"
                 android:key="vibrato"
-                android:summary="Modulate the pitch"
+                android:summary="Enable frequency modulation."
                 android:title="Vibrato" />
 
             <ListPreference
@@ -131,22 +166,54 @@
                 android:summary="Select depth in percent (percent)."
                 android:title="Depth (percent)" />
 
-            <ListPreference
-                android:defaultValue="TRIANGLE"
-                android:dependency="vibrato"
-                android:entries="@array/waveforms"
-                android:entryValues="@array/waveforms"
-                android:key="vibrato_waveform"
-                android:summary="Select waveform."
-                android:title="Waveform" />
-        </PreferenceCategory>
+            <PreferenceCategory android:title="Shape" >
 
-        <PreferenceCategory android:title="Tremolo" >
+                <ListPreference
+                    android:defaultValue="100"
+                    android:dependency="vibrato"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="vibrato_sine"
+                    android:summary="Volume in percent."
+                    android:title="Sine (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="vibrato"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="vibrato_square"
+                    android:summary="Volume in percent."
+                    android:title="Square (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="vibrato"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="vibrato_triangle"
+                    android:summary="Volume in percent."
+                    android:title="Triangle (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="vibrato"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="vibrato_sawtooth"
+                    android:summary="Volume in percent."
+                    android:title="Sawtooth (percent)" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:summary="Modulate the amplitude."
+            android:title="Tremolo" >
 
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:key="tremolo"
-                android:summary="Modulate the amplitude."
+                android:summary="Enable amplitude modulation."
                 android:title="Tremolo" />
 
             <ListPreference
@@ -167,33 +234,83 @@
                 android:summary="Select depth (percent)."
                 android:title="Depth (percent)" />
 
-            <ListPreference
-                android:defaultValue="SINE"
-                android:dependency="tremolo"
-                android:entries="@array/waveforms"
-                android:entryValues="@array/waveforms"
-                android:key="tremolo_waveform"
-                android:summary="Select waveform."
-                android:title="Waveform" />
-        </PreferenceCategory>
+            <PreferenceCategory android:title="Shape" >
 
-        <PreferenceCategory android:title="Portamento" >
+                <ListPreference
+                    android:defaultValue="100"
+                    android:dependency="tremolo"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="tremolo_sine"
+                    android:summary="Volume in percent."
+                    android:title="Sine (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="tremolo"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="tremolo_square"
+                    android:summary="Volume in percent."
+                    android:title="Square (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="tremolo"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="tremolo_triangle"
+                    android:summary="Volume in percent."
+                    android:title="Triangle (percent)" />
+
+                <ListPreference
+                    android:defaultValue="0"
+                    android:dependency="tremolo"
+                    android:entries="@array/hundred"
+                    android:entryValues="@array/hundred"
+                    android:key="tremolo_sawtooth"
+                    android:summary="Volume in percent."
+                    android:title="Sawtooth (percent)" />
+            </PreferenceCategory>
+        </PreferenceScreen>
+
+        <PreferenceScreen
+            android:summary="Create echoes."
+            android:title="Delay" >
 
             <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="portamento"
-                android:summary="Glide between notes."
-                android:title="Portamento" />
+                android:defaultValue="false"
+                android:key="delay"
+                android:summary="Enable echoing."
+                android:title="Delay" />
+
+            <ListPreference
+                android:defaultValue="100"
+                android:dependency="delay"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
+                android:key="delay_bpm"
+                android:summary="Select time (BPM)."
+                android:title="Time (BPM)" />
 
             <ListPreference
                 android:defaultValue="10"
-                android:dependency="portamento"
+                android:dependency="delay"
                 android:entries="@array/hundred"
                 android:entryValues="@array/hundred"
-                android:key="portamento_speed"
-                android:summary="Select speed (ms)."
-                android:title="Speed (ms)" />
-        </PreferenceCategory>
+                android:key="delay_feedback"
+                android:summary="Set the amount of feedback. Higher values mean more repetitions of an echo."
+                android:title="Feedback (percent)" />
+
+            <ListPreference
+                android:defaultValue="50"
+                android:dependency="delay"
+                android:entries="@array/hundred"
+                android:entryValues="@array/hundred"
+                android:key="delay_mix"
+                android:summary="Wet/dry mix in percent. 50 percent means the original sound and the echo are of equal volume."
+                android:title="Mix (percent)" />
+        </PreferenceScreen>
     </PreferenceScreen>
 
 </PreferenceScreen>
