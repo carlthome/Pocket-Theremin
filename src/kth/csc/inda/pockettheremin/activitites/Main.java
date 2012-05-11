@@ -65,7 +65,7 @@ public class Main extends Activity implements OnTouchListener, Global {
 		 * Set default preferences by resource.
 		 */
 		Preferences.setDefaults(this);
-		
+
 		/*
 		 * Get system services.
 		 */
@@ -103,26 +103,8 @@ public class Main extends Activity implements OnTouchListener, Global {
 		/*
 		 * Load user preferences.
 		 */
-		Preferences.loadPreferences(PreferenceManager.getDefaultSharedPreferences(this));
-
-		/*
-		 * Remind the user to turn up the volume on their device.
-		 */
-		if (0.1 > audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setIcon(android.R.drawable.ic_dialog_alert)
-					.setTitle(getString(R.string.dialog_low_volume_headline))
-					.setMessage(getString(R.string.dialog_low_volume_text))
-					.setNeutralButton("OK",
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-									refreshAudioManager();
-								}
-							});
-			builder.show();
-		}
+		Preferences.loadPreferences(PreferenceManager
+				.getDefaultSharedPreferences(this));
 
 		/*
 		 * Setup autotune.
@@ -141,6 +123,27 @@ public class Main extends Activity implements OnTouchListener, Global {
 		refreshAudioManager();
 
 		/*
+		 * Remind the user to turn up the volume on their device.
+		 */
+		if (G.volume.range == 0.0) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle(getString(R.string.dialog_low_volume_headline))
+					.setMessage(getString(R.string.dialog_low_volume_text))
+					.setCancelable(false)
+					.setNeutralButton("OK",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+									refreshAudioManager();
+								}
+							});
+			builder.show();
+		}
+		
+		/*
 		 * Start audio thread.
 		 */
 		audioThread = new AudioThread();
@@ -154,6 +157,7 @@ public class Main extends Activity implements OnTouchListener, Global {
 			@Override
 			public void run() {
 				runOnUiThread(new Runnable() {
+					@Override
 					public void run() {
 						graph.invalidate();
 					}
@@ -336,9 +340,6 @@ public class Main extends Activity implements OnTouchListener, Global {
 		 */
 		G.frequency = new Range(G.key.frequency(4 + G.octaves / 2),
 				G.key.frequency(4 - G.octaves / 2));
-		// G.volume = new
-		// Range(audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),
-		// AudioTrack.getMinVolume());
 		G.volume = new Range(
 				audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),
 				-audioManager.getStreamVolume(AudioManager.STREAM_MUSIC));

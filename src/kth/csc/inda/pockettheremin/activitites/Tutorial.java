@@ -55,30 +55,30 @@ public class Tutorial extends Activity implements OnTouchListener {
 		 * Create animations.
 		 */
 		animation1 = new TranslateAnimation(
-				TranslateAnimation.ABSOLUTE, 0,
-				TranslateAnimation.ABSOLUTE, 0,
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.3f);
+				Animation.ABSOLUTE, 0,
+				Animation.ABSOLUTE, 0,
+				Animation.RELATIVE_TO_PARENT, 0.0f,
+				Animation.RELATIVE_TO_PARENT, 0.3f);
 		animation1.setDuration(1500);
 		animation1.setRepeatCount(-1);
 		animation1.setRepeatMode(Animation.REVERSE);
 		animation1.setInterpolator(new AccelerateDecelerateInterpolator());
 
 		animation2 = new TranslateAnimation(
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.3f,
-				TranslateAnimation.ABSOLUTE, 0, 
-				TranslateAnimation.ABSOLUTE, 0);
+				Animation.RELATIVE_TO_PARENT, 0.0f,
+				Animation.RELATIVE_TO_PARENT, 0.3f,
+				Animation.ABSOLUTE, 0, 
+				Animation.ABSOLUTE, 0);
 		animation2.setDuration(2000);
 		animation2.setRepeatCount(-1);
 		animation2.setRepeatMode(Animation.REVERSE);
 		animation2.setInterpolator(new AccelerateDecelerateInterpolator());
 
 		animation3 = new TranslateAnimation(
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.0f,
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.2f,
-				TranslateAnimation.RELATIVE_TO_PARENT, 0.1f,
-				TranslateAnimation.RELATIVE_TO_PARENT, -0.2f);
+				Animation.RELATIVE_TO_PARENT, 0.0f,
+				Animation.RELATIVE_TO_PARENT, 0.2f,
+				Animation.RELATIVE_TO_PARENT, 0.1f,
+				Animation.RELATIVE_TO_PARENT, -0.2f);
 		animation3.setDuration(2000);
 		animation3.setRepeatCount(-1);
 		animation3.setRepeatMode(Animation.REVERSE);

@@ -1,6 +1,5 @@
 package kth.csc.inda.pockettheremin.synth;
 
-import android.util.Log;
 import kth.csc.inda.pockettheremin.utils.Global;
 
 /**

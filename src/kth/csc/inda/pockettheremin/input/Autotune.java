@@ -6,7 +6,7 @@ import kth.csc.inda.pockettheremin.utils.Global;
 import android.util.Log;
 
 public class Autotune {
-	public static final double TEMPERAMENT = Math.pow((double) 2,
+	public static final double TEMPERAMENT = Math.pow(2,
 			(double) 1 / 12);
 	Note key;
 	int octaves;

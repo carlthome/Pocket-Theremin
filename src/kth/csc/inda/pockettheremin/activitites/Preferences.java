@@ -57,7 +57,7 @@ public class Preferences extends PreferenceActivity implements
 		 */
 		CharSequence[] entries;
 		int i;
-		ListPreference list; 
+		ListPreference list;
 
 		list = (ListPreference) findPreference("preset");
 		i = 0;
@@ -74,7 +74,7 @@ public class Preferences extends PreferenceActivity implements
 			entries[i++] = scale.name();
 		list.setEntries(entries);
 		list.setEntryValues(entries);
-		
+
 		list = (ListPreference) findPreference("key");
 		i = 0;
 		entries = new CharSequence[Autotune.Note.values().length];
@@ -84,6 +84,7 @@ public class Preferences extends PreferenceActivity implements
 		list.setEntryValues(entries);
 	}
 
+	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		if (preference.getKey().equals("advanced_toggle")) {
 			if (newValue.equals(false)) {
@@ -243,7 +244,7 @@ public class Preferences extends PreferenceActivity implements
 				0, 0, 0),
 
 		ZELDA(// Synth
-				new Waveform(0.0, 0.0, 1.0, 1.0), true, true,
+				new Waveform(0.0, 0.0, 1.0, 1.0), true, false,
 				// Vibrato
 				new Waveform(0.0, 0.0, 1.0, 0.0), 9, 2,
 				// Tremolo
@@ -264,6 +265,17 @@ public class Preferences extends PreferenceActivity implements
 				// Delay
 				0, 0, 0),
 
+		LOOP(// Synth
+				new Waveform(1.0, 0.0, 0.0, 1.0), false, false,
+				// Vibrato
+				null, 0, 0,
+				// Tremolo
+				null, 0, 0,
+				// Portamento
+				10,
+				// Delay
+				50, 90, 40),
+
 		BAGPIPE(// Synth
 				new Waveform(0.1, 0.0, 0.0, 1.0), true, false,
 				// Vibrato
@@ -273,7 +285,7 @@ public class Preferences extends PreferenceActivity implements
 				// Portamento
 				25,
 				// Delay
-				5, 20, 20),
+				200, 20, 20),
 
 		FLUTTER(// Synth
 				new Waveform(0.0, 1.0, 0.0, 0.0), false, false,

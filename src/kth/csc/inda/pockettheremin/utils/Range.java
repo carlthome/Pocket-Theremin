@@ -8,7 +8,7 @@ public class Range {
 		this.max = max;
 		this.min = min;
 		this.range = Math.abs(max - min);
-		this.current = min;
+		this.current = (range / 2);
 	}
 
 	public void set(double value) {

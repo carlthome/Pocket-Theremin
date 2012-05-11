@@ -2,7 +2,6 @@ package kth.csc.inda.pockettheremin.synth;
 
 import kth.csc.inda.pockettheremin.synth.Oscillator.Waveform;
 import kth.csc.inda.pockettheremin.utils.Global;
-import kth.csc.inda.pockettheremin.utils.Range;
 
 /**
  * Sampler consisting of three oscillators: one for sound generation, one for AM
@@ -12,7 +11,7 @@ import kth.csc.inda.pockettheremin.utils.Range;
  */
 public class Synth extends Sampler implements Global {
 
-	private final Range frequency, volume;
+	private double frequency, volume;
 	private Oscillator synth, tremolo, vibrato;
 	private double tremoloDepth, vibratoDepth;
 	private double portamentoSpeed, frequencyStep, newFrequency;
@@ -20,9 +19,7 @@ public class Synth extends Sampler implements Global {
 
 	public Synth(Sampler input) {
 		super(input);
-		frequency = new Range(G.frequency.max, G.frequency.min);
-		volume = new Range(G.volume.max, G.volume.min);
-		fadeSpeed = 10; 
+		fadeSpeed = 10;
 		synth = new Oscillator();
 		tremolo = new Oscillator();
 		vibrato = new Oscillator();
@@ -32,12 +29,12 @@ public class Synth extends Sampler implements Global {
 	protected short processSample(short s) {
 
 		// Set initial frequency and volume.
-		double frequency = this.frequency.get();
-		double volume = this.volume.get() / this.volume.range * 2;
+		double frequency = this.frequency;
+		double volume = this.volume / G.volume.range * 2;
 
 		// Portamento
 		portamento();
-		
+
 		// Fade
 		fade();
 
@@ -50,57 +47,58 @@ public class Synth extends Sampler implements Global {
 		// Set oscillation frequency
 		synth.setFrequency(frequency);
 
-		if (DEBUG) 
+		if (DEBUG)
 			if (volume < -1 || volume > 1)
 				throw new IllegalArgumentException();
-		
+
 		// Get and process sample.
-		short sample = (short) Math.round(synth.getSample() * volume * Short.MAX_VALUE);
+		short sample = (short) Math.round(synth.getSample() * volume
+				* Short.MAX_VALUE);
 
 		return sample;
 	}
 
 	public void setFrequency(double frequency) {
 		if (portamentoSpeed == 0)
-			this.frequency.set(frequency);
+			this.frequency = frequency;
 		else {
 			newFrequency = frequency;
-			double step = (newFrequency - this.frequency.get())
-					/ (double) portamentoSpeed;
+			double step = (newFrequency - this.frequency)
+					/ portamentoSpeed;
 			double samples = AudioThread.SAMPLE_RATE / 1000;
 			frequencyStep = step / samples;
 		}
 	}
 
-	public void setVolume(double volume) {	
+	public void setVolume(double volume) {
 		if (fadeSpeed == 0)
-			this.volume.set(volume);
+			this.volume = volume;
 		else {
 			newVolume = volume;
-			double step = (newVolume - this.volume.get()) / (double) fadeSpeed;
+			double step = (newVolume - this.volume) / fadeSpeed;
 			double samples = AudioThread.SAMPLE_RATE / 1000;
 			volumeStep = step / samples;
 		}
 	}
 
 	private void fade() {
-		if (volume.get() != newVolume)
-			if (Math.abs(volume.get() - newVolume) < 0.1f)
-				volume.set(newVolume);
+		if (volume != newVolume)
+			if (Math.abs(volume - newVolume) < 0.1f)
+				volume = newVolume;
 			else
-				volume.set(volume.get() + volumeStep);
+				volume += volumeStep;
 		else
-			volume.set(newVolume);
+			volume = newVolume;
 	}
 
 	private void portamento() {
-		if (frequency.get() != newFrequency)
-			if (Math.abs(frequency.get() - newFrequency) < 0.1f)
-				frequency.set(newFrequency);
+		if (frequency != newFrequency)
+			if (Math.abs(frequency - newFrequency) < 0.1f)
+				frequency = newFrequency;
 			else
-				frequency.set(frequency.get() + frequencyStep);
+				frequency += frequencyStep;
 		else
-			frequency.set(newFrequency);
+			frequency = newFrequency;
 	}
 
 	private double vibrato(double frequency) {
@@ -127,7 +125,7 @@ public class Synth extends Sampler implements Global {
 	}
 
 	public void setTremoloDepth(double tremoloDepthInPercent) {
-		tremoloDepth = (tremoloDepthInPercent / (double) 100);
+		tremoloDepth = (tremoloDepthInPercent / 100);
 	}
 
 	public void setTremoloSpeed(double speedInHertz) {
@@ -139,7 +137,7 @@ public class Synth extends Sampler implements Global {
 	}
 
 	public void setVibratoDepth(double vibratoDepthInPercent) {
-		vibratoDepth = (vibratoDepthInPercent / (double) 100);
+		vibratoDepth = (vibratoDepthInPercent / 100);
 	}
 
 	public void setVibratoSpeed(double speedInHertz) {

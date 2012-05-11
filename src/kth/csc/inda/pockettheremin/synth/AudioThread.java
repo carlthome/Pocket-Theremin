@@ -65,6 +65,7 @@ public class AudioThread implements Runnable {
 			throw new IllegalThreadStateException();
 	}
 
+	@Override
 	public void run() {
 		track.play();
 
