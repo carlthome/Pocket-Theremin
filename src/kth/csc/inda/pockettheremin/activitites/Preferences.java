@@ -44,13 +44,13 @@ public class Preferences extends PreferenceActivity implements
 		 * Toggle between using sound presets or the advanced sound effect
 		 * settings.
 		 */
-		CheckBoxPreference advancedToggle = (CheckBoxPreference) findPreference("advanced_toggle");
-		advancedToggle.setOnPreferenceChangeListener(this);
+		CheckBoxPreference useSoundPresetsToggle = (CheckBoxPreference) findPreference("use_sound_presets");
+		useSoundPresetsToggle.setOnPreferenceChangeListener(this);
 
 		/*
 		 * Make sure to run the toggle once on launch.
 		 */
-		onPreferenceChange(advancedToggle, advancedToggle.isChecked());
+		onPreferenceChange(useSoundPresetsToggle, useSoundPresetsToggle.isChecked());
 
 		/*
 		 * Populate list preferences.
@@ -86,14 +86,14 @@ public class Preferences extends PreferenceActivity implements
 
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		if (preference.getKey().equals("advanced_toggle")) {
+		if (preference.getKey().equals("use_sound_presets")) {
 			if (newValue.equals(false)) {
-				findPreference("sound_effects").setEnabled(false);
-				findPreference("preset").setEnabled(true);
+				findPreference("custom_sound_settings").setEnabled(true);
+				findPreference("preset").setEnabled(false);
 				return true;
 			} else if (newValue.equals(true)) {
-				findPreference("sound_effects").setEnabled(true);
-				findPreference("preset").setEnabled(false);
+				findPreference("custom_sound_settings").setEnabled(false);
+				findPreference("preset").setEnabled(true);
 				return true;
 			}
 		}
@@ -126,7 +126,7 @@ public class Preferences extends PreferenceActivity implements
 		/*
 		 * Sounds.
 		 */
-		if (!p.getBoolean("advanced_toggle", false)) {
+		if (p.getBoolean("use_sound_presets", true)) {
 			Preset preset = Preset.valueOf(p.getString("preset", "THEREMIN"));
 			G.synthShape = preset.SYNTH_WAVEFORM;
 			G.synthIMD = preset.SYNTH_IMD;

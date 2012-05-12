@@ -286,6 +286,9 @@ public class Main extends Activity implements OnTouchListener, Global {
 	 * Set volume.
 	 */
 	private void setVolume(float y, int height) {
+		
+		//TODO Increase exponentially.
+		
 		G.volume.set(-1
 				* (2 * Math.signum(y - (height / 2)) * Math.abs(y
 						- (height / 2))) * (G.volume.range / height));

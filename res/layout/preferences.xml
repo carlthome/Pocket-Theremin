@@ -3,9 +3,8 @@
     android:key="root" >
 
     <PreferenceScreen
-        android:key="input_preferences"
         android:summary="Choose how to play."
-        android:title="Input" >
+        android:title="Controls" >
 
         <ListPreference
             android:defaultValue="2"
@@ -37,25 +36,22 @@
         </PreferenceCategory>
     </PreferenceScreen>
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="use_sound_presets"
+        android:summaryOn="Disable to stop using the sound presets and allow custom sound settings instead."
+        android:summaryOff="Enable to use the sound presets instead."
+        android:title="Enable sound presets" />
+    
     <ListPreference
         android:key="preset"
         android:summary="Select an instrument."
-        android:title="Sound" />
-
-    <PreferenceCategory android:title="Advanced" >
-
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="advanced_toggle"
-            android:summaryOff="Stop using the presets and allow advanced settings instead."
-            android:summaryOn="Disable to use the instrument presets instead."
-            android:title="Enable advanced settings" />
-    </PreferenceCategory>
+        android:title="Sound Presets" />   
 
     <PreferenceScreen
-        android:key="sound_effects"
-        android:summary="Advanced sounds settings."
-        android:title="Sound Effects" >
+        android:key="custom_sound_settings"
+        android:summary="Create and use your own sound. Disabling presets is required."
+        android:title="Custom Sound Settings" >
 
         <PreferenceScreen
             android:summary="Shape the sound."
