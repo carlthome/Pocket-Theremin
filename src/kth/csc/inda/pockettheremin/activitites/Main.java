@@ -163,7 +163,7 @@ public class Main extends Activity implements OnTouchListener, Global {
 					}
 				});
 			}
-		}, 0, 33); // Roughly 30FPS.
+		}, 0, 34); // Roughly 30FPS.
 	}
 
 	/**
